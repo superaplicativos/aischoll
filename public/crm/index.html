@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI School - CRM de Leads</title>
+<link rel="icon" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a14;
+  --surface: rgba(22,22,38,0.6);
+  --surface-2: rgba(28,28,50,0.85);
+  --surface-3: rgba(35,35,55,0.95);
+  --border: rgba(124,58,237,0.18);
+  --border-2: rgba(124,58,237,0.4);
+  --text: #f4f4fb;
+  --text-muted: #a4a4b8;
+  --text-dim: #70708a;
+  --violet: #7c3aed;
+  --violet-light: #a78bfa;
+  --fuchsia: #ec4899;
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--body); background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.15), transparent), radial-gradient(ellipse 60% 50% at 100% 100%, rgba(16,185,129,0.08), transparent); z-index: -1; pointer-events: none; }
+::selection { background: var(--violet); color: white; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.4); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--violet); }
+
+.app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar { background: var(--surface-2); border-right: 1px solid var(--border); padding: 1.5rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--text); margin-bottom: 2rem; padding: 0 0.5rem; }
+.logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--violet), var(--fuchsia)); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(124,58,237,0.4); }
+.logo-icon svg { width: 20px; height: 20px; color: white; }
+.logo-text strong { font-family: var(--display); font-size: 1rem; font-weight: 700; display: block; }
+.logo-text span { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; }
+
+.nav-section { margin-bottom: 1.5rem; }
+.nav-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); padding: 0 0.5rem; margin-bottom: 0.5rem; }
+.nav-item { display: flex; align-items: center; gap: 0.625rem; padding: 0.625rem 0.75rem; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.875rem; cursor: pointer; transition: all 0.15s; border: none; background: transparent; width: 100%; text-align: left; font-family: inherit; }
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.nav-item.active { background: rgba(124,58,237,0.15); color: var(--violet-light); border: 1px solid rgba(124,58,237,0.3); }
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-badge { margin-left: auto; background: var(--violet); color: white; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 999px; font-weight: 700; }
+
+.sidebar-footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.7rem; color: var(--text-dim); }
+.sidebar-stat { display: flex; justify-content: space-between; padding: 0.25rem 0.5rem; }
+
+/* MAIN */
+.main { padding: 2rem; overflow-x: auto; }
+@media (max-width: 768px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; }
+  .main { padding: 1rem; }
+}
+
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+.topbar h1 { font-family: var(--display); font-size: 1.75rem; font-weight: 700; }
+.topbar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.875rem; border-radius: 7px; font-weight: 600; font-size: 0.8125rem; text-decoration: none; border: none; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.btn-primary { background: linear-gradient(135deg, var(--violet), var(--fuchsia)); color: white; }
+.btn-primary:hover { opacity: 0.92; }
+.btn-ghost { background: rgba(255,255,255,0.04); color: var(--text); border: 1px solid var(--border-2); }
+.btn-ghost:hover { background: rgba(255,255,255,0.08); }
+.btn-emerald { background: var(--emerald); color: white; }
+.btn-emerald:hover { opacity: 0.92; }
+.btn-sm { padding: 0.35rem 0.625rem; font-size: 0.75rem; }
+.btn-icon { width: 28px; height: 28px; padding: 0; justify-content: center; }
+
+/* KPI Cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; position: relative; overflow: hidden; }
+.kpi-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.kpi-value { font-family: var(--display); font-size: 1.875rem; font-weight: 700; line-height: 1; }
+.kpi-sub { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.25rem; }
+.kpi-icon { position: absolute; top: 0.75rem; right: 0.75rem; font-size: 18px; opacity: 0.4; }
+.kpi.emerald .kpi-value { color: var(--emerald); }
+.kpi.amber .kpi-value { color: var(--amber); }
+.kpi.blue .kpi-value { color: var(--blue); }
+.kpi.fuchsia .kpi-value { color: var(--fuchsia); }
+.kpi.violet .kpi-value { color: var(--violet-light); }
+
+/* Charts */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+@media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+.chart-title { font-family: var(--display); font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+.chart-bars { display: flex; flex-direction: column; gap: 0.5rem; }
+.bar-row { display: grid; grid-template-columns: 140px 1fr 50px; gap: 0.625rem; align-items: center; font-size: 0.8125rem; }
+.bar-label { color: var(--text-muted); }
+.bar-track { background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.bar-value { color: var(--text); font-weight: 600; text-align: right; font-family: var(--mono); font-size: 0.75rem; }
+
+/* Filters */
+.filters { display: flex; gap: 0.625rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+.search-box { position: relative; flex: 1; min-width: 200px; }
+.search-box input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.625rem 0.875rem 0.625rem 2.25rem; color: var(--text); font-size: 0.875rem; font-family: inherit; }
+.search-box input:focus { outline: none; border-color: var(--violet); }
+.search-box svg { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-dim); }
+.filter-select { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.625rem 0.875rem; color: var(--text); font-size: 0.8125rem; font-family: inherit; cursor: pointer; }
+.filter-select:focus { outline: none; border-color: var(--violet); }
+
+/* Leads Table */
+.leads-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; overflow-x: auto; }
+.leads-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+.leads-table th { background: rgba(124,58,237,0.08); padding: 0.75rem 1rem; text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
+.leads-table td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem; vertical-align: middle; }
+.leads-table tr:hover { background: rgba(124,58,237,0.04); cursor: pointer; }
+.leads-table tr:last-child td { border-bottom: none; }
+.lead-name { font-weight: 600; color: var(--text); }
+.lead-wa { color: var(--text-muted); font-family: var(--mono); font-size: 0.75rem; }
+.lead-source { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 999px; display: inline-block; }
+.lead-source.chatbot { background: rgba(124,58,237,0.15); color: var(--violet-light); }
+.lead-source.form { background: rgba(59,130,246,0.15); color: #93c5fd; }
+.lead-source.checkout { background: rgba(245,158,11,0.15); color: #fcd34d; }
+.lead-source.manual { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+.lead-source.import { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+.status-badge { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 999px; display: inline-block; font-weight: 600; color: white; }
+.empty-row { text-align: center; padding: 3rem 1rem; color: var(--text-dim); }
+.empty-row svg { width: 48px; height: 48px; margin: 0 auto 0.75rem; opacity: 0.4; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; animation: fadeIn 0.2s; }
+.modal-overlay.open { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal { background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 16px; max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface-2); z-index: 1; }
+.modal-header h2 { font-family: var(--display); font-size: 1.25rem; }
+.modal-close { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.4rem; border-radius: 6px; }
+.modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.modal-body { padding: 1.5rem; }
+.modal-section { margin-bottom: 1.5rem; }
+.modal-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.625rem; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (max-width: 480px) { .info-grid { grid-template-columns: 1fr; } }
+.info-item label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.2rem; }
+.info-item value { display: block; font-size: 0.875rem; color: var(--text); }
+
+.status-selector { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.status-option { padding: 0.4rem 0.75rem; border-radius: 999px; font-size: 0.75rem; cursor: pointer; border: 1px solid transparent; background: rgba(255,255,255,0.04); color: var(--text-muted); font-family: inherit; }
+.status-option.active { border-color: currentColor; }
+
+.notes-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 200px; overflow-y: auto; padding-right: 0.5rem; }
+.note-item { background: rgba(255,255,255,0.04); padding: 0.625rem 0.875rem; border-radius: 8px; border-left: 3px solid var(--amber); font-size: 0.8125rem; }
+.note-time { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.25rem; }
+
+.conversation-list { max-height: 280px; overflow-y: auto; padding-right: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.conv-msg { padding: 0.5rem 0.75rem; border-radius: 10px; font-size: 0.8125rem; max-width: 85%; white-space: pre-wrap; word-wrap: break-word; }
+.conv-msg.bot { align-self: flex-start; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.2); border-bottom-left-radius: 3px; }
+.conv-msg.user { align-self: flex-end; background: linear-gradient(135deg, var(--violet), var(--fuchsia)); color: white; border-bottom-right-radius: 3px; }
+
+.add-note-form { display: flex; gap: 0.5rem; margin-top: 0.625rem; }
+.add-note-form input { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 7px; padding: 0.5rem 0.75rem; color: var(--text); font-size: 0.8125rem; font-family: inherit; }
+.add-note-form input:focus { outline: none; border-color: var(--violet); }
+.add-note-form button { padding: 0.5rem 0.875rem; }
+
+.payment-info { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); border-radius: 10px; padding: 0.875rem; }
+.payment-info.unpaid { background: rgba(245,158,11,0.05); border-color: rgba(245,158,11,0.2); }
+.payment-info.pending { background: rgba(59,130,246,0.05); border-color: rgba(59,130,246,0.2); }
+.payment-row { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.8125rem; }
+.payment-row:last-child { margin-bottom: 0; }
+.payment-row .label { color: var(--text-muted); }
+.payment-row .value { color: var(--text); font-weight: 600; }
+
+/* Settings */
+.settings-form { display: flex; flex-direction: column; gap: 1rem; max-width: 600px; }
+.form-group label { font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.4rem; }
+.form-input, .form-textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; padding: 0.625rem 0.875rem; color: var(--text); font-size: 0.875rem; font-family: inherit; }
+.form-input:focus, .form-textarea:focus { outline: none; border-color: var(--violet); }
+.alert { padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.8125rem; margin-bottom: 0.625rem; }
+.alert.info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; }
+.alert.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+.alert.warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #fcd34d; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+.add-lead-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; max-width: 700px; }
+@media (max-width: 600px) { .add-lead-form { grid-template-columns: 1fr; } }
+.add-lead-form .full { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="../index.html" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2 5 5-1-1 5 4 3-4 3 1 5-5-1-2 5-2-5-5 1 1-5-4-3 4-3-1-5 5 1z"/></svg>
+      </div>
+      <div class="logo-text"><strong>AI School</strong><span>CRM</span></div>
+    </a>
+
+    <div class="nav-section">
+      <div class="nav-title">Visão Geral</div>
+      <button class="nav-item active" data-page="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-page="leads">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Leads
+        <span class="nav-badge" id="navLeadsCount">0</span>
+      </button>
+      <button class="nav-item" data-page="add-lead">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar Lead
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">Filtros rápidos</div>
+      <button class="nav-item" data-page="leads" data-filter="status=novo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Novos
+        <span class="nav-badge" id="navNovosCount" style="background:#3b82f6">0</span>
+      </button>
+      <button class="nav-item" data-page="leads" data-filter="status=matriculado">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Aguardando Pgto
+        <span class="nav-badge" id="navMatricCount" style="background:#ec4899">0</span>
+      </button>
+      <button class="nav-item" data-page="leads" data-filter="status=pago">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Pagos
+        <span class="nav-badge" id="navPagoCount" style="background:#10b981">0</span>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">Sistema</div>
+      <button class="nav-item" data-page="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configurações
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-stat"><span>Total leads</span><strong id="sidebarTotal">0</strong></div>
+      <div class="sidebar-stat"><span>Receita</span><strong id="sidebarRevenue" style="color:#10b981">R$ 0</strong></div>
+      <div class="sidebar-stat"><span>Conversão</span><strong id="sidebarConv">0%</strong></div>
+      <div style="margin-top:0.5rem;color:var(--text-dim)">v1.0 - Estático (GitHub Pages)</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="topbar">
+        <h1>Dashboard</h1>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost" onclick="syncFromSheets()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Sincronizar
+          </button>
+          <button class="btn btn-ghost" onclick="AISchoolLeads.exportCSV()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            CSV
+          </button>
+          <button class="btn btn-ghost" onclick="AISchoolLeads.exportJSON()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            JSON
+          </button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" id="kpiGrid"></div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">Leads por Status</h3>
+          <div class="chart-bars" id="chartStatus"></div>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">Leads por Origem</h3>
+          <div class="chart-bars" id="chartSource"></div>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">Cursos mais procurados</h3>
+          <div class="chart-bars" id="chartCourses"></div>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">Status de Pagamento</h3>
+          <div class="chart-bars" id="chartPayments"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADS -->
+    <div class="page" id="page-leads">
+      <div class="topbar">
+        <h1>Leads</h1>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="navigateTo('add-lead')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar
+          </button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Buscar por nome, WhatsApp, email, curso..." />
+        </div>
+        <select class="filter-select" id="filterStatus">
+          <option value="">Todos os status</option>
+        </select>
+        <select class="filter-select" id="filterSource">
+          <option value="">Todas as origens</option>
+        </select>
+        <select class="filter-select" id="filterPayment">
+          <option value="">Todos pagamentos</option>
+        </select>
+      </div>
+
+      <div class="leads-table-wrap">
+        <table class="leads-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>WhatsApp</th>
+              <th>Origem</th>
+              <th>Status</th>
+              <th>Curso(s)</th>
+              <th>Pagamento</th>
+              <th>Último contato</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ADD LEAD -->
+    <div class="page" id="page-add-lead">
+      <div class="topbar">
+        <h1>Adicionar Lead Manual</h1>
+      </div>
+
+      <div class="chart-card">
+        <form class="add-lead-form" onsubmit="submitManualLead(event)">
+          <div class="form-group">
+            <label>Nome completo *</label>
+            <input type="text" id="addName" required class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>WhatsApp (com DDD) *</label>
+            <input type="text" id="addWhatsapp" required class="form-input" placeholder="11966161611" />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="addEmail" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Modalidade</label>
+            <select id="addModalidade" class="form-input">
+              <option value="">Selecione</option>
+              <option value="online">Online</option>
+              <option value="presencial">Presencial</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Curso de interesse</label>
+            <select id="addCourse" class="form-input">
+              <option value="">Selecione</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="addStatus" class="form-input">
+              <option value="novo">Novo</option>
+              <option value="contactado">Contactado</option>
+              <option value="qualificado">Qualificado</option>
+              <option value="matriculado">Matriculado (não pago)</option>
+              <option value="pago">Pago</option>
+              <option value="perdido">Perdido</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Valor do pagamento (R$)</label>
+            <input type="number" id="addAmount" class="form-input" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label>Status do pagamento</label>
+            <select id="addPaymentStatus" class="form-input">
+              <option value="nao_pago">Não pagou</option>
+              <option value="aguardando">Aguardando pagamento</option>
+              <option value="pago">Pago</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Notas iniciais</label>
+            <textarea id="addNotes" class="form-input" rows="3" placeholder="Observações sobre o lead..."></textarea>
+          </div>
+          <div class="form-group full">
+            <button type="submit" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Salvar Lead
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="topbar">
+        <h1>Configurações</h1>
+      </div>
+
+      <div class="chart-card">
+        <h3 class="chart-title">Integração Google Sheets</h3>
+
+        <div id="sheetsAlert"></div>
+
+        <div class="settings-form">
+          <div class="form-group">
+            <label>URL do Google Apps Script (Web App)</label>
+            <input type="text" id="sheetsUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfyc.../exec" />
+            <div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.4rem;">
+              Pegue a URL no Apps Script (Extensões → Apps Script → Implantar → App da Web).
+              Os leads serão enviados automaticamente pra sua planilha.
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="btn btn-primary" onclick="saveSheetsUrl()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Salvar URL
+            </button>
+            <button class="btn btn-ghost" onclick="testSheetsUrl()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Testar conexão
+            </button>
+            <button class="btn btn-emerald" onclick="syncFromSheets()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              Importar da planilha
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card" style="margin-top:1rem;">
+        <h3 class="chart-title">Backup de dados</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;">
+          Os leads ficam salvos no navegador (localStorage). Para backup, exporte regularmente.
+          Você também pode importar um JSON de leads.
+        </p>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn btn-ghost" onclick="AISchoolLeads.exportCSV()">Exportar CSV</button>
+          <button class="btn btn-ghost" onclick="AISchoolLeads.exportJSON()">Exportar JSON</button>
+          <label class="btn btn-ghost" style="cursor:pointer;">
+            Importar JSON
+            <input type="file" accept=".json" style="display:none;" onchange="importJSON(event)" />
+          </label>
+          <button class="btn btn-ghost" style="color:#ef4444;border-color:rgba(239,68,68,0.3);" onclick="clearAllData()">
+            Apagar todos os leads
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- LEAD DETAIL MODAL -->
+<div class="modal-overlay" id="leadModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Detalhes do Lead</h2>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script src="../leads.js"></script>
+<script>
+// ===== STATE =====
+let currentFilter = { search: '', status: '', source: '', payment: '' };
+let currentPageLeadId = null;
+
+// ===== COURSES (mesma lista do chatbot) =====
+const COURSES = [
+  'ia-iniciante', 'ia-intermediario', 'ia-avancado', 'vibe-code',
+  'edicao-videos-ia', 'ia-engenheiros-arquitetos', 'ia-operadores-drone',
+  'ia-robotica-criancas', 'ia-adolescentes', 'pacote-office-ia',
+  'canva-ia', 'criacao-sites-lovable', 'criacao-sites-avancado',
+  'poe-bots-ia', 'ia-empreendedorismo', 'mentoria-vip'
+];
+
+// ===== NAVIGATION =====
+function navigateTo(page, extra) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+  const navBtn = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (navBtn && !extra) navBtn.classList.add('active');
+
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'leads') renderLeads();
+  if (page === 'add-lead') populateAddLeadForm();
+  if (page === 'settings') loadSettings();
+
+  // Handle filters from sidebar
+  if (extra && extra.startsWith('filter=')) {
+    const [key, value] = extra.replace('filter=', '').split('=');
+    if (key === 'status') {
+      document.getElementById('filterStatus').value = value;
+      currentFilter.status = value;
+      renderLeads();
+    }
+  }
+}
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const page = btn.dataset.page;
+    const filter = btn.dataset.filter;
+    navigateTo(page, filter ? 'filter=' + filter : null);
+  });
+});
+
+// ===== DASHBOARD =====
+function renderDashboard() {
+  const stats = AISchoolLeads.getStats();
+
+  // KPIs
+  const kpis = [
+    { label: 'Total de Leads', value: stats.total, icon: '👥', class: 'violet' },
+    { label: 'Receita (R$)', value: 'R$ ' + stats.revenue.toLocaleString('pt-BR'), icon: '💰', class: 'emerald' },
+    { label: 'Conversão', value: stats.conversion_rate + '%', icon: '📈', class: 'blue' },
+    { label: 'Aguardando Pgto', value: stats.pending_payment, icon: '⏳', class: 'amber' },
+    { label: 'Novos hoje', value: stats.new_today, icon: '🆕', class: 'fuchsia' },
+    { label: 'Novos esta semana', value: stats.new_this_week, icon: '📅', class: 'violet' },
+  ];
+
+  document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
+    <div class="kpi ${k.class}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-icon">${k.icon}</div>
+    </div>
+  `).join('');
+
+  // Sidebar update
+  document.getElementById('sidebarTotal').textContent = stats.total;
+  document.getElementById('sidebarRevenue').textContent = 'R$ ' + stats.revenue.toLocaleString('pt-BR');
+  document.getElementById('sidebarConv').textContent = stats.conversion_rate + '%';
+  document.getElementById('navLeadsCount').textContent = stats.total;
+  document.getElementById('navNovosCount').textContent = stats.by_status['novo'] || 0;
+  document.getElementById('navMatricCount').textContent = stats.by_status['matriculado'] || 0;
+  document.getElementById('navPagoCount').textContent = stats.by_status['pago'] || 0;
+
+  // Charts
+  renderChart('chartStatus', stats.by_status, AISchoolLeads.STATUS_LABELS, AISchoolLeads.STATUS_COLORS);
+  renderChart('chartSource', stats.by_source, AISchoolLeads.SOURCE_LABELS);
+  renderChart('chartCourses', stats.by_course);
+  renderChart('chartPayments', stats.by_payment, AISchoolLeads.PAYMENT_STATUS_LABELS);
+}
+
+function renderChart(elementId, data, labels = {}, colors = {}) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const entries = Object.entries(data).sort((a, b) => b[1] - a[1]);
+  const max = Math.max(...entries.map(e => e[1]), 1);
+  if (entries.length === 0) {
+    el.innerHTML = '<div style="color:var(--text-dim);font-size:0.8rem;text-align:center;padding:1rem;">Sem dados</div>';
+    return;
+  }
+  el.innerHTML = entries.map(([key, value]) => {
+    const label = labels[key] || key;
+    const color = colors[key] || '#7c3aed';
+    const pct = (value / max) * 100;
+    return `
+      <div class="bar-row">
+        <div class="bar-label">${label}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div>
+        <div class="bar-value">${value}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== LEADS LIST =====
+function renderLeads() {
+  const all = AISchoolLeads.getAllLeads();
+  const filtered = all.filter(l => {
+    if (currentFilter.search) {
+      const s = currentFilter.search.toLowerCase();
+      const haystack = (l.name + ' ' + l.whatsapp + ' ' + (l.email || '') + ' ' + (l.course_interest || []).join(' ')).toLowerCase();
+      if (!haystack.includes(s)) return false;
+    }
+    if (currentFilter.status && l.status !== currentFilter.status) return false;
+    if (currentFilter.source && l.source !== currentFilter.source) return false;
+    if (currentFilter.payment && l.payment_status !== currentFilter.payment) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('leadsTbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="7" class="empty-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        <div>Nenhum lead encontrado.</div>
+        <div style="font-size:0.8rem;margin-top:0.5rem;">Adicione manualmente ou aguarde chegarem pelo chatbot / formulário.</div>
+      </td></tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(l => {
+    const statusColor = AISchoolLeads.STATUS_COLORS[l.status] || '#a4a4b8';
+    const statusLabel = AISchoolLeads.STATUS_LABELS[l.status] || l.status;
+    const sourceLabel = AISchoolLeads.SOURCE_LABELS[l.source] || l.source;
+    const lastContact = l.last_contact ? new Date(l.last_contact).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+    const paymentLabel = AISchoolLeads.PAYMENT_STATUS_LABELS[l.payment_status] || '';
+    const courses = (l.course_interest || []).slice(0, 2).join(', ') + (l.course_interest && l.course_interest.length > 2 ? ' +' + (l.course_interest.length - 2) : '');
+    return `
+      <tr onclick="openLeadModal('${l.id}')">
+        <td><div class="lead-name">${escapeHtml(l.name || 'Sem nome')}</div>${l.email ? '<div style="font-size:0.7rem;color:var(--text-dim)">' + escapeHtml(l.email) + '</div>' : ''}</td>
+        <td class="lead-wa">${formatWhatsapp(l.whatsapp)}</td>
+        <td><span class="lead-source ${l.source}">${sourceLabel}</span></td>
+        <td><span class="status-badge" style="background:${statusColor};">${statusLabel}</span></td>
+        <td>${escapeHtml(courses || '-')}</td>
+        <td style="font-size:0.75rem;">${paymentLabel}</td>
+        <td style="font-size:0.75rem;color:var(--text-muted);">${lastContact}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function formatWhatsapp(wa) {
+  const digits = (wa || '').replace(/\D/g, '');
+  if (digits.length === 11) return '(' + digits.slice(0,2) + ') ' + digits.slice(2,7) + '-' + digits.slice(7);
+  if (digits.length === 10) return '(' + digits.slice(0,2) + ') ' + digits.slice(2,6) + '-' + digits.slice(6);
+  return wa;
+}
+
+// ===== FILTERS =====
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  currentFilter.search = e.target.value;
+  renderLeads();
+});
+document.getElementById('filterStatus').addEventListener('change', (e) => {
+  currentFilter.status = e.target.value;
+  renderLeads();
+});
+document.getElementById('filterSource').addEventListener('change', (e) => {
+  currentFilter.source = e.target.value;
+  renderLeads();
+});
+document.getElementById('filterPayment').addEventListener('change', (e) => {
+  currentFilter.payment = e.target.value;
+  renderLeads();
+});
+
+// Populate filter dropdowns
+function populateFilters() {
+  const statusSel = document.getElementById('filterStatus');
+  Object.entries(AISchoolLeads.STATUS_LABELS).forEach(([k, v]) => {
+    const opt = document.createElement('option');
+    opt.value = k; opt.textContent = v;
+    statusSel.appendChild(opt);
+  });
+  const sourceSel = document.getElementById('filterSource');
+  Object.entries(AISchoolLeads.SOURCE_LABELS).forEach(([k, v]) => {
+    const opt = document.createElement('option');
+    opt.value = k; opt.textContent = v;
+    sourceSel.appendChild(opt);
+  });
+  const paymentSel = document.getElementById('filterPayment');
+  Object.entries(AISchoolLeads.PAYMENT_STATUS_LABELS).forEach(([k, v]) => {
+    const opt = document.createElement('option');
+    opt.value = k; opt.textContent = v;
+    paymentSel.appendChild(opt);
+  });
+}
+
+// ===== LEAD DETAIL MODAL =====
+function openLeadModal(leadId) {
+  const lead = AISchoolLeads.getLead(leadId);
+  if (!lead) return;
+  currentPageLeadId = leadId;
+
+  document.getElementById('modalTitle').textContent = lead.name || 'Lead sem nome';
+
+  const statusOptions = Object.entries(AISchoolLeads.STATUS_LABELS).map(([k, v]) => {
+    const active = lead.status === k ? 'active' : '';
+    const color = AISchoolLeads.STATUS_COLORS[k] || '#a4a4b8';
+    return `<button class="status-option ${active}" style="color:${color};" onclick="changeStatus('${k}')">${v}</button>`;
+  }).join('');
+
+  const paymentClass = lead.payment_status === 'pago' ? '' : (lead.payment_status === 'aguardando' ? 'pending' : 'unpaid');
+  const paymentMethods = ['pix', 'boleto', 'cartao'];
+
+  const conversation = (lead.conversation || []).map(m => {
+    const time = new Date(m.timestamp).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+    return `<div class="conv-msg ${m.from}"><div>${escapeHtml(m.text)}</div><div style="font-size:0.65rem;margin-top:0.25rem;opacity:0.7;">${time}</div></div>`;
+  }).join('') || '<div style="color:var(--text-dim);text-align:center;padding:1rem;">Sem conversa registrada</div>';
+
+  const notes = (lead.notes || []).map(n => {
+    const time = new Date(n.timestamp).toLocaleString('pt-BR');
+    return `<div class="note-item"><div>${escapeHtml(n.text)}</div><div class="note-time">${time}</div></div>`;
+  }).join('') || '<div style="color:var(--text-dim);text-align:center;padding:0.5rem;font-size:0.8rem;">Sem notas</div>';
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-section">
+      <div class="modal-section-title">Informações</div>
+      <div class="info-grid">
+        <div class="info-item"><label>WhatsApp</label><value>${formatWhatsapp(lead.whatsapp)}</value></div>
+        <div class="info-item"><label>Email</label><value>${escapeHtml(lead.email || '-')}</value></div>
+        <div class="info-item"><label>Origem</label><value>${AISchoolLeads.SOURCE_LABELS[lead.source] || lead.source}</value></div>
+        <div class="info-item"><label>Modalidade</label><value>${lead.modalidade || '-'}</value></div>
+        <div class="info-item"><label>Criado em</label><value>${new Date(lead.created_at).toLocaleString('pt-BR')}</value></div>
+        <div class="info-item"><label>Último contato</label><value>${lead.last_contact ? new Date(lead.last_contact).toLocaleString('pt-BR') : '-'}</value></div>
+      </div>
+    </div>
+
+    ${lead.course_interest && lead.course_interest.length > 0 ? `
+      <div class="modal-section">
+        <div class="modal-section-title">Cursos de Interesse</div>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+          ${lead.course_interest.map(c => `<span style="background:rgba(124,58,237,0.15);color:#a78bfa;padding:0.3rem 0.6rem;border-radius:999px;font-size:0.75rem;">${c}</span>`).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="modal-section">
+      <div class="modal-section-title">Status</div>
+      <div class="status-selector">${statusOptions}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Pagamento</div>
+      <div class="payment-info ${paymentClass}">
+        <div class="payment-row"><span class="label">Status:</span><span class="value">${AISchoolLeads.PAYMENT_STATUS_LABELS[lead.payment_status] || '-'}</span></div>
+        <div class="payment-row"><span class="label">Valor:</span><span class="value">R$ ${(lead.payment_amount || 0).toLocaleString('pt-BR')}</span></div>
+        <div class="payment-row"><span class="label">Método:</span><span class="value">${lead.payment_method || '-'}</span></div>
+        <div class="payment-row"><span class="label">Data pgto:</span><span class="value">${lead.payment_date ? new Date(lead.payment_date).toLocaleString('pt-BR') : '-'}</span></div>
+      </div>
+      <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">
+        <button class="btn btn-emerald btn-sm" onclick="markAsPaid()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Marcar como Pago
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="markPaymentStatus('aguardando')">Aguardando</button>
+        <button class="btn btn-ghost btn-sm" onclick="markPaymentStatus('nao_pago')">Não pagou</button>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Conversa (${(lead.conversation || []).length} mensagens)</div>
+      <div class="conversation-list">${conversation}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Notas</div>
+      <div class="notes-list">${notes}</div>
+      <div class="add-note-form">
+        <input type="text" id="newNoteInput" placeholder="Adicionar nota..." onkeydown="if(event.key==='Enter'){addNoteFromModal();}" />
+        <button class="btn btn-primary btn-sm" onclick="addNoteFromModal()">Adicionar</button>
+      </div>
+    </div>
+
+    <div class="modal-section" style="display:flex;gap:0.5rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;">
+      <a href="https://wa.me/55${lead.whatsapp}?text=Olá%20${encodeURIComponent(lead.name)}!%20Sou%20da%20AI%20School" target="_blank" class="btn btn-emerald btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        WhatsApp
+      </a>
+      <a href="mailto:${lead.email}" class="btn btn-ghost btn-sm" ${!lead.email ? 'style="opacity:0.4;pointer-events:none;"' : ''}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email
+      </a>
+      <button class="btn btn-ghost btn-sm" style="color:#ef4444;margin-left:auto;" onclick="deleteCurrentLead()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Excluir
+      </button>
+    </div>
+  `;
+
+  document.getElementById('leadModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('leadModal').classList.remove('open');
+  currentPageLeadId = null;
+}
+
+function changeStatus(status) {
+  if (!currentPageLeadId) return;
+  AISchoolLeads.setStatus(currentPageLeadId, status);
+  openLeadModal(currentPageLeadId);
+  renderLeads();
+}
+
+function markAsPaid() {
+  if (!currentPageLeadId) return;
+  const lead = AISchoolLeads.getLead(currentPageLeadId);
+  const amount = prompt('Valor pago (R$):', lead.payment_amount || 4000);
+  if (amount === null) return;
+  const method = prompt('Método (pix, boleto, cartao):', lead.payment_method || 'pix');
+  if (!method) return;
+  AISchoolLeads.setPaymentStatus(currentPageLeadId, 'pago', parseFloat(amount), method);
+  openLeadModal(currentPageLeadId);
+  renderLeads();
+}
+
+function markPaymentStatus(status) {
+  if (!currentPageLeadId) return;
+  AISchoolLeads.setPaymentStatus(currentPageLeadId, status);
+  openLeadModal(currentPageLeadId);
+  renderLeads();
+}
+
+function addNoteFromModal() {
+  if (!currentPageLeadId) return;
+  const input = document.getElementById('newNoteInput');
+  const text = input.value.trim();
+  if (!text) return;
+  AISchoolLeads.addNote(currentPageLeadId, text);
+  input.value = '';
+  openLeadModal(currentPageLeadId);
+}
+
+function deleteCurrentLead() {
+  if (!currentPageLeadId) return;
+  if (!confirm('Tem certeza que deseja excluir este lead? Esta ação não pode ser desfeita.')) return;
+  AISchoolLeads.deleteLead(currentPageLeadId);
+  closeModal();
+  renderLeads();
+  renderDashboard();
+}
+
+// Close modal on overlay click
+document.getElementById('leadModal').addEventListener('click', (e) => {
+  if (e.target.id === 'leadModal') closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ===== ADD LEAD =====
+function populateAddLeadForm() {
+  const select = document.getElementById('addCourse');
+  if (select.children.length <= 1) {
+    COURSES.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      select.appendChild(opt);
+    });
+  }
+}
+
+function submitManualLead(event) {
+  event.preventDefault();
+  const lead = {
+    name: document.getElementById('addName').value.trim(),
+    whatsapp: document.getElementById('addWhatsapp').value.trim(),
+    email: document.getElementById('addEmail').value.trim(),
+    modalidade: document.getElementById('addModalidade').value,
+    course_interest: [],
+    source: 'manual',
+    status: document.getElementById('addStatus').value,
+    payment_status: document.getElementById('addPaymentStatus').value,
+    payment_amount: parseFloat(document.getElementById('addAmount').value) || 0,
+    payment_method: document.getElementById('addPaymentStatus').value === 'pago' ? 'manual' : null,
+    notes: [],
+  };
+  const course = document.getElementById('addCourse').value;
+  if (course) lead.course_interest = [course];
+  const notes = document.getElementById('addNotes').value.trim();
+  if (notes) lead.notes = [{ text: notes, timestamp: new Date().toISOString(), author: 'manual' }];
+
+  const id = AISchoolLeads.addLead(lead);
+  if (id) {
+    alert('Lead adicionado com sucesso!');
+    navigateTo('leads');
+  } else {
+    alert('Erro ao adicionar lead.');
+  }
+}
+
+// ===== SETTINGS =====
+function loadSettings() {
+  document.getElementById('sheetsUrl').value = AISchoolLeads.getSheetsUrl();
+  testSheetsUrl();
+}
+
+function saveSheetsUrl() {
+  const url = document.getElementById('sheetsUrl').value.trim();
+  AISchoolLeads.setSheetsUrl(url);
+  showSheetsAlert('URL salva com sucesso!', 'success');
+  testSheetsUrl();
+}
+
+function testSheetsUrl() {
+  const url = AISchoolLeads.getSheetsUrl();
+  if (!url) {
+    showSheetsAlert('Nenhuma URL configurada.', 'warn');
+    return;
+  }
+  showSheetsAlert('Testando conexão...', 'info');
+  fetch(url + '?acao=status', { method: 'GET' })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      if (data && data.status === 'ok') {
+        showSheetsAlert('✅ Conexão OK! Planilha: ' + (data.planilha || 'conectada'), 'success');
+      } else {
+        showSheetsAlert('⚠️ Resposta inesperada da planilha. Verifique se o Apps Script está implantado corretamente.', 'warn');
+      }
+    })
+    .catch(err => {
+      showSheetsAlert('❌ Erro ao conectar: ' + err.message + '. Acesse o link abaixo para configurar o Apps Script:', 'warn');
+    });
+}
+
+function showSheetsAlert(message, type) {
+  const el = document.getElementById('sheetsAlert');
+  el.innerHTML = `<div class="alert ${type}">${message}</div>`;
+}
+
+function syncFromSheets() {
+  showSheetsAlert('Sincronizando da planilha...', 'info');
+  AISchoolLeads.syncFromGoogleSheets().then(result => {
+    if (result.ok) {
+      showSheetsAlert(`✅ ${result.added} novos leads importados da planilha (total na planilha: ${result.total}).`, 'success');
+      renderLeads();
+      renderDashboard();
+    } else {
+      showSheetsAlert('❌ Erro ao importar: ' + result.error, 'warn');
+    }
+  });
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error('Formato inválido. Esperado um array de leads.');
+      const existing = AISchoolLeads.getAllLeads();
+      // Substitui todos
+      localStorage.setItem('aischool_leads_crm_v1', JSON.stringify(data));
+      alert(data.length + ' leads importados com sucesso!');
+      renderLeads();
+      renderDashboard();
+    } catch (err) {
+      alert('Erro ao importar: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function clearAllData() {
+  if (!confirm('Tem certeza? Todos os leads serão apagados deste navegador.')) return;
+  if (!confirm('Última confirmação: apagar TODOS os ' + AISchoolLeads.getAllLeads().length + ' leads?')) return;
+  localStorage.removeItem('aischool_leads_crm_v1');
+  alert('Todos os leads foram apagados.');
+  renderLeads();
+  renderDashboard();
+}
+
+// ===== INIT =====
+populateFilters();
+renderDashboard();
+
+// Subscribe to changes
+AISchoolLeads.subscribe(() => {
+  if (document.getElementById('page-dashboard').classList.contains('active')) {
+    renderDashboard();
+  }
+  if (document.getElementById('page-leads').classList.contains('active')) {
+    renderLeads();
+  }
+});
+</script>
+
+</body>
+</html>

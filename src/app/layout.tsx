@@ -74,22 +74,22 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
-        {/* Chatbot de Vendas com RAG - Aria (carrega dinamicamente com basePath correto) */}
+        {/* Chatbot de Vendas com RAG - Aria + Leads.js (CRM) */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function(){
-            function loadChatbot() {
-              // Estratégia: tenta paths em ordem até um carregar com sucesso
+            function loadScript(name, callback) {
               var base = window.location.pathname.replace(/\\/+$/, '');
               var paths = [
-                base + '/chatbot.js',
-                './chatbot.js',
-                '/chatbot.js'
+                base + '/' + name,
+                './' + name,
+                '/' + name
               ];
               var tried = {};
               var i = 0;
               function tryNext() {
                 if (i >= paths.length) {
-                  console.warn('[AI School Chatbot] Não foi possível carregar o chatbot.js');
+                  console.warn('[AI School] Não foi possível carregar ' + name);
+                  if (callback) callback(false);
                   return;
                 }
                 var path = paths[i++];
@@ -100,6 +100,8 @@ export default function RootLayout({
                     var s = document.createElement('script');
                     s.src = path;
                     s.async = true;
+                    s.onload = function() { if (callback) callback(true); };
+                    s.onerror = function() { tryNext(); };
                     document.body.appendChild(s);
                   } else {
                     tryNext();
@@ -108,10 +110,16 @@ export default function RootLayout({
               }
               tryNext();
             }
+            function loadAll() {
+              // Carrega leads.js primeiro, depois chatbot.js (que depende dele)
+              loadScript('leads.js', function() {
+                loadScript('chatbot.js');
+              });
+            }
             if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', loadChatbot);
+              document.addEventListener('DOMContentLoaded', loadAll);
             } else {
-              loadChatbot();
+              loadAll();
             }
           })();
         `}} />

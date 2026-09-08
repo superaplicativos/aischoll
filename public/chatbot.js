@@ -410,6 +410,7 @@
   function saveLead() {
     if (!state.lead.name || !state.lead.whatsapp) return;
     try {
+      // 1. Salva no formato antigo (compatibilidade)
       const leads = JSON.parse(localStorage.getItem(CONFIG.storageKey) || '[]');
       const idx = leads.findIndex(l => l.whatsapp === state.lead.whatsapp);
       const data = {
@@ -420,6 +421,23 @@
       if (idx >= 0) leads[idx] = data;
       else leads.push(data);
       localStorage.setItem(CONFIG.storageKey, JSON.stringify(leads));
+
+      // 2. Salva também no formato novo (CRM) via biblioteca leads.js
+      if (window.AISchoolLeads) {
+        const conversation = state.messages.map(m => ({
+          from: m.from,
+          text: m.text,
+          timestamp: m.timestamp
+        }));
+        AISchoolLeads.addLead({
+          name: state.lead.name,
+          whatsapp: state.lead.whatsapp,
+          source: 'chatbot',
+          course_interest: state.lead.course_interest || [],
+          conversation: conversation,
+          status: 'novo',
+        });
+      }
     } catch (e) {}
   }
 
@@ -1159,6 +1177,8 @@
         return;
       }
       state.lead.whatsapp = digits;
+      // Salva no localStorage para o checkout-dialog pegar
+      try { localStorage.setItem('aichat_lead_whatsapp', digits); } catch (e) {}
       saveSession();
       saveLead();
       sendLeadToSheets();

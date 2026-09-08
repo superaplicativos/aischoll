@@ -95,6 +95,22 @@ export function CheckoutDialog({
       return;
     }
     setStep("qr");
+
+    // Salva o lead no CRM (matriculado, aguardando pagamento)
+    if (typeof window !== "undefined" && (window as any).AISchoolLeads) {
+      const phone = localStorage.getItem("aichat_lead_whatsapp") || "";
+      (window as any).AISchoolLeads.addLead({
+        name: buyerName.trim(),
+        whatsapp: phone,
+        email: buyerEmail.trim(),
+        source: "checkout",
+        course_interest: [redirectSlug],
+        status: "matriculado",
+        payment_status: "aguardando",
+        payment_amount: amount,
+        metadata: { course: title, redirectSlug },
+      });
+    }
   };
 
   const handleSimulatePayment = () => {
@@ -103,6 +119,18 @@ export function CheckoutDialog({
     // Em produção, este passo seria substituído pelo webhook do Mercado Pago.
     setTimeout(() => {
       setStep("done");
+      // Atualiza o lead no CRM: pagamento confirmado
+      if (typeof window !== "undefined" && (window as any).AISchoolLeads) {
+        const phone = localStorage.getItem("aichat_lead_whatsapp") || "";
+        const leads = (window as any).AISchoolLeads.getAllLeads();
+        const lead = leads.find((l: any) =>
+          l.email === buyerEmail.trim() ||
+          (phone && l.whatsapp === phone)
+        );
+        if (lead) {
+          (window as any).AISchoolLeads.setPaymentStatus(lead.id, "pago", amount, "pix");
+        }
+      }
     }, 2500);
   };
 

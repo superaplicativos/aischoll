@@ -647,7 +647,8 @@ window.addEventListener('scroll', () => {{
 }});
 </script>
 
-<!-- Chatbot Aria -->
+<!-- CRM + Chatbot Aria -->
+<script src="../leads.js"></script>
 <script src="../chatbot.js"></script>
 
 </body>
