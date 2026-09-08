@@ -1175,7 +1175,8 @@
     const input = normalize(text);
 
     // 1. INTENT: comprando / matricular
-    if (/^(quero|comprar|matricular|matricula|inscrever|inscricao|fechar|bora|to dentro|tô dentro|topo|vamos|pode ser|fechado)/.test(input)) {
+    // Só ativa se for uma intenção clara de compra (não apenas mencionando "quero curso")
+    if (/^(quero matricular|quero comprar|quero fechar|matricular|matricula|inscrever|inscricao|fechar|bora fechar|to dentro|tô dentro|topo|fechado|vamos la|vamos lá|pode ser|quero esse|quero este|quero o curso)/.test(input)) {
       const course = findCourse(input) || state.suggestedCourse;
       if (course) {
         await presentCourseForEnrollment(course);
