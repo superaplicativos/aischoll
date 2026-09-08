@@ -363,19 +363,19 @@
     },
     schedule: {
       triggers: ['horario', 'horário', 'quando', 'aula', 'aulas', 'encontro', 'encontros', 'data', 'turma', 'turmas', 'inicio', 'início', 'disponibilidade', 'dias'],
-      response: `📅 Os cursos são 100% online ao vivo via Zoom, ${'$NAME'}:\n\n• Cada curso = 10 horas (5 encontros de 2h ou 10 de 1h)\n• Turmas novas toda semana\n• Horários: manhã, tarde, noite ou fim de semana\n• Gravações disponíveis por 12 meses\n• Turmas pequenas (máx. 10 alunos; infantil máx. 8)\n\nMentoria VIP: horários 100% flexíveis, você agenda direto com o mentor.`
+      response: `📅 Os cursos são 100% online ao vivo via Zoom, ${'$NAME'}:\n\nCada curso = 10 horas (5 encontros de 2h ou 10 de 1h)\nTurmas novas toda semana\nHorários: manhã, tarde, noite ou fim de semana\nGravações disponíveis por 12 meses\nTurmas pequenas (máx. 10 alunos; infantil máx. 8)\n\nMentoria VIP: horários 100% flexíveis, você agenda direto com o mentor.`
     },
     guarantee: {
       triggers: ['garantia', 'confianca', 'confiança', 'seguranca', 'segurança', 'nao gostei', 'não gostei', 'arrependimento', 'cancelar', 'cancelamento'],
-      response: `🛡️ Transparência total, ${'$NAME'}:\n\n• Aulas ao vivo (não é só vídeo gravado)\n• Material de apoio completo incluso\n• Certificado digital com verificação\n• Comunidade ativa no WhatsApp\n• Suporte direto com os instrutores\n• Você escolhe online ou presencial\n\nNossa prioridade é seu aprendizado real. Em cada aula você sai com algo prático pronto.`
+      response: `🛡️ Transparência total, ${'$NAME'}:\n\nAulas ao vivo (não é só vídeo gravado)\nMaterial de apoio completo incluso\nCertificado digital com verificação\nComunidade ativa no WhatsApp\nSuporte direto com os instrutores\nVocê escolhe online ou presencial\n\nNossa prioridade é seu aprendizado real. Em cada aula você sai com algo prático pronto.`
     },
     certificate: {
       triggers: ['certificado', 'certificados', 'diploma', 'comprovante', 'horas complementares'],
-      response: `📜 Sim, todos os cursos emitem certificado digital, ${'$NAME'}:\n\n• Carga horária de 10 horas\n• Verificação de autenticidade\n• Válido para horas complementares\n• Mentoria VIP emite certificado personalizado`
+      response: `📜 Sim, todos os cursos emitem certificado digital, ${'$NAME'}:\n\nCarga horária de 10 horas\nVerificação de autenticidade\nVálido para horas complementares\nMentoria VIP emite certificado personalizado`
     },
     price: {
       triggers: ['preco', 'preço', 'valor', 'custo', 'quanto custa', 'quanto', 'quanto fica', 'valor do curso', 'valor da mentoria', 'tabela'],
-      response: `💰 Tabela de preços, ${'$NAME'}:\n\n• Todos os cursos: R$4.000 / 10 horas (R$400/h)\n• Mentoria VIP: a partir de R$4.500 (10h 1-a-1)\n• Horas extras avulsas: R$400/h\n\nNosso diferencial: você paga por hora, não por "curso de 200 horas". Quer que eu te mostre qual curso se encaixa no seu momento?`
+      response: `💰 Tabela de preços, ${'$NAME'}:\n\nTodos os cursos: R$4.000 / 10 horas (R$400/h)\nMentoria VIP: a partir de R$4.500 (10h 1-a-1)\nHoras extras avulsas: R$400/h\n\nNosso diferencial: você paga por hora, não por "curso de 200 horas". Quer que eu te mostre qual curso se encaixa no seu momento?`
     }
   };
 
@@ -909,8 +909,8 @@
     const header = el('div', { class: 'aria-header' });
     const avatar = el('div', { class: 'aria-avatar' }, '✨');
     const info = el('div', { class: 'aria-info' });
-    info.appendChild(el('div', { class: 'aria-name' }, `${CONFIG.botName} · AI School`));
-    info.appendChild(el('div', { class: 'aria-status' }, 'Online agora · responde em segundos'));
+    info.appendChild(el('div', { class: 'aria-name' }, `${CONFIG.botName}, AI School`));
+    info.appendChild(el('div', { class: 'aria-status' }, 'Online agora, responde em segundos'));
     const closeBtn = el('button', { class: 'aria-close', 'aria-label': 'Fechar chat', title: 'Fechar' });
     closeBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
     closeBtn.addEventListener('click', toggleWindow);
@@ -1209,7 +1209,7 @@
 
     // 4. INTENT: ver cursos / lista
     if (/^(curso|cursos|opcoes|opções|quais|categoria|ver todos|lista)/.test(input) && !findCourse(input)) {
-      await botSay('📚 Temos 15 cursos de IA para todos os públicos. Todos com 10h por R$4.000:\n\n• IA Iniciante, Intermediário e Avançado\n• Vibe Code (programar com IA)\n• Edição de Vídeos com IA\n• IA para Engenheiros e Arquitetos\n• IA para Operadores de Drone\n• IA + Robótica para Crianças (7-12)\n• IA para Adolescentes (13-17)\n• Pacote Office com IA\n• Canva com IA\n• Criação de Sites no Lovable\n• Criação de Sites Avançado\n• Poe Bots de IA\n• IA + Empreendedorismo (Solo First)\n\nE a Mentoria VIP (1-a-1) a partir de R$4.500.\n\nQual desses te chama atenção?', {
+      await botSay('📚 Temos 15 cursos de IA para todos os públicos. Todos com 10h por R$4.000:\n\nIA Iniciante, Intermediário e Avançado\nVibe Code (programar com IA)\nEdição de Vídeos com IA\nIA para Engenheiros e Arquitetos\nIA para Operadores de Drone\nIA + Robótica para Crianças (7-12)\nIA para Adolescentes (13-17)\nPacote Office com IA\nCanva com IA\nCriação de Sites no Lovable\nCriação de Sites Avançado\nPoe Bots de IA\nIA + Empreendedorismo (Solo First)\n\nE a Mentoria VIP (1-a-1) a partir de R$4.500.\n\nQual desses te chama atenção?', {
         quick: ['IA Iniciante', 'Vibe Code', 'Mentoria VIP', 'Me ajuda a escolher']
       });
       return;
@@ -1227,7 +1227,7 @@
     if (/(nunca usei|comecar do zero|começar do zero|iniciante total)/.test(input)) {
       trackInterest('ia-iniciante');
       state.suggestedCourse = COURSES.find(c => c.slug === 'ia-iniciante');
-      await botSay(`Para você, ${state.lead.name}, o curso ideal é o **IA Iniciante**. ✨\n\nEm 10 horas você sai do zero a fluente em ChatGPT e Gemini. Aprende a fórmula de prompts que funcionam, cria imagens com Gemini Imagen e aplica tudo no trabalho e nos estudos.\n\nR$4.000 (10h online) · R$4.500 (10h presencial) · Certificado incluso`, {
+      await botSay(`Para você, ${state.lead.name}, o curso ideal é o **IA Iniciante**. ✨\n\nEm 10 horas você sai do zero a fluente em ChatGPT e Gemini. Aprende a fórmula de prompts que funcionam, cria imagens com Gemini Imagen e aplica tudo no trabalho e nos estudos.\n\nR$4.000 (10h online), R$4.500 (10h presencial), Certificado incluso`, {
         cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-iniciante') }
       });
       return;
@@ -1239,14 +1239,14 @@
       if (age >= 7 && age <= 12) {
         trackInterest('ia-robotica-criancas');
         state.suggestedCourse = COURSES.find(c => c.slug === 'ia-robotica-criancas');
-        await botSay(`Que delícia ter seu filho na AI School! 👶🤖\n\nPara crianças de 7 a 12 anos, o curso ideal é o **IA + Robótica**. Curso lúdico onde seu filho vai criar robôs, games e histórias com IA, primeiro contato com tecnologia de forma segura e divertida.\n\nR$4.000 (10h) · Turmas pequenas (máx. 8 crianças) · Certificado de "Pequeno Cientista"`, {
+        await botSay(`Que delícia ter seu filho na AI School! 👶🤖\n\nPara crianças de 7 a 12 anos, o curso ideal é o **IA + Robótica**. Curso lúdico onde seu filho vai criar robôs, games e histórias com IA, primeiro contato com tecnologia de forma segura e divertida.\n\nR$4.000 (10h), Turmas pequenas (máx. 8 crianças), Certificado de "Pequeno Cientista"`, {
           cta: { label: '🚀 Quero matricular meu filho', handler: () => redirectToCheckout('ia-robotica-criancas') }
         });
         return;
       } else if (age >= 13 && age <= 17) {
         trackInterest('ia-adolescentes');
         state.suggestedCourse = COURSES.find(c => c.slug === 'ia-adolescentes');
-        await botSay(`Para adolescentes de 13-17 anos, o curso ideal é o **IA para Adolescentes**. 🎮\n\nCriação de apps, jogos, arte digital e automações. IA para a próxima geração de criadores. Sai com portfólio publicado.\n\nR$4.000 (10h) · Online ao vivo`, {
+        await botSay(`Para adolescentes de 13-17 anos, o curso ideal é o **IA para Adolescentes**. 🎮\n\nCriação de apps, jogos, arte digital e automações. IA para a próxima geração de criadores. Sai com portfólio publicado.\n\nR$4.000 (10h), Online ao vivo`, {
           cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-adolescentes') }
         });
         return;
@@ -1256,7 +1256,7 @@
     if (/(criador de conteudo|criador de conteúdo|content|youtube|tiktok|instagram|social media|edicao|edição|editar video|editar vídeo)/.test(input)) {
       trackInterest('edicao-videos-ia');
       state.suggestedCourse = COURSES.find(c => c.slug === 'edicao-videos-ia');
-      await botSay(`Para criadores de conteúdo, o curso perfeito é **Edição de Vídeos com IA**. 🎬\n\nCapCut, Runway, Pika, Kling, Sora. Edição profissional, b-roll gerado por IA, legendas automáticas. Você vai editar 5x mais rápido.\n\nR$4.000 (10h) · Templates de edição inclusos`, {
+      await botSay(`Para criadores de conteúdo, o curso perfeito é **Edição de Vídeos com IA**. 🎬\n\nCapCut, Runway, Pika, Kling, Sora. Edição profissional, b-roll gerado por IA, legendas automáticas. Você vai editar 5x mais rápido.\n\nR$4.000 (10h), Templates de edição inclusos`, {
         cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('edicao-videos-ia') }
       });
       return;
@@ -1265,7 +1265,7 @@
     if (/(empreendedor|empreender|negocio|negócio|startup|sair do clt|clt|consultor|freelancer)/.test(input)) {
       trackInterest('ia-empreendedorismo');
       state.suggestedCourse = COURSES.find(c => c.slug === 'ia-empreendedorismo');
-      await botSay(`Para quem quer empreender, o curso ideal é **IA + Empreendedorismo (Solo First Framework)**. 🚀\n\nTorne-se um Empreendedor T-Shaped com IA. Do posicionamento ao primeiro cliente. Baseado no framework Solo First.\n\nR$4.000 (10h) · Plano 90 dias incluso`, {
+      await botSay(`Para quem quer empreender, o curso ideal é **IA + Empreendedorismo (Solo First Framework)**. 🚀\n\nTorne-se um Empreendedor T-Shaped com IA. Do posicionamento ao primeiro cliente. Baseado no framework Solo First.\n\nR$4.000 (10h), Plano 90 dias incluso`, {
         cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-empreendedorismo') }
       });
       return;
@@ -1307,7 +1307,7 @@
     }
 
     // 10. FALLBACK inteligente
-    await botSay(`Entendi, ${state.lead.name}. Posso te ajudar com várias coisas:\n\n• Encontrar o curso ideal (me conta sua área/objetivo)\n• Informações sobre preços e pagamento\n• Horários e formato das aulas\n• Mentoria VIP\n• Garantia e certificado\n\nO que você quer saber? Se preferir, posso te passar no WhatsApp da escola.`, {
+    await botSay(`Entendi, ${state.lead.name}. Posso te ajudar com várias coisas:\n\nEncontrar o curso ideal (me conta sua área/objetivo)\nInformações sobre preços e pagamento\nHorários e formato das aulas\nMentoria VIP\nGarantia e certificado\n\nO que você quer saber? Se preferir, posso te passar no WhatsApp da escola.`, {
       quick: ['Quero aprender IA', 'Ver cursos', 'Preços', 'Falar com humano']
     });
   }

@@ -1,49 +1,102 @@
 #!/usr/bin/env python3
-"""Gera landing pages para diferentes públicos da AI School."""
-import sys
+"""
+Reescreve as 5 landing pages removendo conceito 'Pai + Filho'.
+Cada landing é focada no público correto:
+- pais.html: convence o PAI a comprar curso pro filho
+- maes.html: convence a MÃE a comprar curso pro filho
+- criancas.html:Curso direto pra criança (pai compra)
+- adolescentes.html: curso direto pro adolescente
+- empreendedores.html: curso pro próprio empreendedor
+"""
 from pathlib import Path
 
 LANDINGS = {
+    'pais': {
+        'title': 'AI School para Pais | Invista no futuro do seu filho com IA',
+        'desc': 'Pais que querem preparar os filhos para o futuro. Cursos de IA e Robótica para crianças e adolescentes. Presencial e online. A partir de R$4.000.',
+        'badge_text': 'Para pais que querem preparar os filhos pro futuro',
+        'badge_pill': 'For Parents',
+        'hero_title': 'O melhor investimento <span class="gradient-text">no futuro do seu filho</span>',
+        'hero_subtitle': 'Como pai, você sabe que IA não é mais opcional. É a nova alfabetização. Na AI School, seu filho aprende IA criando robôs, games e apps, com <strong>cursos presenciais e online</strong> supervisionados. E você ainda pode aprender IA pra si mesmo, com Mentoria VIP personalizada.',
+        'section_badge': '👨 POR QUE PAIS ESCOLHEM A AI SCHOOL',
+        'section_title': 'Mais que curso, é preparo para a vida do seu filho',
+        'section_subtitle': 'Sabemos que seu maior desejo como pai é ver seu filho pronto para o mundo. A IA é a nova alfabetização. Quem não dominar agora, vai ficar atrás.',
+        'benefits': [
+            ('🎯', 'Foco no que importa', 'Seu filho aprende IA criando jogos, robôs e apps. Sem teoria inútil, só prática que prende atenção.'),
+            ('🛡️', 'Ambiente seguro', 'Turmas pequenas (máx. 8 crianças), supervisão total, conteúdo adaptado por idade. Cidadania digital inclusa.'),
+            ('👨‍🏫', 'Acompanhe de perto', 'Você recebe relatórios do progresso do seu filho e pode falar direto com os instrutores.'),
+            ('📍', 'Online ou presencial', 'Você escolhe. Online via Zoom ou presencial em São Paulo. Mesma qualidade, mesma turma pequena.'),
+            ('📅', 'Horários flexíveis', 'Manhã, tarde, noite ou fim de semana. Acompanhamos o ritmo da sua família.'),
+            ('📜', 'Certificado real', 'Certificado digital com verificação de autenticidade. Válido para horas complementares.'),
+        ],
+        'cursos_badge': '📚 CURSOS PARA SEU FILHO',
+        'cursos_title': 'Escolha o curso ideal pro seu filho',
+        'cursos_subtitle': 'Cursos desenhados por idade, com supervisão total e foco em aprendizado real.',
+        'cursos': [
+            ('🤖', 'IA + Robótica (7-12 anos)', 'Curso lúdico onde seu filho cria robôs, games e histórias com IA. Primeiro contato com tecnologia de forma divertida.', '4.000', '10h online, R$4.500 presencial'),
+            ('🎮', 'IA para Adolescentes (13-17)', 'Criação de apps, jogos, arte digital com IA. Portfólio digital publicado. Preparo real para o mercado futuro.', '4.000', '10h online, R$4.500 presencial'),
+            ('👑', 'Mentoria VIP para Você', 'Aprenda IA você mesmo, pai. Acompanhe o aprendizado do filho com conhecimento próprio. Plano personalizado.', '4.500', '10h online, R$500/hora presencial', 'primary'),
+        ],
+        'mentoria_badge': '👑 MENTORIA VIP PARA O PAI',
+        'mentoria_title': 'Você também merece <span class="gradient-text">aprender IA</span>',
+        'mentoria_subtitle': 'A Mentoria VIP é pra VOCÊ, pai. Aprenda IA no seu ritmo, com plano personalizado. Assim você acompanha de perto o aprendizado do seu filho e ainda evolui profissionalmente.',
+        'mentoria_features': [
+            ('🎯', 'Plano 100% personalizado pra você'),
+            ('⏰', 'Horários flexíveis, manhã, tarde, noite ou fim de semana'),
+            ('💬', 'Canal direto com mentor no WhatsApp'),
+            ('📍', 'Online ou presencial, você escolhe'),
+            ('🚀', 'Acompanhamento de projeto real seu'),
+            ('👨‍👧', 'Pai presente e preparado pra ajudar em casa'),
+        ],
+        'testimonial_data': [
+            ('AB', 'Ana Beatriz', 'Mãe da Helena (9 anos)', '"Meu filho saiu do curso falando de IA como fofoca de criança. Fez um robô que acende a luz do quarto. Mudou a forma como ele vê o mundo."'),
+            ('RM', 'Rodrigo Mendes', 'Pai do Pedro (14 anos)', '"Meu filho publicou o primeiro app dele em 6 semanas. Eu fiz a Mentoria VIP pra poder acompanhar. Valeu cada real."'),
+            ('CS', 'Carla Schmidt', 'Mãe da Júlia (11 anos)', '"Minha filha sempre quis fazer jogos. Hoje tem 3 publicados na itch.io. A AI School deu ferramenta e direção."'),
+        ],
+        'cta_text': 'Conversa inicial gratuita de 30 minutos. Sem compromisso.',
+        'cta_btn': 'Quero Mentoria VIP, R$4.500',
+        'wa_msg': 'Sou pai e quero Mentoria VIP',
+    },
     'maes': {
-        'title': 'AI School para Mães | Aprenda IA e empreenda de casa',
-        'desc': 'Mães que querem aprender IA, empreender de casa e preparar os filhos. Mentoria VIP personalizada, cursos online e presenciais. A partir de R$4.500.',
-        'badge_text': 'Para mães que querem aprender IA e empreender de casa',
+        'title': 'AI School para Mães | Prepare seu filho para o futuro com IA',
+        'desc': 'Mães que querem preparar os filhos para o futuro com IA. Cursos presenciais e online para crianças e adolescentes. A partir de R$4.000.',
+        'badge_text': 'Para mães que querem preparar os filhos pro futuro',
         'badge_pill': 'For Moms',
-        'hero_title': 'Mãe que aprende IA <span class="gradient-text">multiplica oportunidades</span>',
-        'hero_subtitle': 'Como mãe, você quer terflexibilidade pra ficar com seus filhos e ao mesmo tempo construir uma renda. A IA é a ferramenta perfeita pra isso, <strong>trabalhe de casa</strong>, gere renda e ainda ajude seus filhos com a nova alfabetização.',
+        'hero_title': 'Mãe presente, <span class="gradient-text">filho preparado</span>',
+        'hero_subtitle': 'Como mãe, você quer o melhor pros seus filhos. IA é a nova alfabetização. Na AI School seu filho aprende criando robôs, games e apps, com <strong>cursos presenciais e online</strong> supervisionados. E você ainda pode aprender IA pra si mesma, com Mentoria VIP personalizada.',
         'section_badge': '💪 POR QUE MÃES ESCOLHEM A AI SCHOOL',
-        'section_title': 'Aprenda IA, empreenda de casa, esteja com seus filhos',
-        'section_subtitle': 'Sabemos que sua rotina é intensa. Por isso nossos cursos são curtos (10h), práticos e com horários flexíveis que respeitam sua família.',
+        'section_title': 'Segurança e qualidade pro seu filho',
+        'section_subtitle': 'Sabemos que sua rotina é intensa. Por isso nossos cursos são curtos (10h), práticos e com horários flexíveis que respeitam a rotina da sua família.',
         'benefits': [
             ('⏰', 'Horários flexíveis', 'Manhã enquanto kids na escola, tarde, noite ou fim de semana. Sua rotina no controle.'),
-            ('🏠', 'Empreenda de casa', 'Aprenda IA pra prestar serviços, criar conteúdo, atender clientes. Sem sair de casa.'),
-            ('🤱', 'Pais e filhos aprendem', 'Na Mentoria VIP você aprende junto com seus filhos. Momento em família que gera resultado.'),
+            ('🛡️', 'Ambiente seguro', 'Turmas pequenas (máx. 8 crianças), supervisão total, conteúdo adaptado por idade.'),
+            ('📋', 'Acompanhamento', 'Você recebe relatórios do progresso do seu filho e fala direto com os instrutores.'),
             ('📍', 'Online ou presencial', 'Você escolhe. Online via Zoom ou presencial em São Paulo. Mesma qualidade.'),
             ('💰', 'Parcelamento facilitado', 'PIX, boleto 2x sem juros ou cartão em 12x com juros da operadora.'),
             ('📜', 'Certificado real', 'Certificado digital com verificação de autenticidade. Válido para horas complementares.'),
         ],
-        'cursos_badge': '📚 TRILHAS PARA MÃES',
-        'cursos_title': 'Cursos que cabem na sua rotina',
-        'cursos_subtitle': 'Cursos desenhados pra você que tem pouco tempo e precisa de resultado real.',
+        'cursos_badge': '📚 CURSOS PARA SEU FILHO',
+        'cursos_title': 'Escolha o curso ideal pro seu filho',
+        'cursos_subtitle': 'Cursos desenhados por idade, com supervisão total e foco em aprendizado real.',
         'cursos': [
-            ('🎨', 'Canva com IA', 'Crie designs profissionais e venda pra clientes. Magic Studio + Gemini. Aprenda do zero.', '4.000', '10h online · R$4.500 presencial'),
-            ('💼', 'Office com IA (Copilot)', 'Domine Excel + Word + PowerPoint com Copilot. Aumente produtividade no trabalho.', '4.000', '10h online · R$4.500 presencial'),
-            ('👑', 'Mentoria VIP pra Mães', 'Plano 100% personalizado. Empreender de casa, criar conteúdo, atender filhos. Você define.', '4.500', 'online · R$500/hora presencial', 'primary'),
+            ('🤖', 'IA + Robótica (7-12 anos)', 'Curso lúdico onde seu filho cria robôs, games e histórias com IA. Primeiro contato com tecnologia de forma divertida.', '4.000', '10h online, R$4.500 presencial'),
+            ('🎮', 'IA para Adolescentes (13-17)', 'Criação de apps, jogos, arte digital com IA. Portfólio digital publicado. Preparo real para o mercado.', '4.000', '10h online, R$4.500 presencial'),
+            ('👑', 'Mentoria VIP para Você', 'Aprenda IA você mesma, mãe. Plano personalizado. Empreenda de casa ou acompanhe o aprendizado do filho.', '4.500', '10h online, R$500/hora presencial', 'primary'),
         ],
-        'mentoria_badge': '👑 MENTORIA VIP PARA MÃES',
-        'mentoria_title': 'Sob medida pra <span class="gradient-text">sua rotina de mãe</span>',
-        'mentoria_subtitle': 'A Mentoria VIP não é um curso engessado. É você + um mentor dedicado, desenhando um plano de aprendizado que cabe na sua rotina de mãe.',
+        'mentoria_badge': '👑 MENTORIA VIP PARA A MÃE',
+        'mentoria_title': 'Aprenda IA <span class="gradient-text">no seu tempo</span>',
+        'mentoria_subtitle': 'A Mentoria VIP é pra VOCÊ, mãe. Aprenda IA no seu ritmo, com plano personalizado. Empreenda de casa, gere renda, ou apenas acompanhe de perto o aprendizado do seu filho com conhecimento próprio.',
         'mentoria_features': [
-            ('🎯', 'Plano personalizado pra seus objetivos'),
-            ('⏰', 'Horários flexíveis, você agenda conforme rotina dos kids'),
+            ('🎯', 'Plano 100% personalizado pra você'),
+            ('⏰', 'Horários flexíveis que respeitam sua rotina'),
             ('💬', 'Canal direto com mentor no WhatsApp'),
-            ('📍', 'Online ou presencial, escolha a cada sessão'),
-            ('🚀', 'Acompanhamento de projeto real'),
-            ('👶', 'Aprenda junto com seus filhos'),
+            ('📍', 'Online ou presencial, você escolhe'),
+            ('🚀', 'Acompanhamento de projeto real seu'),
+            ('🏠', 'Empreenda de casa ou só aprenda'),
         ],
         'testimonial_data': [
-            ('CS', 'Carla Schmidt', 'Mãe empreendedora', '"Fiz a Mentoria VIP enquanto meus filhos estavam na escola. Em 2 semanas fechei meus primeiros 3 clientes de design com Canva IA. R$ 2.500 de renda extra por mês."'),
-            ('MR', 'Mariana Rocha', 'Mãe de 2 e social media', '"Achei que IA não era pra mim. Hoje atendo 6 clientes pelo Instagram usando só IA. Em dobro minha renda sem sair de casa."'),
+            ('CS', 'Carla Schmidt', 'Mãe do Pedro (10 anos)', '"Meu filho fez IA + Robótica e eu fiz Mentoria VIP. Em 2 semanas fechei meus primeiros clientes de design com IA. R$ 2.500 de renda extra por mês."'),
+            ('MR', 'Mariana Rocha', 'Mãe de 2 adolescentes', '"Meus filhos aprenderam a criar apps. Eu aprendi IA pra empreender de casa. Hoje atendo 6 clientes e estou com eles."'),
             ('PA', 'Patrícia Almeida', 'Mãe e professora', '"A Mentoria VIP me deu confiança. Aprendi IA e hoje aplico nas aulas. Meus alunos adoraram. Bônus: meu filho de 11 aprendeu junto."'),
         ],
         'cta_text': 'Conversa inicial gratuita de 30 minutos. Sem compromisso.',
@@ -59,42 +112,42 @@ LANDINGS = {
         'hero_subtitle': 'Curso lúdico e seguro onde crianças de 7 a 12 anos criam robôs, games e histórias com IA. <strong>Primeiro contato com tecnologia</strong> de forma divertida e supervisionada.',
         'section_badge': '🤖 POR QUE OS PEQUENOS AMAM',
         'section_title': 'Aprender IA pode (e deve) ser divertido',
-        'section_subtitle': 'Crianças aprendem melhor brincando. Por isso nosso curso é 100% prático: a cada aula, seu filho cria algo real.',
+        'section_subtitle': 'Crianças aprendem melhor brincando. Por isso nosso curso é 100% prático: a cada aula, a criança cria algo real.',
         'benefits': [
-            ('🎮', 'Aprende criando', 'Em cada aula, seu filho cria um jogo, um robô ou uma história. Teoria só pra explicar o que já fez.'),
+            ('🎮', 'Aprende criando', 'Em cada aula, a criança cria um jogo, um robô ou uma história. Teoria só pra explicar o que já fez.'),
             ('🛡️', 'Ambiente seguro', 'Turmas pequenas (máx. 8 crianças), supervisão total, conteúdo adaptado por idade.'),
             ('🤖', 'Robôs educacionais', 'Montagem real de robôs com LEGO Education e Micro:bit. Mão na massa.'),
             ('💡', 'Lógica de programação', 'Loop, condição, variável, explicados de forma visual com Scratch.'),
-            ('👨‍👩‍👧', 'Apresentação pros pais', 'No final do curso, seu filho apresenta o que criou pra família. Orgulho garantido.'),
-            ('📜', 'Certificado de Pequeno Cientista', 'Certificado especial que seu filho vai querer pendurar no quarto.'),
+            ('👨‍👩‍👧', 'Apresentação pros pais', 'No final do curso, a criança apresenta o que criou pra família. Orgulho garantido.'),
+            ('📜', 'Certificado de Pequeno Cientista', 'Certificado especial que a criança vai querer pendurar no quarto.'),
         ],
-        'cursos_badge': '📚 NOSSO CURSO INFANTIL',
+        'cursos_badge': '📚 CURSO INFANTIL',
         'cursos_title': 'IA + Robótica para Crianças',
-        'cursos_subtitle': 'O curso ideal pro primeiro contato do seu filho com tecnologia.',
+        'cursos_subtitle': 'O curso ideal pro primeiro contato da criança com tecnologia.',
         'cursos': [
-            ('🤖', 'IA + Robótica (7-12 anos)', 'Curso completo: robôs, games, histórias com IA. 10 horas de pura diversão.', '4.000', 'online · R$4.500 presencial'),
-            ('🎨', 'Criação de imagens com IA', 'Crianças criam arte com Gemini. Imaginação é o limite.', '4.000', '10h online'),
-            ('👨‍👧', 'Mentoria Pai + Filho', 'Aprenda junto com seu filho. Momento em família que gera resultado.', '4.500', 'online · R$500/hora presencial', 'primary'),
+            ('🤖', 'IA + Robótica (7-12 anos)', 'Curso completo: robôs, games, histórias com IA. 10 horas de pura diversão.', '4.000', '10h online, R$4.500 presencial'),
+            ('🎨', 'Criação de imagens com IA', 'Crianças criam arte com Gemini Imagen. Imaginação é o limite.', '4.000', '10h online'),
+            ('👑', 'Mentoria VIP (para os pais)', 'Pais que querem aprender IA pra acompanhar o filho de perto. Plano personalizado.', '4.500', '10h online, R$500/hora presencial', 'primary'),
         ],
-        'mentoria_badge': '👨‍👧 MENTORIA PAI + FILHO',
-        'mentoria_title': 'Aprendizado em <span class="gradient-text">família</span>',
-        'mentoria_subtitle': 'A Mentoria VIP Pai + Filho é a forma mais envolvente de aprender IA. Você aprende junto, acompanha de perto e cria memórias com seu filho.',
+        'mentoria_badge': '👑 MENTORIA VIP PARA PAIS',
+        'mentoria_title': 'Pais preparados <span class="gradient-text">pra ajudar em casa</span>',
+        'mentoria_subtitle': 'A Mentoria VIP é pra os PAIS que querem aprender IA pra acompanhar de perto o aprendizado do filho. Plano personalizado, no seu ritmo, com mentor dedicado.',
         'mentoria_features': [
-            ('👨‍👧', 'Você aprende junto com seu filho'),
+            ('🎯', 'Plano 100% personalizado pra você, pai'),
             ('⏰', 'Horários flexíveis, fim de semana disponível'),
             ('💬', 'Canal direto com mentor no WhatsApp'),
             ('📍', 'Online ou presencial, você escolhe'),
-            ('🚀', 'Projeto real do seu filho acompanhado'),
-            ('🏆', 'Apresentação final para a família'),
+            ('🚀', 'Acompanhamento de projeto real seu'),
+            ('👨‍👧', 'Acompanhe de perto o aprendizado do filho'),
         ],
         'testimonial_data': [
             ('AB', 'Ana Beatriz', 'Mãe da Helena (9 anos)', '"Meu filho saiu do curso falando de IA como fofoca de criança. Fez um robô que acende a luz do quarto. Mudou a forma como ele vê o mundo."'),
-            ('LS', 'Luiz Santos', 'Pai do Theo (10 anos)', '"Meu filho pediu pra continuar. Hoje ele cria jogos no Scratch e mostra pra turma toda na escola. Autoestima lá em cima."'),
+            ('LS', 'Luiz Santos', 'Pai do Theo (10 anos)', '"Meu filho pediu pra continuar. Hoje cria jogos no Scratch e mostra pra turma toda na escola. Autoestima lá em cima."'),
             ('FC', 'Fernanda Costa', 'Mãe da Luna (8 anos)', '"Minha filha era tímida. Depois do curso, apresentou o robô que criou pra turma toda. Mudou completamente."'),
         ],
         'cta_text': 'Conversa inicial gratuita de 30 minutos. Sem compromisso.',
         'cta_btn': 'Quero Mentoria VIP, R$4.500',
-        'wa_msg': 'Quero Mentoria VIP para meu filho',
+        'wa_msg': 'Quero Mentoria VIP pra acompanhar meu filho',
     },
     'adolescentes': {
         'title': 'AI School Teen | IA para adolescentes de 13 a 17 anos',
@@ -118,13 +171,13 @@ LANDINGS = {
         'cursos_title': 'Escolha sua trilha de criação',
         'cursos_subtitle': '3 caminhos. Mesma base de IA. Resultado real publicado.',
         'cursos': [
-            ('🎮', 'Criação de Jogos', 'Crie seu jogo com IA e publique na itch.io. Cursor + Gemini. Do zero ao publish.', '4.000', '10h online · R$4.500 presencial'),
-            ('🎬', 'Edição de Vídeo com IA', 'CapCut + Gemini + Google Flow. Vire editor de TikTok/YouTube profissional.', '4.000', '10h online · R$4.500 presencial'),
-            ('👑', 'Mentoria VIP Teen', 'Plano 100% personalizado pro seu projeto. App, jogo, canal, você escolhe.', '4.500', 'online · R$500/hora presencial', 'primary'),
+            ('🎮', 'Criação de Jogos', 'Crie seu jogo com IA e publique na itch.io. Cursor + Gemini. Do zero ao publish.', '4.000', '10h online, R$4.500 presencial'),
+            ('🎬', 'Edição de Vídeo com IA', 'CapCut + Gemini + Google Flow. Vire editor de TikTok/YouTube profissional.', '4.000', '10h online, R$4.500 presencial'),
+            ('👑', 'Mentoria VIP Teen', 'Plano 100% personalizado pro seu projeto. App, jogo, canal, você escolhe.', '4.500', '10h online, R$500/hora presencial', 'primary'),
         ],
         'mentoria_badge': '👑 MENTORIA VIP TEEN',
         'mentoria_title': 'Seu projeto, <span class="gradient-text">do seu jeito</span>',
-        'mentoria_subtitle': 'A Mentoria VIP Teen é 100% personalizada. Você chega com uma ideia, app, jogo, canal, e nosso mentor te ajuda a publicar em semanas.',
+        'mentoria_subtitle': 'A Mentoria VIP Teen é 100% personalizada. Você chega com uma ideia (app, jogo, canal) e nosso mentor te ajuda a publicar em semanas.',
         'mentoria_features': [
             ('🎯', 'Plano focado no seu projeto'),
             ('⏰', 'Horários flexíveis, não atrapalha a escola'),
@@ -164,9 +217,9 @@ LANDINGS = {
         'cursos_title': 'Do posicionamento à automação',
         'cursos_subtitle': '3 trilhas pra diferentes momentos do seu negócio solo.',
         'cursos': [
-            ('🚀', 'IA + Empreendedorismo (Solo First)', 'Torne-se um Empreendedor T-Shaped. Posicionamento, oferta, vendas. Plano 90 dias.', '4.000', '10h online · R$4.500 presencial'),
-            ('🤖', 'Automação com IA (Modular)', 'Curso por módulos. Mínimo 3 módulos de R$4.000 cada. Foco profissional em automação empresarial.', '4.000', 'por módulo · mín. 3 módulos (R$12.000)', 'primary'),
-            ('👑', 'Mentoria VIP Empreendedor', 'Plano 100% personalizado pro seu negócio. Saia do CLT em 90 dias.', '4.500', 'online · R$500/hora presencial'),
+            ('🚀', 'IA + Empreendedorismo (Solo First)', 'Torne-se um Empreendedor T-Shaped. Posicionamento, oferta, vendas. Plano 90 dias.', '4.000', '10h online, R$4.500 presencial'),
+            ('🤖', 'Automação com IA (Modular)', 'Curso por módulos. Mínimo 3 módulos de R$4.000 cada. Foco profissional em automação empresarial.', '4.000', 'por módulo, mín. 3 módulos (R$12.000)', 'primary'),
+            ('👑', 'Mentoria VIP Empreendedor', 'Plano 100% personalizado pro seu negócio. Saia do CLT em 90 dias.', '4.500', '10h online, R$500/hora presencial'),
         ],
         'mentoria_badge': '👑 MENTORIA VIP EMPREENDEDOR',
         'mentoria_title': 'Seu negócio, <span class="gradient-text">acelerado</span>',
@@ -211,7 +264,6 @@ def build_html(data):
             btn_text = 'Quero Mentoria' if btn_type == 'primary' else 'Matricular'
             btn_link = '#mentoria'
             price_color = 'var(--amber)' if btn_type == 'primary' else 'var(--emerald)'
-
         cursos_html += f'\n      <div class="benefit">\n        <div class="benefit-icon">{icon}</div>\n        <h3>{title}</h3>\n        <p style="margin-bottom: 1rem;">{desc}</p>\n        <div style="font-family: var(--display); font-size: 1.5rem; font-weight: 700; color: {price_color};">R$ {price}</div>\n        <div style="font-size: 0.75rem; color: var(--text-muted);">{info}</div>\n        <a href="{btn_link}" class="btn {btn_class}" style="width:100%; margin-top: 1rem; justify-content: center;">{btn_text}</a>\n      </div>\n'
 
     mentoria_features_html = '\n'.join([
@@ -422,7 +474,7 @@ section {{ padding: 5rem 1.5rem; position: relative; }}
       <h3>Mentoria VIP Personalizada</h3>
       <p style="color:var(--text-muted);font-size:0.9rem;">Plano 100% sob medida. Você define ritmo e modalidade.</p>
       <div class="hero-card-price">R$ 4.500</div>
-      <div class="hero-card-price-info">10 horas · online · R$450/hora</div>
+      <div class="hero-card-price-info">10 horas, online, R$450/hora</div>
       <ul class="hero-card-list">
         <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Plano de aprendizado sob medida</li>
         <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Sessões 1-a-1 ao vivo</li>
@@ -471,7 +523,7 @@ section {{ padding: 5rem 1.5rem; position: relative; }}
           <div style="margin-bottom: 1.5rem;">
             <div style="font-size:0.75rem;color:var(--text-muted);">A partir de</div>
             <div class="mentoria-price">R$ 4.500</div>
-            <div style="font-size:0.75rem;color:var(--text-muted);">10 horas · online · R$450/hora</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">10 horas, online, R$450/hora</div>
             <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--amber);">📍 Presencial: R$500/hora (pacote 10h = R$5.000)</div>
           </div>
           <div style="display:flex; gap:0.625rem; flex-wrap:wrap;">
@@ -583,7 +635,7 @@ section {{ padding: 5rem 1.5rem; position: relative; }}
   </div>
   <div class="footer-bottom">
     <div>© 2026 AI School. Todos os direitos reservados.</div>
-    <div>PIX · Boleto 2x sem juros · Cartão 12x</div>
+    <div>PIX, Boleto 2x sem juros, Cartão 12x</div>
   </div>
 </footer>
 
@@ -612,4 +664,4 @@ for slug, data in LANDINGS.items():
     output_file.write_text(html, encoding='utf-8')
     print(f'OK {slug}.html ({len(html)} bytes)')
 
-print(f'\nTotal: {len(LANDINGS)} landing pages em {output_dir}')
+print(f'\nTotal: {len(LANDINGS)} landing pages reescritas')

@@ -186,7 +186,7 @@ export function CursosPage() {
                           {formatBRL(course.price)}
                         </p>
                         <p className="text-[10px] text-muted-foreground">
-                          {course.hours}h · {formatBRL(course.pricePerHour)}/h
+                          {course.hours}h, {formatBRL(course.pricePerHour)}/h
                         </p>
                       </div>
                       <Clock className="h-5 w-5 text-muted-foreground" />

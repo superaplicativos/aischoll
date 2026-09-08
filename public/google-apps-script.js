@@ -230,7 +230,7 @@ function listarLeadsHTML() {
         html += '🎯 Interesses: <strong>' + escapeHtml(l.interesse) + '</strong>';
       }
       if (l.valor) {
-        html += ' · 💰 ' + escapeHtml(String(l.valor));
+        html += ', 💰 ' + escapeHtml(String(l.valor));
       }
       html += '</div>';
       if (l.conversa) {

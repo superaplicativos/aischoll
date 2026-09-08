@@ -100,7 +100,7 @@ export function HomePage() {
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-xs font-medium text-violet-300 backdrop-blur-sm mb-8">
               <Sparkles className="h-3.5 w-3.5" />
               A escola #1 de IA do Brasil
-              <span className="text-violet-400">·</span>
+              <span className="text-violet-400">-</span>
               <span className="text-emerald-400">+1.200 alunos formados</span>
             </div>
 
@@ -344,7 +344,7 @@ export function HomePage() {
                     <p className="font-display text-4xl font-bold text-amber-400">
                       {formatBRL(MENTORIA_VIP_MIN)}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">10 horas · 1-a-1 · flexível</p>
+                    <p className="text-xs text-muted-foreground mt-1">10 horas, 1-a-1, flexível</p>
 
                     <Button
                       className="mt-6 bg-gradient-to-r from-amber-500 to-rose-500 hover:opacity-90 text-white"
@@ -571,7 +571,7 @@ function CourseCard({
                 {formatBRL(course.price)}
               </p>
               <p className="text-[10px] text-muted-foreground">
-                {course.hours}h · {formatBRL(course.pricePerHour)}/h
+                {course.hours}h, {formatBRL(course.pricePerHour)}/h
               </p>
             </div>
             <div className="text-right">

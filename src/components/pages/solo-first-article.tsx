@@ -28,11 +28,11 @@ export function SoloFirstArticle() {
             <span className="text-xs font-medium text-violet-400 uppercase tracking-wider">
               Solo First
             </span>
-            <span className="text-xs text-muted-foreground">·</span>
+            <span className="text-xs text-muted-foreground">-</span>
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               <Calendar className="h-3 w-3" /> 07 set 2026
             </span>
-            <span className="text-xs text-muted-foreground">·</span>
+            <span className="text-xs text-muted-foreground">-</span>
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               <Clock className="h-3 w-3" /> 12 min de leitura
             </span>
@@ -57,7 +57,7 @@ export function SoloFirstArticle() {
             </Avatar>
             <div>
               <p className="font-semibold text-sm">Christopher Toya</p>
-              <p className="text-xs text-muted-foreground">Fundador · Solo First Framework</p>
+              <p className="text-xs text-muted-foreground">Fundador, Solo First Framework</p>
             </div>
             <div className="ml-auto hidden md:block">
               <Button

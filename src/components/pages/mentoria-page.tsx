@@ -64,7 +64,7 @@ export function MentoriaPage() {
                   {formatBRL(MENTORIA_VIP_MIN)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {mentoriaVIP.minimumHours} horas 1-a-1 · horários flexíveis
+                  {mentoriaVIP.minimumHours} horas 1-a-1, horários flexíveis
                 </p>
                 <Button
                   size="lg"

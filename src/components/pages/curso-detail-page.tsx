@@ -113,7 +113,7 @@ export function CursoDetailPage({ slug }: Props) {
                       {formatBRL(course.price)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {course.hours} horas · {formatBRL(course.pricePerHour)}/h
+                      {course.hours} horas, {formatBRL(course.pricePerHour)}/h
                     </p>
                   </div>
 
@@ -291,7 +291,7 @@ export function CursoDetailPage({ slug }: Props) {
             </p>
             <div className="mt-6">
               <p className="text-3xl font-bold text-emerald-400">{formatBRL(course.price)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{course.hours} horas · {course.format}</p>
+              <p className="text-xs text-muted-foreground mt-1">{course.hours} horas, {course.format}</p>
             </div>
             <Button
               size="lg"
@@ -323,7 +323,7 @@ export function CursoDetailPage({ slug }: Props) {
                       <RIcon className="h-5 w-5 text-white" />
                     </div>
                     <p className="font-semibold text-sm line-clamp-2">{rc.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{formatBRL(rc.price)} · {rc.hours}h</p>
+                    <p className="text-xs text-muted-foreground mt-1">{formatBRL(rc.price)}, {rc.hours}h</p>
                   </button>
                 );
               })}
