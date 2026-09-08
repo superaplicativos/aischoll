@@ -28,7 +28,7 @@ export function DiferencialPage() {
 
         <p className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed">
           Em um mercado cheio de cursos de 200 horas que ninguém termina,
-          cursos longos só para parecerem caros, mensalidades eternas — a AI School
+          cursos longos só para parecerem caros, mensalidades eternas, a AI School
           faz o oposto. Você paga pelo tempo de aprendizado que realmente usa.
           Simples assim.
         </p>
@@ -52,7 +52,7 @@ export function DiferencialPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium">Cada curso = 10 horas</p>
-                    <p className="text-xs text-muted-foreground">Por {formatBRL(COURSE_PRICE)} — {formatBRL(PRICE_PER_HOUR)}/h</p>
+                    <p className="text-xs text-muted-foreground">Por {formatBRL(COURSE_PRICE)}, {formatBRL(PRICE_PER_HOUR)}/h</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -138,7 +138,7 @@ export function DiferencialPage() {
             {
               icon: Clock,
               title: "Respeito ao seu tempo",
-              desc: "10 horas são 5 encontros de 2h. Você não precisa de 6 meses para aprender IA — precisa de foco.",
+              desc: "10 horas são 5 encontros de 2h. Você não precisa de 6 meses para aprender IA, precisa de foco.",
             },
           ].map((item) => (
             <Card key={item.title} className="glass p-5 border-border">

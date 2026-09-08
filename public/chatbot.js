@@ -343,7 +343,7 @@
     },
     {
       triggers: ['preciso pensar', 'vou pensar', 'depois eu vejo', 'mais pra frente', 'amanha', 'amanhã', 'vou analisis', 'vou ver'],
-      response: `Compreensível, ${'$NAME'}. Mas deixa eu te dar 2 informações importantes pra te ajudar a decidir:\n\n📊 Turmas novas toda semana — começar agora = começar a aplicar IA no trabalho mais cedo\n⏰ Aulas ao vivo (não é só vídeo gravado) — você interage com o instrutor\n\nPosso te salvar uma vaga na próxima turma e você decide até lá? É só me confirmar.`
+      response: `Compreensível, ${'$NAME'}. Mas deixa eu te dar 2 informações importantes pra te ajudar a decidir:\n\n📊 Turmas novas toda semana, começar agora = começar a aplicar IA no trabalho mais cedo\n⏰ Aulas ao vivo (não é só vídeo gravado), você interage com o instrutor\n\nPosso te salvar uma vaga na próxima turma e você decide até lá? É só me confirmar.`
     },
     {
       triggers: ['já fiz curso', 'ja fiz curso', 'ja estudei', 'já estudei', 'conheço IA', 'sei usar'],
@@ -359,7 +359,7 @@
   const INTENTS = {
     payment: {
       triggers: ['pagar', 'pagamento', 'pix', 'mercado pago', 'cartao', 'cartão', 'boleto', 'parcelar', 'parcela', 'forma de pagamento', 'como pagar', 'como funciona o pagamento'],
-      response: `💳 Pagamento 100% via PIX, ${'$NAME'}:\n\n✅ QR Code gerado na hora quando você clica em "Matricular"\n✅ Você paga em segundos pelo app do seu banco\n✅ Retorno automático assim que o banco confirma\n✅ Sem burocracia, sem espera\n\nNão trabalhamos com cartão ou boleto — PIX é mais rápido, mais barato e mais seguro. Pronto pra matricular?`
+      response: `💳 Pagamento 100% via PIX, ${'$NAME'}:\n\n✅ QR Code gerado na hora quando você clica em "Matricular"\n✅ Você paga em segundos pelo app do seu banco\n✅ Retorno automático assim que o banco confirma\n✅ Sem burocracia, sem espera\n\nNão trabalhamos com cartão ou boleto, PIX é mais rápido, mais barato e mais seguro. Pronto pra matricular?`
     },
     schedule: {
       triggers: ['horario', 'horário', 'quando', 'aula', 'aulas', 'encontro', 'encontros', 'data', 'turma', 'turmas', 'inicio', 'início', 'disponibilidade', 'dias'],
@@ -1131,7 +1131,7 @@
 
     state.lead.startedAt = new Date().toISOString();
     saveSession();
-    botSay(`Oi! 👋 Eu sou a ${CONFIG.botName}, sua consultora de IA aqui na AI School.\n\nVou te ajudar a encontrar o curso perfeito e tirar todas suas dúvidas. Sem reunião, sem enrolação — direto ao ponto. 🚀\n\nPra começar, qual o seu nome?`);
+    botSay(`Oi! 👋 Eu sou a ${CONFIG.botName}, sua consultora de IA aqui na AI School.\n\nVou te ajudar a encontrar o curso perfeito e tirar todas suas dúvidas. Sem reunião, sem enrolação, direto ao ponto. 🚀\n\nPra começar, qual o seu nome?`);
     state.stage = 'ask_name';
   }
 
@@ -1146,7 +1146,7 @@
       const name = text.split(' ').slice(0, 2).join(' ').substring(0, 40);
       state.lead.name = name;
       saveSession();
-      await botSay(`Prazer em conhecer você, ${name}! 😊\n\nAgora me passa seu WhatsApp (com DDD) — só pra te enviar novidades e, se você quiser, alguém da escola poder te contatar depois:\n\nEx: 11966161611 ou 11 96616-1611`);
+      await botSay(`Prazer em conhecer você, ${name}! 😊\n\nAgora me passa seu WhatsApp (com DDD), só pra te enviar novidades e, se você quiser, alguém da escola poder te contatar depois:\n\nEx: 11966161611 ou 11 96616-1611`);
       state.stage = 'ask_whatsapp';
       return;
     }
@@ -1169,7 +1169,7 @@
       return;
     }
 
-    // STAGE: CHATTING — usar SDR senior flow
+    // STAGE: CHATTING, usar SDR senior flow
     await handleChat(text);
   }
 
@@ -1201,7 +1201,7 @@
 
     // 3. INTENT: falar com humano / whatsapp
     if (/(humano|pessoa|atendente|falar com alguem|falar com alguém|whatsapp|telefone|contato|consultor|especialista)/.test(input)) {
-      await botSay('Claro! Posso te redirecionar para o WhatsApp da escola — lá você fala direto com nosso time. 👇', {
+      await botSay('Claro! Posso te redirecionar para o WhatsApp da escola, lá você fala direto com nosso time. 👇', {
         cta: { label: '📱 Abrir WhatsApp da escola', handler: sendLeadToWhatsApp }
       });
       return;
@@ -1239,7 +1239,7 @@
       if (age >= 7 && age <= 12) {
         trackInterest('ia-robotica-criancas');
         state.suggestedCourse = COURSES.find(c => c.slug === 'ia-robotica-criancas');
-        await botSay(`Que delícia ter seu filho na AI School! 👶🤖\n\nPara crianças de 7 a 12 anos, o curso ideal é o **IA + Robótica**. Curso lúdico onde seu filho vai criar robôs, games e histórias com IA — primeiro contato com tecnologia de forma segura e divertida.\n\nR$4.000 (10h) · Turmas pequenas (máx. 8 crianças) · Certificado de "Pequeno Cientista"`, {
+        await botSay(`Que delícia ter seu filho na AI School! 👶🤖\n\nPara crianças de 7 a 12 anos, o curso ideal é o **IA + Robótica**. Curso lúdico onde seu filho vai criar robôs, games e histórias com IA, primeiro contato com tecnologia de forma segura e divertida.\n\nR$4.000 (10h) · Turmas pequenas (máx. 8 crianças) · Certificado de "Pequeno Cientista"`, {
           cta: { label: '🚀 Quero matricular meu filho', handler: () => redirectToCheckout('ia-robotica-criancas') }
         });
         return;
@@ -1274,7 +1274,7 @@
     if (/(ja uso|já uso|chatgpt|claude|gemini|automatizar|agente)/.test(input)) {
       trackInterest('ia-intermediario');
       state.suggestedCourse = COURSES.find(c => c.slug === 'ia-intermediario');
-      await botSay(`Você já tem base — perfeito! O curso ideal é **IA Intermediário**. ⚙️\n\nFluxos, automações e agentes. Aprende n8n (gratuito), Make, RAG básico. Sai com 10 templates de automação prontos pra usar.\n\nR$4.000 (10h)`, {
+      await botSay(`Você já tem base, perfeito! O curso ideal é **IA Intermediário**. ⚙️\n\nFluxos, automações e agentes. Aprende n8n (gratuito), Make, RAG básico. Sai com 10 templates de automação prontos pra usar.\n\nR$4.000 (10h)`, {
         cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-intermediario') }
       });
       return;
@@ -1339,7 +1339,7 @@
       ? `A partir de R$ ${course.price.toLocaleString('pt-BR')} (${course.hours}h 1-a-1)`
       : `R$ ${course.price.toLocaleString('pt-BR')} (${course.hours} horas)`;
 
-    await botSay(`🚀 Bora fechar isso, ${state.lead.name}!\n\n**${course.title}**\n${course.short}\n\n💰 ${priceStr}\n💳 PIX, boleto 2x sem juros ou cartão 12x com juros da operadora\n📜 Certificado incluso\n💻 Online ou 📍 presencial — você escolhe\n\nVou te levar pro checkout.`, {
+    await botSay(`🚀 Bora fechar isso, ${state.lead.name}!\n\n**${course.title}**\n${course.short}\n\n💰 ${priceStr}\n💳 PIX, boleto 2x sem juros ou cartão 12x com juros da operadora\n📜 Certificado incluso\n💻 Online ou 📍 presencial, você escolhe\n\nVou te levar pro checkout.`, {
       cta: { label: '🚀 Ir para o checkout', handler: () => redirectToCheckout(course.slug) },
       quick: ['Tirar dúvida antes', 'Ver outros cursos', 'Falar com humano']
     });

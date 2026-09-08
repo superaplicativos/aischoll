@@ -98,9 +98,9 @@ export function SoloFirstArticle() {
 
           <p className="leading-relaxed mt-4">
             A metáfora da letra &quot;T&quot; ilustra o equilíbrio metodológico entre duas dimensões
-            de competência. A haste vertical representa a profundidade — o rigor técnico e
+            de competência. A haste vertical representa a profundidade, o rigor técnico e
             a maestria indiscutível em um campo de atuação específico. Em contrapartida, a
-            barra horizontal representa a amplitude — as soft skills, a empatia cognitiva
+            barra horizontal representa a amplitude, as soft skills, a empatia cognitiva
             e a capacidade de compreender, interagir e transitar por múltiplas disciplinas.
           </p>
 
@@ -194,7 +194,7 @@ export function SoloFirstArticle() {
           <p className="leading-relaxed mt-4">
             Estruturado historicamente a partir do modelo de carreira em Y, ou dual career
             ladder (Allen &amp; Katz, 1986), esse perfil profissional progride em níveis
-            técnicos sêniores — tais como Staff, Principal ou Distinguished —, conquistando
+            técnicos sêniores, tais como Staff, Principal ou Distinguished , conquistando
             autonomia, remuneração e escopo de influência equivalentes aos de cargos da
             liderança corporativa tradicional (Larson, 2021).
           </p>
@@ -431,7 +431,7 @@ export function SoloFirstArticle() {
                 </h3>
                 <p className="text-sm text-muted-foreground mt-2">
                   O curso &quot;IA + Empreendedorismo: Solo First Framework&quot; da AI School
-                  transforma este artigo em um plano de 10 horas — com mentoria,
+                  transforma este artigo em um plano de 10 horas, com mentoria,
                   ferramentas e plano 90 dias para sair do CLT.
                 </p>
               </div>

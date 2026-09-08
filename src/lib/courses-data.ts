@@ -59,11 +59,11 @@ export const courses: Course[] = [
     gradient: "from-violet-500 to-fuchsia-500",
     tags: ["ChatGPT", "Claude", "Gemini", "Prompts", "Iniciante"],
     targetAudience:
-      "Pessoas sem nenhum conhecimento de IA que querem começar a usar IA no dia a dia — estudantes, aposentados, profissionais de qualquer área, donas de casa, empreendedores iniciantes.",
+      "Pessoas sem nenhum conhecimento de IA que querem começar a usar IA no dia a dia, estudantes, aposentados, profissionais de qualquer área, donas de casa, empreendedores iniciantes.",
     prerequisites: "Nenhum. Basta saber usar um computador, celular e ter conta de e-mail.",
     whatYouWillLearn: [
       "O que é IA generativa e como ela funciona por dentro (sem jargão técnico)",
-      "Como criar prompts que realmente funcionam — a fórmula CRISPE",
+      "Como criar prompts que realmente funcionam, a fórmula CRISPE",
       "ChatGPT na prática: redação, resumos, e-mails, planejamento, estudos",
       "Claude para documentos longos e análise de PDFs",
       "Gemini integrado ao ecossistema Google (Docs, Gmail, Drive)",
@@ -75,7 +75,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Mindset e Fundamentos",
+        title: "Módulo 1, Mindset e Fundamentos",
         topics: [
           "O que é (e o que não é) Inteligência Artificial",
           "IA generativa vs. IA tradicional",
@@ -84,7 +84,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — A Arte do Prompt",
+        title: "Módulo 2, A Arte do Prompt",
         topics: [
           "Anatomia de um bom prompt",
           "Fórmula CRISPE: Contexto, Role, Instruction, Specificity, Output, Extras",
@@ -93,7 +93,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — ChatGPT na Prática",
+        title: "Módulo 3, ChatGPT na Prática",
         topics: [
           "Conta gratuita vs. Plus: vale a pena pagar?",
           "Custom GPTs: criando seu próprio assistente",
@@ -102,7 +102,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Claude, Gemini e o Ecossistema",
+        title: "Módulo 4, Claude, Gemini e o Ecossistema",
         topics: [
           "Claude: o melhor para documentos longos",
           "Gemini integrado ao Google Workspace",
@@ -111,7 +111,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Imagens, Áudio e Vídeo",
+        title: "Módulo 5, Imagens, Áudio e Vídeo",
         topics: [
           "DALL-E 3 e Imagen: criação de imagens",
           "Voz com IA: ElevenLabs e Whisper",
@@ -120,7 +120,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Ética, Limites e Próximos Passos",
+        title: "Módulo 6, Ética, Limites e Próximos Passos",
         topics: [
           "Alucinações: como identificar e corrigir",
           "Privacidade, LGPD e dados sensíveis",
@@ -173,7 +173,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Do Prompt ao Fluxo",
+        title: "Módulo 1, Do Prompt ao Fluxo",
         topics: [
           "Mentalidade de fluxo: parar de fazer tarefas, criar sistemas",
           "Anatomia de um agente de IA",
@@ -181,7 +181,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Custom GPTs e Claude Projects",
+        title: "Módulo 2, Custom GPTs e Claude Projects",
         topics: [
           "Como criar um Custom GPT útil",
           "Knowledge base: subindo seus documentos",
@@ -189,7 +189,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — n8n do Zero",
+        title: "Módulo 3, n8n do Zero",
         topics: [
           "Instalação local e na nuvem",
           "Triggers, nodes e conexões",
@@ -198,7 +198,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Make.com e Zapier com IA",
+        title: "Módulo 4, Make.com e Zapier com IA",
         topics: [
           "Comparativo: n8n vs. Make vs. Zapier",
           "Templates prontos para produtividade",
@@ -206,7 +206,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — RAG Básico",
+        title: "Módulo 5, RAG Básico",
         topics: [
           "O que é Retrieval-Augmented Generation",
           "Subindo uma base de conhecimento",
@@ -215,7 +215,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Deploy e Operação",
+        title: "Módulo 6, Deploy e Operação",
         topics: [
           "Publicando seu agente",
           "Monitoramento e logs",
@@ -232,7 +232,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — 10 horas",
+    certificate: "Certificado digital AI School, 10 horas",
     featured: true,
   },
   {
@@ -268,7 +268,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — APIs de LLM na Prática",
+        title: "Módulo 1, APIs de LLM na Prática",
         topics: [
           "OpenAI, Anthropic, Google AI Studio",
           "Streaming, function calling, structured outputs",
@@ -276,7 +276,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Agentes Autônomos",
+        title: "Módulo 2, Agentes Autônomos",
         topics: [
           "ReAct pattern",
           "LangChain vs. LangGraph vs. OpenAI Agents SDK",
@@ -284,7 +284,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — RAG em Produção",
+        title: "Módulo 3, RAG em Produção",
         topics: [
           "Embeddings: OpenAI, Cohere, BGE",
           "Vector DBs: Pinecone, Qdrant, Chroma",
@@ -292,7 +292,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Context Engineering",
+        title: "Módulo 4, Context Engineering",
         topics: [
           "Como projetar o contexto perfeito",
           "Memória de longo prazo",
@@ -300,7 +300,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — MCP e Integrações",
+        title: "Módulo 5, MCP e Integrações",
         topics: [
           "O que é o Model Context Protocol",
           "Servidores MCP: criando o seu",
@@ -308,7 +308,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Fine-tuning e Avaliação",
+        title: "Módulo 6, Fine-tuning e Avaliação",
         topics: [
           "Quando fazer fine-tuning (e quando não fazer)",
           "LoRA e QLoRA: fine-tuning barato",
@@ -333,7 +333,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — 10 horas (nível avançado)",
+    certificate: "Certificado digital AI School, 10 horas (nível avançado)",
     featured: true,
   },
   {
@@ -342,7 +342,7 @@ export const courses: Course[] = [
     shortDescription:
       "Aprenda a programar com IA usando Cursor, Windsurf e Claude Code. Construa apps reais sem ser engenheiro.",
     fullDescription:
-      "Vibe Coding é a nova forma de programar — você descreve o que quer em linguagem natural e a IA escreve o código. Neste curso você vai do zero ao deploy de aplicações web completas usando as ferramentas mais modernas do mercado (Cursor, Windsurf, Claude Code, v0). Não precisa ser programador. Não precisa saber JavaScript. Em 10 horas você terá publicado pelo menos 2 aplicações reais no ar.",
+      "Vibe Coding é a nova forma de programar, você descreve o que quer em linguagem natural e a IA escreve o código. Neste curso você vai do zero ao deploy de aplicações web completas usando as ferramentas mais modernas do mercado (Cursor, Windsurf, Claude Code, v0). Não precisa ser programador. Não precisa saber JavaScript. Em 10 horas você terá publicado pelo menos 2 aplicações reais no ar.",
     category: "vibe-code",
     level: "iniciante",
     price: COURSE_PRICE,
@@ -368,7 +368,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Setup e Mentalidade",
+        title: "Módulo 1, Setup e Mentalidade",
         topics: [
           "Instalando Cursor, Windsurf e Claude Code",
           "Como 'pensar em prompt' para código",
@@ -376,7 +376,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Cursor na Prática",
+        title: "Módulo 2, Cursor na Prática",
         topics: [
           "Composer, Chat e Agent mode",
           ".cursorrules: configurando o projeto",
@@ -384,7 +384,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Windsurf e Claude Code",
+        title: "Módulo 3, Windsurf e Claude Code",
         topics: [
           "Windsurf Cascade e agentes",
           "Claude Code no terminal",
@@ -392,7 +392,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — v0 e Lovable",
+        title: "Módulo 4, v0 e Lovable",
         topics: [
           "v0: geração de UIs instantâneas",
           "Lovable: apps completos com 1 prompt",
@@ -400,7 +400,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Projeto Prático",
+        title: "Módulo 5, Projeto Prático",
         topics: [
           "Construindo um app real do zero",
           "Banco de dados, auth e deploy",
@@ -408,7 +408,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Debug, Padrões e Produção",
+        title: "Módulo 6, Debug, Padrões e Produção",
         topics: [
           "Como ler e corrigir código que a IA escreveu",
           "Estrutura de pastas e convenções",
@@ -424,7 +424,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — Vibe Code 10 horas",
+    certificate: "Certificado digital AI School, Vibe Code 10 horas",
     featured: true,
   },
   {
@@ -459,7 +459,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Stack de Edição com IA",
+        title: "Módulo 1, Stack de Edição com IA",
         topics: [
           "CapCut vs. Premiere com IA",
           "Quando usar cada ferramenta",
@@ -467,7 +467,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Geração de Vídeo",
+        title: "Módulo 2, Geração de Vídeo",
         topics: [
           "Runway Gen-3: text-to-video e image-to-video",
           "Pika 1.5: motion e efeitos",
@@ -475,7 +475,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Voz e Áudio",
+        title: "Módulo 3, Voz e Áudio",
         topics: [
           "ElevenLabs: TTS e voice cloning ético",
           "Tratamento de áudio com Adobe IA",
@@ -483,7 +483,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Edição para Redes",
+        title: "Módulo 4, Edição para Redes",
         topics: [
           "Reels e Shorts: ritmo e cortes",
           "Legendas automáticas estilizadas",
@@ -491,7 +491,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — YouTube e Longo",
+        title: "Módulo 5, YouTube e Longo",
         topics: [
           "Edição de vídeos longos com IA",
           "B-roll automático",
@@ -499,7 +499,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Projeto Final",
+        title: "Módulo 6, Projeto Final",
         topics: [
           "Produção de um vídeo completo do zero",
           "Publicação multiplataforma",
@@ -515,7 +515,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — Edição de Vídeos com IA",
+    certificate: "Certificado digital AI School, Edição de Vídeos com IA",
     featured: true,
   },
   {
@@ -524,7 +524,7 @@ export const courses: Course[] = [
     shortDescription:
       "BIM, renderização, projetos, cálculos, propostas. IA aplicada à engenharia e arquitetura.",
     fullDescription:
-      "Curso desenhado para engenheiros civis, arquitetos, calculistas e profissionais da construção civil que querem integrar IA no fluxo de trabalho. Aprenda a acelerar renderizações, automatizar projetos, gerar memórias de cálculo, criar propostas comerciais impressionantes e otimizar a comunicação com clientes. IA não substitui o engenheiro — ela o multiplica.",
+      "Curso desenhado para engenheiros civis, arquitetos, calculistas e profissionais da construção civil que querem integrar IA no fluxo de trabalho. Aprenda a acelerar renderizações, automatizar projetos, gerar memórias de cálculo, criar propostas comerciais impressionantes e otimizar a comunicação com clientes. IA não substitui o engenheiro, ela o multiplica.",
     category: "profissional",
     level: "intermediario",
     price: COURSE_PRICE,
@@ -550,7 +550,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — IA na Construção Civil",
+        title: "Módulo 1, IA na Construção Civil",
         topics: [
           "Panorama: onde IA já está sendo usada",
           "Stack de ferramentas para arquitetura e engenharia",
@@ -558,7 +558,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Renderização com IA",
+        title: "Módulo 2, Renderização com IA",
         topics: [
           "Midjourney para concept design",
           "Veras: transformando SketchUp em realista",
@@ -566,7 +566,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Projeto e Cálculo",
+        title: "Módulo 3, Projeto e Cálculo",
         topics: [
           "Geração de layouts com IA",
           "ChatGPT + Excel para memória de cálculo",
@@ -574,7 +574,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Proposta e Apresentação",
+        title: "Módulo 4, Proposta e Apresentação",
         topics: [
           "Pitch visual com IA",
           "Apresentações em PowerPoint com IA",
@@ -582,7 +582,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Orçamento e Gestão",
+        title: "Módulo 5, Orçamento e Gestão",
         topics: [
           "Planilhas inteligentes com IA",
           "Automação de BOM e cronograma",
@@ -590,7 +590,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Projeto Prático",
+        title: "Módulo 6, Projeto Prático",
         topics: [
           "Briefing → Conceito → Render → Proposta",
           "Apresentação final para cliente simulado",
@@ -606,7 +606,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — IA para Engenheiros e Arquitetos",
+    certificate: "Certificado digital AI School, IA para Engenheiros e Arquitetos",
     featured: false,
   },
   {
@@ -641,7 +641,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Stack de IA para Drone",
+        title: "Módulo 1, Stack de IA para Drone",
         topics: [
           "Visão geral das ferramentas",
           "Workflow integrado de pós-processamento",
@@ -649,7 +649,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Edição Aérea Cinematográfica",
+        title: "Módulo 2, Edição Aérea Cinematográfica",
         topics: [
           "CapCut + IA para drone",
           "Estabilização automática",
@@ -657,7 +657,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Mapeamento e Modelagem",
+        title: "Módulo 3, Mapeamento e Modelagem",
         topics: [
           "DroneDeploy + IA",
           "Pix4D Cloud",
@@ -665,7 +665,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Inspeção Industrial",
+        title: "Módulo 4, Inspeção Industrial",
         topics: [
           "Detecção de trincas, corrosão e falhas",
           "Modelos pré-treinados vs. custom",
@@ -673,7 +673,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Agricultura e Meio Ambiente",
+        title: "Módulo 5, Agricultura e Meio Ambiente",
         topics: [
           "NDVI com IA",
           "Contagem de plantas e animais",
@@ -681,7 +681,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Negócios",
+        title: "Módulo 6, Negócios",
         topics: [
           "Como precificar seus serviços",
           "Proposta comercial com IA",
@@ -697,7 +697,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — IA para Operadores de Drone",
+    certificate: "Certificado digital AI School, IA para Operadores de Drone",
     featured: false,
   },
   {
@@ -732,7 +732,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Conhecendo a IA",
+        title: "Módulo 1, Conhecendo a IA",
         topics: [
           "IA está em todo lugar!",
           "Conversando com um robô pela primeira vez",
@@ -740,7 +740,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Programando com Blocos",
+        title: "Módulo 2, Programando com Blocos",
         topics: [
           "Primeiros passos no Scratch",
           "Criando uma animação",
@@ -748,7 +748,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Robótica Educacional",
+        title: "Módulo 3, Robótica Educacional",
         topics: [
           "Montando o primeiro robô",
           "Sensores e motores",
@@ -756,7 +756,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — IA Generativa para Crianças",
+        title: "Módulo 4, IA Generativa para Crianças",
         topics: [
           "Criando imagens com IA",
           "Histórias interativas com IA",
@@ -764,7 +764,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — IA no Dia a Dia",
+        title: "Módulo 5, IA no Dia a Dia",
         topics: [
           "Como funciona o YouTube, Netflix e TikTok",
           "Privacidade: o que podemos compartilhar",
@@ -772,7 +772,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Projeto Final",
+        title: "Módulo 6, Projeto Final",
         topics: [
           "Criação de um robô com propósito",
           "Apresentação para os pais",
@@ -786,9 +786,9 @@ export const courses: Course[] = [
       "Apresentação final para os pais",
       "Certificado de 'Pequeno Cientista de IA'",
     ],
-    duration: "10 horas (10 encontros de 1h) — adaptado ao ritmo infantil",
+    duration: "10 horas (10 encontros de 1h), adaptado ao ritmo infantil",
     format: "Online ao vivo ou presencial (turmas de até 8 crianças)",
-    certificate: "Certificado AI School Kids — Pequeno Cientista de IA",
+    certificate: "Certificado AI School Kids, Pequeno Cientista de IA",
     featured: true,
   },
   {
@@ -797,7 +797,7 @@ export const courses: Course[] = [
     shortDescription:
       "Criação de apps, jogos, arte digital e automações. IA para a próxima geração de criadores.",
     fullDescription:
-      "Curso desenhado para adolescentes de 13 a 17 anos que querem dominar IA como ferramenta de criação. Eles vão programar com IA, criar jogos, gerar arte digital, automatizar tarefas da escola e começar a construir um portfólio digital. O curso estimula a curiosidade, a responsabilidade e o empreendedorismo jovem — preparando-os para um mercado que já exige fluência em IA.",
+      "Curso desenhado para adolescentes de 13 a 17 anos que querem dominar IA como ferramenta de criação. Eles vão programar com IA, criar jogos, gerar arte digital, automatizar tarefas da escola e começar a construir um portfólio digital. O curso estimula a curiosidade, a responsabilidade e o empreendedorismo jovem, preparando-os para um mercado que já exige fluência em IA.",
     category: "infanto-juvenil",
     level: "intermediario",
     price: COURSE_PRICE,
@@ -822,7 +822,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — IA como Superpoder",
+        title: "Módulo 1, IA como Superpoder",
         topics: [
           "Por que IA muda tudo",
           "Stack de ferramentas para adolescentes",
@@ -830,7 +830,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Programação com IA",
+        title: "Módulo 2, Programação com IA",
         topics: [
           "Cursor: programando em português",
           "Construindo seu primeiro app",
@@ -838,7 +838,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Criação de Conteúdo",
+        title: "Módulo 3, Criação de Conteúdo",
         topics: [
           "Edição de vídeo com CapCut + IA",
           "Imagens com Midjourney",
@@ -846,7 +846,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Games e Robótica",
+        title: "Módulo 4, Games e Robótica",
         topics: [
           "Criando um jogo com IA",
           "Robótica com Micro:bit",
@@ -854,7 +854,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Cidadania Digital",
+        title: "Módulo 5, Cidadania Digital",
         topics: [
           "Privacidade e LGPD para jovens",
           "Como identificar deepfakes",
@@ -862,7 +862,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Projeto Final",
+        title: "Módulo 6, Projeto Final",
         topics: [
           "Lançamento de um produto, app ou canal",
           "Apresentação para a turma",
@@ -878,7 +878,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo ou presencial (turmas de até 10 adolescentes)",
-    certificate: "Certificado AI School Teen — Criador Digital",
+    certificate: "Certificado AI School Teen, Criador Digital",
     featured: false,
   },
   {
@@ -913,7 +913,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Excel com IA",
+        title: "Módulo 1, Excel com IA",
         topics: [
           "Copilot no Excel: o que muda",
           "Análise de dados com linguagem natural",
@@ -921,7 +921,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Word com IA",
+        title: "Módulo 2, Word com IA",
         topics: [
           "Redação com Copilot",
           "Revisão e formatação automática",
@@ -929,7 +929,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — PowerPoint com IA",
+        title: "Módulo 3, PowerPoint com IA",
         topics: [
           "Apresentações em 60 segundos",
           "Design automático",
@@ -937,7 +937,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Outlook com IA",
+        title: "Módulo 4, Outlook com IA",
         topics: [
           "E-mails automáticos",
           "Resumo de threads",
@@ -945,7 +945,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Automações",
+        title: "Módulo 5, Automações",
         topics: [
           "Power Automate com IA",
           "Templates de fluxo",
@@ -953,7 +953,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Projeto Prático",
+        title: "Módulo 6, Projeto Prático",
         topics: [
           "Construção de um dashboard real",
           "Apresentação executiva",
@@ -969,7 +969,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — Office com IA",
+    certificate: "Certificado digital AI School, Office com IA",
     featured: false,
   },
   {
@@ -1004,7 +1004,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Canva + IA",
+        title: "Módulo 1, Canva + IA",
         topics: [
           "Tour pelo Magic Studio",
           "Magic Design: do prompt ao layout",
@@ -1012,7 +1012,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Social Media",
+        title: "Módulo 2, Social Media",
         topics: [
           "Posts para Instagram, LinkedIn e TikTok",
           "Templates inteligentes",
@@ -1020,7 +1020,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Imagem e Vídeo",
+        title: "Módulo 3, Imagem e Vídeo",
         topics: [
           "Magic Edit: remova, substitua, adicione",
           "Magic Media: text-to-image e text-to-video",
@@ -1028,7 +1028,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Branding",
+        title: "Módulo 4, Branding",
         topics: [
           "Criação de logo com IA",
           "Paleta e tipografia",
@@ -1036,7 +1036,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Apresentações e Documentos",
+        title: "Módulo 5, Apresentações e Documentos",
         topics: [
           "Pitch deck em minutos",
           "Proposta comercial",
@@ -1044,7 +1044,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Projeto Final",
+        title: "Módulo 6, Projeto Final",
         topics: [
           "Branding completo para uma marca",
           "Kit de redes sociais",
@@ -1060,7 +1060,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — Canva com IA",
+    certificate: "Certificado digital AI School, Canva com IA",
     featured: false,
   },
   {
@@ -1095,7 +1095,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Setup Lovable + Supabase",
+        title: "Módulo 1, Setup Lovable + Supabase",
         topics: [
           "Conta e plano Lovable",
           "Conta Supabase",
@@ -1103,7 +1103,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Prompting para Sites",
+        title: "Módulo 2, Prompting para Sites",
         topics: [
           "Como descrever um site",
           "Componentes, cores, layout",
@@ -1111,7 +1111,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Site Institucional",
+        title: "Módulo 3, Site Institucional",
         topics: [
           "Estrutura de páginas",
           "Hero, sobre, serviços, contato",
@@ -1119,7 +1119,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Landing Page de Alta Conversão",
+        title: "Módulo 4, Landing Page de Alta Conversão",
         topics: [
           "Estrutura de copy",
           "CTA, prova social, urgência",
@@ -1127,7 +1127,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — App com Login e Banco",
+        title: "Módulo 5, App com Login e Banco",
         topics: [
           "Auth com Supabase",
           "CRUD com IA",
@@ -1135,7 +1135,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Deploy e Domínio",
+        title: "Módulo 6, Deploy e Domínio",
         topics: [
           "Publicação",
           "Domínio próprio",
@@ -1151,7 +1151,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — Lovable No-Code",
+    certificate: "Certificado digital AI School, Lovable No-Code",
     featured: false,
   },
   {
@@ -1186,7 +1186,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Stack Moderna",
+        title: "Módulo 1, Stack Moderna",
         topics: [
           "Next.js 16 + Tailwind 4 + shadcn/ui",
           "Setup com Cursor",
@@ -1194,7 +1194,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — UI com v0",
+        title: "Módulo 2, UI com v0",
         topics: [
           "Geração de componentes",
           "Customização",
@@ -1202,7 +1202,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Bolt.new",
+        title: "Módulo 3, Bolt.new",
         topics: [
           "Prototipagem completa",
           "Quando usar Bolt vs. Cursor",
@@ -1210,7 +1210,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Backend e Banco",
+        title: "Módulo 4, Backend e Banco",
         topics: [
           "Supabase / Neon",
           "Auth + RLS",
@@ -1218,7 +1218,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Pagamentos e Email",
+        title: "Módulo 5, Pagamentos e Email",
         topics: [
           "Stripe Checkout",
           "Resend para e-mails transacionais",
@@ -1226,7 +1226,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Projeto SaaS",
+        title: "Módulo 6, Projeto SaaS",
         topics: [
           "Construção de um SaaS real",
           "Deploy + domínio",
@@ -1242,7 +1242,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — Vibe Code Avançado",
+    certificate: "Certificado digital AI School, Vibe Code Avançado",
     featured: false,
   },
   {
@@ -1277,7 +1277,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — Tour pelo Poe",
+        title: "Módulo 1, Tour pelo Poe",
         topics: [
           "Plataforma, planos e modelos",
           "Primeiro bot",
@@ -1285,7 +1285,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Prompt Engineering para Bots",
+        title: "Módulo 2, Prompt Engineering para Bots",
         topics: [
           "Estrutura de prompt template",
           "Persona e contexto",
@@ -1293,7 +1293,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Knowledge Base",
+        title: "Módulo 3, Knowledge Base",
         topics: [
           "Subindo PDFs e documentos",
           "Chunks e retrieval",
@@ -1301,7 +1301,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Bots com Imagem",
+        title: "Módulo 4, Bots com Imagem",
         topics: [
           "FLUX.1 e Stable Diffusion",
           "Bots de avatar",
@@ -1309,7 +1309,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Publicação e Monetização",
+        title: "Módulo 5, Publicação e Monetização",
         topics: [
           "Poe Store",
           "Como ganhar pontos/money",
@@ -1317,7 +1317,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — API e Integrações",
+        title: "Módulo 6, API e Integrações",
         topics: [
           "Poe API em Python",
           "Integrando no seu site/app",
@@ -1333,7 +1333,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — Poe Bots de IA",
+    certificate: "Certificado digital AI School, Poe Bots de IA",
     featured: false,
   },
   {
@@ -1342,7 +1342,7 @@ export const courses: Course[] = [
     shortDescription:
       "Torne-se um Empreendedor T-Shaped com IA. Do posicionamento ao primeiro cliente.",
     fullDescription:
-      "Curso baseado no Solo First Framework — como se tornar um solo empreendedor de alto impacto usando IA como amplificador. Você vai definir seu Dharma (posicionamento de excelência), construir Soft Assets (capital intelectual, reputacional e social), criar uma oferta irresistível, estabelecer presença digital e fechar seus primeiros clientes. Para quem quer empreender sem queimar caixa.",
+      "Curso baseado no Solo First Framework, como se tornar um solo empreendedor de alto impacto usando IA como amplificador. Você vai definir seu Dharma (posicionamento de excelência), construir Soft Assets (capital intelectual, reputacional e social), criar uma oferta irresistível, estabelecer presença digital e fechar seus primeiros clientes. Para quem quer empreender sem queimar caixa.",
     category: "empreendedorismo",
     level: "intermediario",
     price: COURSE_PRICE,
@@ -1368,7 +1368,7 @@ export const courses: Course[] = [
     ],
     modules: [
       {
-        title: "Módulo 1 — O Empreendedor T-Shaped",
+        title: "Módulo 1, O Empreendedor T-Shaped",
         topics: [
           "Haste vertical: Dharma e Soft Assets",
           "Haste horizontal: skills empreendedoras",
@@ -1376,7 +1376,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 2 — Encontrando seu Dharma",
+        title: "Módulo 2, Encontrando seu Dharma",
         topics: [
           "Inventário de Soft Assets",
           "Onde seu conjunto é mais valorizado",
@@ -1384,7 +1384,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 3 — Oferta Irresistível",
+        title: "Módulo 3, Oferta Irresistível",
         topics: [
           "ICP e Buyer Persona",
           "Estrutura de oferta",
@@ -1392,7 +1392,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 4 — Presença Digital",
+        title: "Módulo 4, Presença Digital",
         topics: [
           "LinkedIn com IA",
           "Conteúdo que atrai",
@@ -1400,7 +1400,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 5 — Vendas Solo",
+        title: "Módulo 5, Vendas Solo",
         topics: [
           "Prospecção com IA",
           "Outbound e Inbound",
@@ -1408,7 +1408,7 @@ export const courses: Course[] = [
         ],
       },
       {
-        title: "Módulo 6 — Operação e Escala",
+        title: "Módulo 6, Operação e Escala",
         topics: [
           "Sistemas e IA",
           "Finanças solo",
@@ -1424,7 +1424,7 @@ export const courses: Course[] = [
     ],
     duration: "10 horas (5 encontros de 2h)",
     format: "Online ao vivo via Zoom com gravações disponíveis por 12 meses",
-    certificate: "Certificado digital AI School — Solo First Framework",
+    certificate: "Certificado digital AI School, Solo First Framework",
     featured: true,
   },
 ];
@@ -1447,15 +1447,15 @@ export const mentoriaVIP: Mentoria = {
   slug: "mentoria-vip",
   title: "Mentoria VIP Personalizada",
   shortDescription:
-    "Mentoria 1-a-1 sob medida. Você define o que quer aprender — IA, Vibe Code, Empreendedorismo — e nós desenhamos um plano só seu.",
+    "Mentoria 1-a-1 sob medida. Você define o que quer aprender, IA, Vibe Code, Empreendedorismo, e nós desenhamos um plano só seu.",
   fullDescription:
-    "A Mentoria VIP da AI School é diferente de qualquer curso. Não há currículo fixo. Você chega com seu objetivo — seja ele aprender IA para sua profissão específica, construir um produto, automatizar seu negócio ou desenvolver uma estratégia de conteúdo — e nós desenhamos juntos um plano de aprendizado personalizado. Cada sessão é 100% focada no que VOCÊ quer aprender, com tira-dúvidas, acompanhamento de projeto real e mentoria estratégica. Indicado para executivos, fundadores, profissionais liberais e qualquer pessoa que precise de atenção individualizada e resultados rápidos.",
+    "A Mentoria VIP da AI School é diferente de qualquer curso. Não há currículo fixo. Você chega com seu objetivo, seja ele aprender IA para sua profissão específica, construir um produto, automatizar seu negócio ou desenvolver uma estratégia de conteúdo, e nós desenhamos juntos um plano de aprendizado personalizado. Cada sessão é 100% focada no que VOCÊ quer aprender, com tira-dúvidas, acompanhamento de projeto real e mentoria estratégica. Indicado para executivos, fundadores, profissionais liberais e qualquer pessoa que precise de atenção individualizada e resultados rápidos.",
   startingPrice: MENTORIA_VIP_MIN,
   minimumHours: 10,
   features: [
     "Plano de aprendizado personalizado desenhado nas primeiras sessões",
     "Sessões 1-a-1 ao vivo de 1h ou 2h, no seu ritmo",
-    "Horários flexíveis — manhã, tarde, noite ou fim de semana",
+    "Horários flexíveis, manhã, tarde, noite ou fim de semana",
     "Acompanhamento de projeto real entre sessões",
     "Acesso ao canal direto do mentor no WhatsApp",
     "Material de apoio customizado para seu caso",

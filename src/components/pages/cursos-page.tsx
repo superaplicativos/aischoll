@@ -69,8 +69,7 @@ export function CursosPage() {
         </h1>
         <p className="mt-4 text-muted-foreground text-base md:text-lg leading-relaxed">
           Todos os cursos têm <strong>10 horas</strong> e custam{" "}
-          <strong className="text-emerald-400">{formatBRL(COURSE_PRICE)}</strong> —
-          pague por hora extra a {formatBRL(PRICE_PER_HOUR)}/h. Escolha seu caminho.
+          <strong className="text-emerald-400">{formatBRL(COURSE_PRICE)}</strong>, pague por hora extra a {formatBRL(PRICE_PER_HOUR)}/h. Escolha seu caminho.
         </p>
       </div>
 
@@ -244,7 +243,7 @@ export function CursosPage() {
         </h2>
         <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
           A Mentoria VIP é personalizada para o que VOCÊ quer aprender.
-          Começa em {formatBRL(4500)} — 10 horas 1-a-1 com mentor dedicado.
+          Começa em {formatBRL(4500)}, 10 horas 1-a-1 com mentor dedicado.
         </p>
         <Button
           className="mt-6 bg-gradient-to-r from-amber-500 to-rose-500 hover:opacity-90 text-white"

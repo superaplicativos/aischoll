@@ -128,7 +128,7 @@ export function CheckoutDialog({
           <DialogDescription>
             {step === "details" && title}
             {step === "qr" && "Escaneie o QR Code ou copie o código abaixo"
-              .concat(" — o valor será creditado automaticamente.")}
+              .concat(", o valor será creditado automaticamente.")}
             {step === "processing" && "Aguardando confirmação do banco..."}
             {step === "done" && "Tudo certo! Seu acesso foi liberado."}
           </DialogDescription>
@@ -253,7 +253,7 @@ export function CheckoutDialog({
                 onClick={handleSimulatePayment}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
               >
-                Já paguei — Confirmar
+                Já paguei, Confirmar
               </Button>
             </div>
           </div>

@@ -25,7 +25,7 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "AI School | Cursos de Inteligência Artificial para Todos",
   description:
-    "A escola líder em cursos de IA no Brasil. Aprenda Vibe Code, IA Iniciante, Intermediário, Avançado, Edição de Vídeos com IA, IA para Engenheiros, Operadores de Drone, IA + Robótica para Crianças, Mentoria VIP e muito mais. Pague por hora — R$4.000 / 10h.",
+    "A escola líder em cursos de IA no Brasil. Aprenda Vibe Code, IA Iniciante, Intermediário, Avançado, Edição de Vídeos com IA, IA para Engenheiros, Operadores de Drone, IA + Robótica para Crianças, Mentoria VIP e muito mais. Pague por hora, R$4.000 / 10h.",
   keywords: [
     "curso de IA",
     "inteligência artificial",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     icon: "/favicon.svg",
   },
   openGraph: {
-    title: "AI School — Aprenda IA do Zero ao Avançado",
+    title: "AI School, Aprenda IA do Zero ao Avançado",
     description:
       "Cursos de Inteligência Artificial para crianças, adolescentes, adultos e profissionais. Pague por hora. Mentoria VIP personalizada.",
     url: "https://aischool.github.io",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI School — Cursos de IA para Todos",
+    title: "AI School, Cursos de IA para Todos",
     description:
       "Do iniciante ao avançado. Pague por hora de aprendizado. Mentoria VIP a partir de R$4.500.",
   },

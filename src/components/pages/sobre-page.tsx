@@ -24,7 +24,7 @@ export function SobrePage() {
         </h1>
         <p className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed">
           A AI School é a escola pioneira em ensinar Inteligência Artificial
-          para todos os públicos no Brasil — de crianças de 7 anos a CEOs.
+          para todos os públicos no Brasil, de crianças de 7 anos a CEOs.
           Acreditamos que IA é alfabetização do século 21. Por isso criamos
           um modelo onde você paga por hora, aprende no seu ritmo e sai com
           algo concreto na mão.
@@ -37,7 +37,7 @@ export function SobrePage() {
           {
             icon: Target,
             title: "Missão",
-            desc: "Tornar a fluência em IA acessível a todos os brasileiros — independente de idade, formação ou orçamento.",
+            desc: "Tornar a fluência em IA acessível a todos os brasileiros, independente de idade, formação ou orçamento.",
           },
           {
             icon: Rocket,
@@ -47,7 +47,7 @@ export function SobrePage() {
           {
             icon: Heart,
             title: "Valores",
-            desc: "Prática sobre teoria. Respeito ao tempo do aluno. Transparência total. Educação como transformação — não como produto.",
+            desc: "Prática sobre teoria. Respeito ao tempo do aluno. Transparência total. Educação como transformação, não como produto.",
           },
         ].map((item) => (
           <Card key={item.title} className="glass p-6 border-border">
@@ -69,8 +69,8 @@ export function SobrePage() {
               <p>
                 Em 2023, quando o ChatGPT explodiu no mundo, vimos uma divisão
                 se formar. De um lado, profissionais de tecnologia que dominaram
-                IA rapidamente. Do outro, a maioria — crianças, aposentados,
-                professores, advogados, médicos — que ficaram para trás.
+                IA rapidamente. Do outro, a maioria, crianças, aposentados,
+                professores, advogados, médicos, que ficaram para trás.
               </p>
               <p>
                 Pior: os cursos existentes ou eram superficiais demais ("aprenda

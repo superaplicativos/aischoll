@@ -25,7 +25,7 @@ const EMV = {
 const PIX_GUI = "BR.GOV.BCB.PIX";
 
 /**
- * Calcula o CRC16-CCITT (polinômio 0x1021) — padrão BR Code
+ * Calcula o CRC16-CCITT (polinômio 0x1021), padrão BR Code
  */
 function crc16(payload: string): string {
   let crc = 0xffff;

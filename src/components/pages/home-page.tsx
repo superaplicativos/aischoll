@@ -113,7 +113,7 @@ export function HomePage() {
             <p className="mt-6 text-base md:text-xl text-muted-foreground max-w-2xl leading-relaxed">
               Para crianças, adolescentes, adultos e profissionais.
               Vibe Code, ChatGPT, Midjourney, Robótica, Edição de Vídeo,
-              IA para Engenheiros e muito mais —{" "}
+              IA para Engenheiros e muito mais {" "}
               <span className="text-foreground font-medium">
                 pague apenas por hora de aprendizado.
               </span>
@@ -158,7 +158,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* DIFERENCIAL — Pague por hora */}
+      {/* DIFERENCIAL, Pague por hora */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -320,8 +320,8 @@ export function HomePage() {
                     <span className="shimmer-text">só seu</span>
                   </h2>
                   <p className="mt-4 text-muted-foreground leading-relaxed">
-                    Não há currículo fixo. Você chega com seu objetivo — IA,
-                    Vibe Code, Empreendedorismo — e desenhamos juntos um plano
+                    Não há currículo fixo. Você chega com seu objetivo, IA,
+                    Vibe Code, Empreendedorismo, e desenhamos juntos um plano
                     1-a-1 só seu. Para quem precisa de resultados rápidos.
                   </p>
 
@@ -398,7 +398,7 @@ export function HomePage() {
                 name: "Mariana Costa",
                 role: "Arquiteta & Urbanista",
                 content:
-                  "Em 2 semanas estava renderizando com IA projetos que levavam 3 dias. O ROI foi imediato — fechei 2 novos contratos graças às apresentações que aprendi a fazer.",
+                  "Em 2 semanas estava renderizando com IA projetos que levavam 3 dias. O ROI foi imediato, fechei 2 novos contratos graças às apresentações que aprendi a fazer.",
                 gradient: "from-amber-500 to-orange-500",
               },
               {
@@ -608,7 +608,7 @@ function FAQSection() {
   const faqs = [
     {
       q: "Como funciona o pagamento por hora?",
-      a: "Cada curso custa R$4.000 por 10 horas (R$400/hora). Se você quiser comprar horas avulsas adicionais — para revisar uma aula, fazer um projeto extra ou mentoria pontual — você paga R$400 por hora extra. Sem fidelidade, sem mensalidade.",
+      a: "Cada curso custa R$4.000 por 10 horas (R$400/hora). Se você quiser comprar horas avulsas adicionais, para revisar uma aula, fazer um projeto extra ou mentoria pontual, você paga R$400 por hora extra. Sem fidelidade, sem mensalidade.",
     },
     {
       q: "O pagamento é via PIX mesmo?",
@@ -624,7 +624,7 @@ function FAQSection() {
     },
     {
       q: "Crianças realmente aprendem IA?",
-      a: "Sim! No curso IA + Robótica para Crianças (7-12 anos) elas aprendem lógica de programação com Scratch, montam robôs educacionais e entendem como a IA funciona no dia a dia — de forma lúdica e supervisionada.",
+      a: "Sim! No curso IA + Robótica para Crianças (7-12 anos) elas aprendem lógica de programação com Scratch, montam robôs educacionais e entendem como a IA funciona no dia a dia, de forma lúdica e supervisionada.",
     },
     {
       q: "Como funciona a Mentoria VIP?",

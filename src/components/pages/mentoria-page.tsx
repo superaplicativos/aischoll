@@ -226,7 +226,7 @@ export function MentoriaPage() {
               className="bg-gradient-to-r from-amber-500 to-rose-500 hover:opacity-90 text-white animate-glow"
             >
               <Crown className="mr-2 h-4 w-4" />
-              Garantir Mentoria VIP — {formatBRL(MENTORIA_VIP_MIN)}
+              Garantir Mentoria VIP, {formatBRL(MENTORIA_VIP_MIN)}
             </Button>
             <Button
               size="lg"
