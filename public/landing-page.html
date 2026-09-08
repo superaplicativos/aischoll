@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI School | Inteligência Artificial para Todos</title>
+<meta name="description" content="A escola #1 de IA no Brasil. 15 cursos de IA para crianças, adolescentes, adultos e profissionais. Pague por hora. Mentoria VIP a partir de R$4.500.">
+<link rel="icon" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+:root {
+  --bg: #0a0a14;
+  --bg-2: #11111f;
+  --surface: rgba(22, 22, 38, 0.6);
+  --surface-2: rgba(28, 28, 50, 0.85);
+  --border: rgba(124, 58, 237, 0.18);
+  --border-2: rgba(124, 58, 237, 0.4);
+  --text: #f4f4fb;
+  --text-muted: #a4a4b8;
+  --text-dim: #70708a;
+  --violet: #7c3aed;
+  --violet-light: #a78bfa;
+  --fuchsia: #ec4899;
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124, 58, 237, 0.18), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(16, 185, 129, 0.10), transparent),
+    radial-gradient(ellipse 50% 40% at 0% 50%, rgba(236, 72, 153, 0.10), transparent);
+  z-index: -1;
+  pointer-events: none;
+}
+
+::selection { background: var(--violet); color: white; }
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(124, 58, 237, 0.4); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--violet); }
+
+/* ============ HEADER ============ */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1rem 0;
+  transition: all 0.3s;
+}
+
+.header.scrolled {
+  background: rgba(10, 10, 20, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0;
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-icon {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--violet), var(--fuchsia));
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+}
+
+.logo-icon::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--violet), var(--fuchsia));
+  opacity: 0.5;
+  filter: blur(8px);
+  z-index: -1;
+}
+
+.logo-icon svg { width: 22px; height: 22px; color: white; }
+
+.logo-text {
+  display: flex; flex-direction: column; line-height: 1;
+}
+.logo-text strong { font-family: var(--display); font-size: 1.1rem; font-weight: 700; }
+.logo-text span { font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px; }
+
+.nav {
+  display: flex;
+  gap: 0.25rem;
+}
+.nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 0.875rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.nav a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--violet), var(--fuchsia));
+  color: white;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(124, 58, 237, 0.5); }
+
+.btn-emerald {
+  background: var(--emerald); color: white;
+}
+.btn-emerald:hover { background: #059669; }
+
+.btn-ghost {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  border: 1px solid var(--border-2);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.08); }
+
+.btn-lg { padding: 0.875rem 1.75rem; font-size: 1rem; }
+
+.mobile-toggle { display: none; }
+
+/* ============ HERO 3D ============ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 8rem 1.5rem 4rem;
+}
+
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  text-align: center;
+  pointer-events: none;
+}
+.hero-content > * { pointer-events: auto; }
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: rgba(124, 58, 237, 0.12);
+  border: 1px solid var(--border-2);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--violet-light);
+  backdrop-filter: blur(8px);
+  margin-bottom: 1.5rem;
+  animation: floatBadge 4s ease-in-out infinite;
+}
+
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 8px var(--emerald);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero-title {
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+}
+
+.hero-title .gradient-text {
+  background: linear-gradient(90deg, var(--violet) 0%, var(--fuchsia) 50%, var(--amber) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text-muted);
+  max-width: 720px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+}
+
+.hero-subtitle strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.hero-stat {
+  text-align: center;
+}
+.hero-stat-value {
+  font-family: var(--display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  color: var(--violet-light);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ============ SECTIONS ============ */
+section {
+  padding: 6rem 1.5rem;
+  position: relative;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.section-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--violet-light);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: var(--display);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  font-size: 1.0625rem;
+  max-width: 600px;
+  margin-bottom: 3rem;
+}
+
+.section-header.center {
+  text-align: center;
+}
+.section-header.center .section-subtitle { margin-left: auto; margin-right: auto; }
+
+/* ============ DIFERENCIAL ============ */
+.diferencial-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 24px;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.diferencial-card::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.2), transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.diferencial-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.feature {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+.feature-icon {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(124, 58, 237, 0.2));
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 0.75rem;
+  color: var(--emerald);
+}
+.feature h4 { font-size: 0.95rem; margin-bottom: 0.4rem; font-weight: 600; }
+.feature p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+/* ============ COURSES ============ */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.course-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.course-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-2);
+  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15);
+}
+
+.course-cover {
+  height: 130px;
+  position: relative;
+  overflow: hidden;
+  background-size: 200% 200%;
+  animation: gradientFlow 8s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@keyframes gradientFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.course-cover svg {
+  width: 56px; height: 56px;
+  color: rgba(255,255,255,0.95);
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.4));
+}
+
+.course-badge {
+  position: absolute;
+  top: 0.75rem; left: 0.75rem;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.course-popular {
+  position: absolute;
+  top: 0.75rem; right: 0.75rem;
+  background: rgba(245, 158, 11, 0.85);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 0.2rem;
+}
+
+.course-body {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-title {
+  font-family: var(--display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+.course-tag {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  color: var(--violet-light);
+}
+
+.course-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0.75rem;
+}
+.course-price {
+  font-family: var(--display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--emerald);
+  line-height: 1;
+}
+.course-price-info {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.course-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.75rem;
+  justify-content: center;
+}
+
+/* ============ MENTORIA ============ */
+.mentoria-card {
+  background: var(--surface-2);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 24px;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.mentoria-card::before {
+  content: '';
+  position: absolute;
+  top: -150px; right: -150px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.2), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.mentoria-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .mentoria-grid { grid-template-columns: 1fr; }
+}
+
+.mentoria-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.mentoria-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.mentoria-feature svg { color: var(--amber); flex-shrink: 0; }
+.mentoria-feature span { font-size: 0.875rem; }
+
+/* ============ CHECKOUT MODAL ============ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s;
+}
+.modal-overlay.open { display: flex; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 20px;
+  max-width: 460px;
+  width: 100%;
+  padding: 2rem;
+  position: relative;
+  animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+.modal-title {
+  font-family: var(--display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.modal-desc { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+.checkout-summary {
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+.checkout-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.4rem;
+}
+.checkout-row:last-child { margin-bottom: 0; }
+.checkout-row .label { font-size: 0.75rem; color: var(--text-muted); }
+.checkout-row .value { font-size: 0.85rem; font-weight: 500; text-align: right; }
+.checkout-row .value.price { font-size: 1.25rem; font-weight: 700; color: var(--emerald); font-family: var(--display); }
+
+.form-group { margin-bottom: 1rem; }
+.form-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block; }
+.form-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  color: var(--text);
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.form-input:focus { outline: none; border-color: var(--violet); }
+
+.qr-container {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+}
+.qr-box {
+  background: white;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.qr-box canvas { display: block; }
+
+.qr-info {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.qr-info-row {
+  display: flex; justify-content: space-between;
+  font-size: 0.75rem; margin-bottom: 0.4rem;
+}
+.qr-info-row .label { color: var(--text-muted); }
+.qr-info-row .value { font-weight: 500; }
+
+.qr-copy {
+  display: flex; gap: 0.4rem; margin-top: 0.6rem;
+}
+.qr-copy input {
+  flex: 1;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.625rem;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+}
+.qr-copy-btn {
+  padding: 0.5rem 0.75rem;
+  background: var(--violet);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.qr-copy-btn:hover { background: #6d28d9; }
+
+.processing {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  padding: 2rem;
+}
+.spinner {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(124, 58, 237, 0.2);
+  border-top-color: var(--violet);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.success-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--emerald);
+  margin: 0 auto;
+}
+
+/* ============ FOOTER ============ */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem 1.5rem 2rem;
+  background: rgba(22, 22, 38, 0.4);
+  backdrop-filter: blur(8px);
+}
+.footer-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 2.5rem;
+}
+.footer h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 1rem; }
+.footer ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.footer a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; }
+.footer a:hover { color: var(--text); }
+.footer-bottom {
+  max-width: 1280px; margin: 2.5rem auto 0; padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.75rem; color: var(--text-muted);
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .nav { display: none; }
+  .header .btn-primary { display: none; }
+  .mobile-toggle {
+    display: flex;
+    background: transparent; border: none;
+    color: var(--text);
+    cursor: pointer;
+    width: 40px; height: 40px;
+    align-items: center; justify-content: center;
+  }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .diferencial-card, .mentoria-card { padding: 1.75rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  section { padding: 4rem 1.25rem; }
+}
+
+@media (max-width: 480px) {
+  .footer-grid { grid-template-columns: 1fr; }
+  .hero-cta { flex-direction: column; }
+  .hero-cta .btn { width: 100%; justify-content: center; }
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0; right: -100%;
+  width: 80%; max-width: 320px;
+  height: 100vh;
+  background: var(--surface-2);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border);
+  z-index: 150;
+  padding: 5rem 2rem 2rem;
+  transition: right 0.3s;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.mobile-menu.open { right: 0; }
+.mobile-menu a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2 5 5-1-1 5 4 3-4 3 1 5-5-1-2 5-2-5-5 1 1-5-4-3 4-3-1-5 5 1z"/></svg>
+      </div>
+      <div class="logo-text">
+        <strong>AI School</strong>
+        <span>Intelligence for All</span>
+      </div>
+    </a>
+    <nav class="nav">
+      <a href="#cursos">Cursos</a>
+      <a href="#mentoria">Mentoria VIP</a>
+      <a href="#diferencial">Por hora</a>
+      <a href="https://superaplicativos.github.io/aischoll/" target="_blank">Site completo</a>
+    </nav>
+    <a href="#cursos" class="btn btn-primary">Inscreva-se</a>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#cursos">Cursos</a>
+  <a href="#mentoria">Mentoria VIP</a>
+  <a href="#diferencial">Pague por hora</a>
+  <a href="https://superaplicativos.github.io/aischoll/" target="_blank">Site completo</a>
+  <a href="#cursos" style="margin-top:1rem; background:linear-gradient(135deg,var(--violet),var(--fuchsia)); padding:0.75rem 1rem; border-radius:8px; text-align:center; border:none;">Inscreva-se</a>
+</div>
+
+<!-- HERO 3D -->
+<section class="hero" id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      A escola #1 de IA do Brasil · +1.200 alunos
+    </div>
+    <h1 class="hero-title">
+      Aprenda <span class="gradient-text">Inteligência Artificial</span><br>
+      do zero ao avançado
+    </h1>
+    <p class="hero-subtitle">
+      Para crianças, adolescentes, adultos e profissionais.
+      Vibe Code, ChatGPT, Midjourney, Robótica, Edição de Vídeo, IA para Engenheiros e muito mais —
+      <strong>pague apenas por hora de aprendizado.</strong>
+    </p>
+    <div class="hero-cta">
+      <a href="#cursos" class="btn btn-primary btn-lg">
+        Ver os 15 cursos
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="#mentoria" class="btn btn-ghost btn-lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
+        Mentoria VIP
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value">15</div>
+        <div class="hero-stat-label">cursos de IA</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">10h</div>
+        <div class="hero-stat-label">por curso</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">1.200+</div>
+        <div class="hero-stat-label">alunos formados</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">R$400</div>
+        <div class="hero-stat-label">por hora extra</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">↓ ROLE PARA EXPLORAR</div>
+</section>
+
+<!-- DIFERENCIAL -->
+<section id="diferencial">
+  <div class="container">
+    <div class="diferencial-card">
+      <span class="section-badge">⚡ Nosso diferencial</span>
+      <h2 class="section-title">Pague por hora de aprendizado. <span style="color:var(--emerald)">Sério.</span></h2>
+      <p class="section-subtitle">
+        Aqui você não paga por curso longo e cheio de enrolação. Cada curso tem <strong style="color:var(--text)">10 horas de conteúdo</strong>
+        por <strong style="color:var(--emerald)">R$4.000</strong>. Precisa de mais? Compre pacotes de horas avulsas a R$400/h.
+        Precisa de menos? A Mentoria VIP começa em R$4.500.
+      </p>
+      <div class="diferencial-features">
+        <div class="feature">
+          <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+          <h4>Aprenda só o que precisa</h4>
+          <p>Você define o ritmo e o foco. Sem 'curso de 200 horas' para enrolar.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <h4>Escala conforme evolui</h4>
+          <p>Começa com 10h, adiciona horas conforme seu projeto cresce.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h4>Sem fidelidade</h4>
+          <p>Sem mensalidade. Sem pegadinha. Você paga pelo que consome.</p>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <a href="#cursos" class="btn btn-emerald">Começar agora</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CURSOS -->
+<section id="cursos" style="background:linear-gradient(180deg, transparent, rgba(124, 58, 237, 0.03), transparent);">
+  <div class="container">
+    <div class="section-header center">
+      <span class="section-badge">⭐ CURSOS EM DESTAQUE</span>
+      <h2 class="section-title">Os mais procurados</h2>
+      <p class="section-subtitle">Início imediato. Turmas com vagas abertas agora.</p>
+    </div>
+    <div class="courses-grid" id="coursesGrid"></div>
+  </div>
+</section>
+
+<!-- MENTORIA VIP -->
+<section id="mentoria">
+  <div class="container">
+    <div class="mentoria-card">
+      <div class="mentoria-grid">
+        <div>
+          <span class="section-badge" style="color:var(--amber)">👑 MENTORIA VIP</span>
+          <h2 class="section-title">Aprendizado sob medida, <span style="background:linear-gradient(90deg,var(--violet),var(--fuchsia),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;">só seu</span></h2>
+          <p class="section-subtitle">
+            Não há currículo fixo. Você chega com seu objetivo — IA, Vibe Code, Empreendedorismo — e desenhamos juntos um plano 1-a-1 só seu.
+            Para quem precisa de resultados rápidos.
+          </p>
+          <div style="margin-bottom:1.5rem;">
+            <div style="font-size:0.75rem;color:var(--text-muted);">A partir de</div>
+            <div style="font-family:var(--display);font-size:3rem;font-weight:700;color:var(--amber);line-height:1;">R$ 4.500</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">10 horas · 1-a-1 · flexível</div>
+          </div>
+          <div style="display:flex;gap:0.625rem;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openCheckout('Mentoria VIP Personalizada', 4500, 'mentoria')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
+              Quero Mentoria VIP
+            </button>
+            <a href="https://wa.me/5511999999999?text=Quero%20conversa%20inicial%20gratuita%20da%20Mentoria%20VIP" target="_blank" class="btn btn-ghost">Conversa grátis 30min</a>
+          </div>
+        </div>
+        <div class="mentoria-features">
+          <div class="mentoria-feature">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            <span>Plano personalizado de aprendizado</span>
+          </div>
+          <div class="mentoria-feature">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Sessões 1-a-1 ao vivo, no seu ritmo</span>
+          </div>
+          <div class="mentoria-feature">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <span>Canal direto com mentor no WhatsApp</span>
+          </div>
+          <div class="mentoria-feature">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span>Acompanhamento de projeto real</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <a href="#" class="logo" style="margin-bottom:1rem;">
+        <div class="logo-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2 5 5-1-1 5 4 3-4 3 1 5-5-1-2 5-2-5-5 1 1-5-4-3 4-3-1-5 5 1z"/></svg></div>
+        <div class="logo-text"><strong>AI School</strong><span>Intelligence for All</span></div>
+      </a>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-top:1rem;line-height:1.6;">
+        A escola líder em IA no Brasil. Cursos para crianças, adolescentes, adultos e profissionais. Pague por hora.
+      </p>
+    </div>
+    <div>
+      <h4>Cursos</h4>
+      <ul>
+        <li><a href="#cursos">IA Iniciante</a></li>
+        <li><a href="#cursos">Vibe Code</a></li>
+        <li><a href="#cursos">Edição com IA</a></li>
+        <li><a href="#cursos">IA + Robótica Kids</a></li>
+        <li><a href="#cursos">IA para Engenheiros</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Navegação</h4>
+      <ul>
+        <li><a href="#cursos">Todos os cursos</a></li>
+        <li><a href="#mentoria">Mentoria VIP</a></li>
+        <li><a href="#diferencial">Pague por hora</a></li>
+        <li><a href="https://superaplicativos.github.io/aischoll/" target="_blank">Site completo</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contato</h4>
+      <ul>
+        <li><a href="mailto:contato@aischool.com.br">contato@aischool.com.br</a></li>
+        <li><a href="https://wa.me/5511999999999" target="_blank">WhatsApp 24/7</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 AI School. Todos os direitos reservados.</div>
+    <div>Pagamentos via <span style="color:var(--emerald);font-weight:600;">PIX Mercado Pago</span></div>
+  </div>
+</footer>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeCheckout()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="checkoutContent"></div>
+  </div>
+</div>
+
+<!-- THREE.JS HERO 3D -->
+<script type="module">
+import * as THREE from 'three';
+
+// === Setup ===
+const canvas = document.getElementById('hero-canvas');
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 0, 5);
+
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// === Custom shader for holographic sphere ===
+const sphereGeometry = new THREE.IcosahedronGeometry(1.6, 5);
+
+const sphereMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime: { value: 0 },
+    uMouse: { value: new THREE.Vector2(0, 0) },
+    uColorA: { value: new THREE.Color(0x7c3aed) },
+    uColorB: { value: new THREE.Color(0xec4899) },
+    uColorC: { value: new THREE.Color(0xf59e0b) }
+  },
+  vertexShader: `
+    uniform float uTime;
+    uniform vec2 uMouse;
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+    varying float vDistortion;
+
+    // Simplex noise (3D) - by Ian McEwan, Ashima Arts
+    vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+    vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+    vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+    vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
+    float snoise(vec3 v){
+      const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+      const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+      vec3 i = floor(v + dot(v, C.yyy));
+      vec3 x0 = v - i + dot(i, C.xxx);
+      vec3 g = step(x0.yzx, x0.xyz);
+      vec3 l = 1.0 - g;
+      vec3 i1 = min(g.xyz, l.zxy);
+      vec3 i2 = max(g.xyz, l.zxy);
+      vec3 x1 = x0 - i1 + C.xxx;
+      vec3 x2 = x0 - i2 + C.yyy;
+      vec3 x3 = x0 - D.yyy;
+      i = mod289(i);
+      vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+      float n_ = 0.142857142857;
+      vec3 ns = n_ * D.wyz - D.xzx;
+      vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+      vec4 x_ = floor(j * ns.z);
+      vec4 y_ = floor(j - 7.0 * x_);
+      vec4 x = x_ * ns.x + ns.yyyy;
+      vec4 y = y_ * ns.x + ns.yyyy;
+      vec4 h = 1.0 - abs(x) - abs(y);
+      vec4 b0 = vec4(x.xy, y.xy);
+      vec4 b1 = vec4(x.zw, y.zw);
+      vec4 s0 = floor(b0)*2.0 + 1.0;
+      vec4 s1 = floor(b1)*2.0 + 1.0;
+      vec4 sh = -step(h, vec4(0.0));
+      vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+      vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+      vec3 p0 = vec3(a0.xy, h.x);
+      vec3 p1 = vec3(a0.zw, h.y);
+      vec3 p2 = vec3(a1.xy, h.z);
+      vec3 p3 = vec3(a1.zw, h.w);
+      vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+      p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+      vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+      m = m * m;
+      return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+    }
+
+    void main() {
+      vNormal = normal;
+      vPosition = position;
+
+      // Distort vertices with flowing noise
+      float noise = snoise(position * 1.4 + uTime * 0.25);
+      float distortion = noise * 0.18;
+      vDistortion = distortion;
+
+      vec3 newPosition = position + normal * distortion;
+
+      // Mouse influence
+      vec3 mouseInfluence = vec3(uMouse.x * 0.15, uMouse.y * 0.15, 0.0);
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition + mouseInfluence, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform float uTime;
+    uniform vec3 uColorA;
+    uniform vec3 uColorB;
+    uniform vec3 uColorC;
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+    varying float vDistortion;
+
+    void main() {
+      // Fresnel rim lighting
+      vec3 viewDir = normalize(cameraPosition - vPosition);
+      float fresnel = pow(1.0 - dot(viewDir, vNormal), 2.5);
+
+      // Color gradient based on position + time
+      float t1 = sin(vPosition.y * 1.5 + uTime * 0.3) * 0.5 + 0.5;
+      float t2 = cos(vPosition.x * 1.2 + uTime * 0.2) * 0.5 + 0.5;
+
+      vec3 baseColor = mix(uColorA, uColorB, t1);
+      baseColor = mix(baseColor, uColorC, t2 * 0.4);
+
+      // Add distortion glow
+      vec3 finalColor = baseColor + fresnel * vec3(0.6, 0.4, 1.0) * 0.8;
+      finalColor += abs(vDistortion) * vec3(1.0, 0.5, 0.8) * 1.5;
+
+      // Inner glow
+      float inner = pow(max(dot(viewDir, vNormal), 0.0), 0.5);
+      finalColor += inner * 0.15;
+
+      gl_FragColor = vec4(finalColor, 0.85);
+    }
+  `,
+  transparent: true,
+  side: THREE.DoubleSide
+});
+
+const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+scene.add(sphere);
+
+// === Wireframe overlay ===
+const wireGeometry = new THREE.IcosahedronGeometry(1.65, 2);
+const wireMaterial = new THREE.MeshBasicMaterial({
+  color: 0x7c3aed,
+  wireframe: true,
+  transparent: true,
+  opacity: 0.15
+});
+const wireframe = new THREE.Mesh(wireGeometry, wireMaterial);
+scene.add(wireframe);
+
+// === Particle field ===
+const particleCount = 2500;
+const particleGeometry = new THREE.BufferGeometry();
+const positions = new Float32Array(particleCount * 3);
+const colors = new Float32Array(particleCount * 3);
+const sizes = new Float32Array(particleCount);
+
+const colorPalette = [
+  new THREE.Color(0x7c3aed),
+  new THREE.Color(0xec4899),
+  new THREE.Color(0xf59e0b),
+  new THREE.Color(0x10b981),
+  new THREE.Color(0xa78bfa)
+];
+
+for (let i = 0; i < particleCount; i++) {
+  const i3 = i * 3;
+  const radius = 2.5 + Math.random() * 4;
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(2 * Math.random() - 1);
+
+  positions[i3]     = radius * Math.sin(phi) * Math.cos(theta);
+  positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+  positions[i3 + 2] = radius * Math.cos(phi);
+
+  const c = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+  colors[i3]     = c.r;
+  colors[i3 + 1] = c.g;
+  colors[i3 + 2] = c.b;
+
+  sizes[i] = Math.random() * 0.05 + 0.01;
+}
+
+particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+particleGeometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
+particleGeometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+
+const particleMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime: { value: 0 },
+    uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) }
+  },
+  vertexShader: `
+    attribute float aSize;
+    attribute vec3 aColor;
+    uniform float uTime;
+    uniform float uPixelRatio;
+    varying vec3 vColor;
+
+    void main() {
+      vColor = aColor;
+      vec3 pos = position;
+
+      // Floating motion
+      pos.y += sin(uTime * 0.5 + position.x * 2.0) * 0.1;
+      pos.x += cos(uTime * 0.3 + position.z * 2.0) * 0.1;
+
+      vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+      gl_Position = projectionMatrix * mvPosition;
+      gl_PointSize = aSize * 300.0 * uPixelRatio / -mvPosition.z;
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vColor;
+
+    void main() {
+      float d = length(gl_PointCoord - vec2(0.5));
+      if (d > 0.5) discard;
+      float alpha = 1.0 - smoothstep(0.0, 0.5, d);
+      gl_FragColor = vec4(vColor, alpha * 0.9);
+    }
+  `,
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending
+});
+
+const particles = new THREE.Points(particleGeometry, particleMaterial);
+scene.add(particles);
+
+// === Orbiting rings ===
+function createRing(radius, color, opacity, tubeRadius = 0.005) {
+  const geometry = new THREE.TorusGeometry(radius, tubeRadius, 16, 200);
+  const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity });
+  return new THREE.Mesh(geometry, material);
+}
+
+const ring1 = createRing(2.3, 0x7c3aed, 0.6);
+ring1.rotation.x = Math.PI / 3;
+scene.add(ring1);
+
+const ring2 = createRing(2.6, 0xec4899, 0.4);
+ring2.rotation.x = -Math.PI / 4;
+ring2.rotation.y = Math.PI / 6;
+scene.add(ring2);
+
+const ring3 = createRing(2.9, 0xf59e0b, 0.3);
+ring3.rotation.z = Math.PI / 3;
+scene.add(ring3);
+
+// === Lights ===
+const ambient = new THREE.AmbientLight(0x4a4a8a, 0.5);
+scene.add(ambient);
+
+const pointLight = new THREE.PointLight(0xec4899, 2, 10);
+pointLight.position.set(3, 2, 3);
+scene.add(pointLight);
+
+const pointLight2 = new THREE.PointLight(0x7c3aed, 1.5, 10);
+pointLight2.position.set(-3, -1, 2);
+scene.add(pointLight2);
+
+// === Mouse tracking ===
+const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+
+window.addEventListener('mousemove', (e) => {
+  mouse.targetX = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
+});
+
+// Touch support
+window.addEventListener('touchmove', (e) => {
+  if (e.touches.length > 0) {
+    mouse.targetX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+    mouse.targetY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+  }
+}, { passive: true });
+
+// === Resize ===
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+// === Animation loop ===
+const clock = new THREE.Clock();
+
+function animate() {
+  const elapsed = clock.getElapsedTime();
+
+  // Smooth mouse lerp
+  mouse.x += (mouse.targetX - mouse.x) * 0.05;
+  mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+  // Update uniforms
+  sphereMaterial.uniforms.uTime.value = elapsed;
+  sphereMaterial.uniforms.uMouse.value.set(mouse.x, mouse.y);
+  particleMaterial.uniforms.uTime.value = elapsed;
+
+  // Rotate sphere
+  sphere.rotation.y = elapsed * 0.15 + mouse.x * 0.3;
+  sphere.rotation.x = mouse.y * 0.2;
+
+  wireframe.rotation.y = -elapsed * 0.1;
+  wireframe.rotation.x = elapsed * 0.05;
+
+  // Rotate particles
+  particles.rotation.y = elapsed * 0.05;
+  particles.rotation.x = mouse.y * 0.1;
+
+  // Rotate rings
+  ring1.rotation.z = elapsed * 0.3;
+  ring2.rotation.z = -elapsed * 0.2;
+  ring3.rotation.z = elapsed * 0.15;
+
+  // Subtle camera movement
+  camera.position.x = mouse.x * 0.3;
+  camera.position.y = mouse.y * 0.2;
+  camera.lookAt(0, 0, 0);
+
+  // Pulse rings based on time
+  const pulse = Math.sin(elapsed * 2) * 0.05 + 1;
+  ring1.scale.set(pulse, pulse, pulse);
+  ring2.scale.set(pulse * 0.95, pulse * 0.95, pulse * 0.95);
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+// === Parallax on scroll ===
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  if (scrolled < window.innerHeight) {
+    sphere.rotation.z = scrolled * 0.001;
+    camera.position.z = 5 + scrolled * 0.003;
+  }
+});
+</script>
+
+<!-- DATA + CHECKOUT -->
+<script>
+// ===== COURSES DATA =====
+const COURSES = [
+  {
+    title: "IA Iniciante: Primeiros Passos com IA",
+    desc: "Comece do zero. Aprenda a usar ChatGPT, Claude e Gemini no dia a dia, no trabalho e nos estudos.",
+    price: 4000, hours: 10, level: "iniciante", popular: true,
+    icon: '<path d="M12 2l2 5 5-1-1 5 4 3-4 3 1 5-5-1-2 5-2-5-5 1 1-5-4-3 4-3-1-5 5 1z"/>',
+    gradient: "linear-gradient(135deg, #7c3aed, #ec4899)",
+    tags: ["ChatGPT", "Claude", "Prompts"]
+  },
+  {
+    title: "IA Intermediário: Fluxos, Automações e Agentes",
+    desc: "Saia do prompt solto. Aprenda a encadear ferramentas, criar agentes e automatizar tarefas repetitivas.",
+    price: 4000, hours: 10, level: "intermediario", popular: true,
+    icon: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+    gradient: "linear-gradient(135deg, #10b981, #06b6d4)",
+    tags: ["Automação", "n8n", "Agentes"]
+  },
+  {
+    title: "IA Avançado: Agentes, RAG, LLMs e APIs",
+    desc: "Para quem quer dominar IA no nível técnico. Agentes autônomos, RAG, fine-tuning, MCP e APIs.",
+    price: 4000, hours: 10, level: "avancado", popular: true,
+    icon: '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/>',
+    gradient: "linear-gradient(135deg, #f97316, #ef4444)",
+    tags: ["APIs", "RAG", "MCP"]
+  },
+  {
+    title: "Vibe Code: Programe com IA do Zero ao Deploy",
+    desc: "Aprenda a programar com IA usando Cursor, Windsurf e Claude Code. Construa apps reais sem ser engenheiro.",
+    price: 4000, hours: 10, level: "iniciante", popular: true,
+    icon: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+    gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+    tags: ["Cursor", "Windsurf", "v0"]
+  },
+  {
+    title: "Edição de Vídeos com IA: Do Clip ao Longo",
+    desc: "CapCut, Runway, Pika, Kling, Sora. Edição profissional, b-roll gerado por IA e legendas automáticas.",
+    price: 4000, hours: 10, level: "intermediario", popular: true,
+    icon: '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+    gradient: "linear-gradient(135deg, #ec4899, #f43f5e)",
+    tags: ["CapCut", "Runway", "Pika"]
+  },
+  {
+    title: "IA + Robótica para Crianças (7-12 anos)",
+    desc: "Curso lúdico onde crianças aprendem IA criando robôs, games e histórias. Primeiro contato com tecnologia.",
+    price: 4000, hours: 10, level: "infantil", popular: true,
+    icon: '<rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/>',
+    gradient: "linear-gradient(135deg, #fbbf24, #f97316)",
+    tags: ["Infantil", "Robótica", "Scratch"]
+  },
+  {
+    title: "IA para Engenheiros e Arquitetos",
+    desc: "BIM, renderização, projetos, cálculos, propostas. IA aplicada à engenharia e arquitetura.",
+    price: 4000, hours: 10, level: "intermediario", popular: false,
+    icon: '<path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/>',
+    gradient: "linear-gradient(135deg, #f59e0b, #ef4444)",
+    tags: ["BIM", "Revit", "Render"]
+  },
+  {
+    title: "IA para Operadores de Drone",
+    desc: "Pós-processamento, mapeamento, inspeção e edição de filmagens aéreas com IA. Para pilotos profissionais.",
+    price: 4000, hours: 10, level: "intermediario", popular: false,
+    icon: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.36 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+    gradient: "linear-gradient(135deg, #0ea5e9, #6366f1)",
+    tags: ["Drone", "Inspeção", "Mapeamento"]
+  },
+  {
+    title: "IA para Adolescentes (13-17 anos)",
+    desc: "Criação de apps, jogos, arte digital e automações. IA para a próxima geração de criadores.",
+    price: 4000, hours: 10, level: "intermediario", popular: false,
+    icon: '<line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M2 12c0-2 1.79-4 4-4h12c2.21 0 4 2 4 4s-1.79 4-4 4H6c-2.21 0-4-2-4-4z"/>',
+    gradient: "linear-gradient(135deg, #a855f7, #ec4899)",
+    tags: ["Adolescentes", "Apps", "Jogos"]
+  },
+  {
+    title: "Pacote Office com IA (Copilot)",
+    desc: "Excel, Word e PowerPoint turbinados com Copilot e ChatGPT. Produtividade de outro nível.",
+    price: 4000, hours: 10, level: "iniciante", popular: false,
+    icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+    gradient: "linear-gradient(135deg, #22c55e, #10b981)",
+    tags: ["Excel", "Copilot", "Office"]
+  },
+  {
+    title: "Canva com IA: Design para Todos",
+    desc: "Magic Studio, Magic Design, Magic Edit. Design profissional sem saber design.",
+    price: 4000, hours: 10, level: "iniciante", popular: false,
+    icon: '<circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2a10 10 0 0 0-9.95 9h5.45L12 7l4.5 4h5.45A10 10 0 0 0 12 2z"/>',
+    gradient: "linear-gradient(135deg, #14b8a6, #06b6d4)",
+    tags: ["Canva", "Design", "Magic"]
+  },
+  {
+    title: "Criação de Sites no Lovable (No-Code)",
+    desc: "Crie sites e apps completos no Lovable com 1 prompt. Não precisa saber programar.",
+    price: 4000, hours: 10, level: "iniciante", popular: false,
+    icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
+    gradient: "linear-gradient(135deg, #f43f5e, #ec4899)",
+    tags: ["Lovable", "No-code", "Sites"]
+  },
+  {
+    title: "Criação de Sites Avançado (Cursor + v0 + Bolt)",
+    desc: "Vibe coding profissional. Cursor, v0, Bolt, Next.js, deploy de apps reais com IA.",
+    price: 4000, hours: 10, level: "avancado", popular: false,
+    icon: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+    gradient: "linear-gradient(135deg, #6366f1, #7c3aed)",
+    tags: ["Cursor", "v0", "Next.js"]
+  },
+  {
+    title: "Poe: Crie Seus Próprios Bots de IA",
+    desc: "Crie bots com IA para vender, atender e automatizar. Monetize com Poe.",
+    price: 4000, hours: 10, level: "intermediario", popular: false,
+    icon: '<rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/>',
+    gradient: "linear-gradient(135deg, #d946ef, #a855f7)",
+    tags: ["Poe", "Bots", "Monetização"]
+  },
+  {
+    title: "IA + Empreendedorismo: Solo First Framework",
+    desc: "Torne-se um Empreendedor T-Shaped com IA. Do posicionamento ao primeiro cliente.",
+    price: 4000, hours: 10, level: "intermediario", popular: true,
+    icon: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91 0z"/><path d="M12 15l-3 3a5.5 5.5 0 0 1-7.8-7.8l3-3"/><path d="M9 12l3-3a5.5 5.5 0 0 1 7.8 7.8l-3 3"/>',
+    gradient: "linear-gradient(135deg, #f59e0b, #ec4899)",
+    tags: ["Empreender", "Solo First", "Negócios"]
+  }
+];
+
+const levelLabels = {
+  iniciante: "Iniciante",
+  intermediario: "Intermediário",
+  avancado: "Avançado",
+  infantil: "Infantil"
+};
+
+function formatBRL(value) {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// ===== RENDER COURSES =====
+const grid = document.getElementById('coursesGrid');
+grid.innerHTML = COURSES.map(c => `
+  <article class="course-card">
+    <div class="course-cover" style="background: ${c.gradient};">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.icon}</svg>
+      <span class="course-badge">${levelLabels[c.level]}</span>
+      ${c.popular ? '<span class="course-popular"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Popular</span>' : ''}
+    </div>
+    <div class="course-body">
+      <h3 class="course-title">${c.title}</h3>
+      <p class="course-desc">${c.desc}</p>
+      <div class="course-tags">
+        ${c.tags.map(t => `<span class="course-tag">${t}</span>`).join('')}
+      </div>
+      <div class="course-footer">
+        <div>
+          <div class="course-price">${formatBRL(c.price)}</div>
+          <div class="course-price-info">${c.hours}h · ${formatBRL(c.price / c.hours)}/h</div>
+        </div>
+      </div>
+      <div class="course-actions">
+        <a href="https://superaplicativos.github.io/aischoll/#/curso/${slugify(c.title)}" target="_blank" class="btn btn-ghost btn-sm">Detalhes</a>
+        <button class="btn btn-primary btn-sm" onclick='openCheckout(${JSON.stringify(c.title)}, ${c.price}, "${slugify(c.title)}")'>Matricular</button>
+      </div>
+    </div>
+  </article>
+`).join('');
+
+function slugify(text) {
+  return text.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .substring(0, 60);
+}
+
+// ===== PIX BR CODE GENERATOR =====
+const PIX_KEY = "33783362857";
+const PIX_RECEIVER = "AI SCHOOL TECNOLOGIA EDUCACIONAL";
+const PIX_CITY = "SAO PAULO";
+
+function crc16(payload) {
+  let crc = 0xffff;
+  const polynomial = 0x1021;
+  for (let i = 0; i < payload.length; i++) {
+    crc ^= payload.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = (crc & 0x8000) !== 0 ? (crc << 1) ^ polynomial : crc << 1;
+      crc &= 0xffff;
+    }
+  }
+  return crc.toString(16).toUpperCase().padStart(4, '0');
+}
+
+function formatField(id, value) {
+  return id + value.length.toString().padStart(2, '0') + value;
+}
+
+function sanitize(str, max) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9 ]/g, '').toUpperCase().substring(0, max);
+}
+
+function generatePixCode(amount, description) {
+  const amountStr = amount.toFixed(2);
+  const merchantAccount = formatField("26", formatField("00", "BR.GOV.BCB.PIX") + formatField("01", PIX_KEY));
+  const additionalData = formatField("62", formatField("05", "***"));
+
+  let payload =
+    formatField("00", "01") +
+    merchantAccount +
+    formatField("52", "0000") +
+    formatField("53", "986") +
+    formatField("54", amountStr) +
+    formatField("58", "BR") +
+    formatField("59", sanitize(PIX_RECEIVER, 25)) +
+    formatField("60", sanitize(PIX_CITY, 15)) +
+    additionalData;
+
+  const crcPayload = payload + "6304";
+  return crcPayload + crc16(crcPayload);
+}
+
+// ===== CHECKOUT FLOW =====
+let currentCheckout = null;
+
+function openCheckout(title, amount, slug) {
+  currentCheckout = { title, amount, slug };
+  renderDetails();
+  document.getElementById('checkoutModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutModal').classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(() => { currentCheckout = null; }, 300);
+}
+
+function renderDetails() {
+  const { title, amount } = currentCheckout;
+  document.getElementById('checkoutContent').innerHTML = `
+    <h3 class="modal-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--violet-light);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      Confirme seus dados
+    </h3>
+    <p class="modal-desc">${title}</p>
+    <div class="checkout-summary">
+      <div class="checkout-row">
+        <span class="label">Curso</span>
+        <span class="value">${title.length > 30 ? title.substring(0, 30) + '...' : title}</span>
+      </div>
+      <div class="checkout-row">
+        <span class="label">Valor</span>
+        <span class="value price">${formatBRL(amount)}</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nome completo</label>
+      <input type="text" class="form-input" id="buyerName" placeholder="Seu nome" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">E-mail</label>
+      <input type="email" class="form-input" id="buyerEmail" placeholder="seu@email.com" />
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem;">O acesso será enviado para este e-mail.</div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:0.5rem;" onclick="proceedToQR()">
+      Gerar PIX
+    </button>
+    <div style="display:flex;align-items:center;gap:0.4rem;margin-top:0.875rem;font-size:0.7rem;color:var(--text-muted);">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Pagamento seguro via PIX. Dados protegidos.</span>
+    </div>
+  `;
+}
+
+function proceedToQR() {
+  const name = document.getElementById('buyerName').value.trim();
+  const email = document.getElementById('buyerEmail').value.trim();
+  if (!name) { alert('Informe seu nome completo.'); return; }
+  if (!email || !email.includes('@')) { alert('Informe um e-mail válido.'); return; }
+  currentCheckout.buyerName = name;
+  currentCheckout.buyerEmail = email;
+  renderQR();
+}
+
+function renderQR() {
+  const { title, amount } = currentCheckout;
+  const pixCode = generatePixCode(amount, title);
+
+  // Render QR Code using Google Chart API (no JS dependency)
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=1&data=${encodeURIComponent(pixCode)}`;
+
+  document.getElementById('checkoutContent').innerHTML = `
+    <h3 class="modal-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--violet-light);"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="14"/><line x1="21" y1="14" x2="21" y2="14"/><line x1="14" y1="21" x2="14" y2="21"/><line x1="21" y1="21" x2="21" y2="21"/><line x1="17" y1="17" x2="17" y2="17"/></svg>
+      Pague com PIX
+    </h3>
+    <p class="modal-desc">Escaneie o QR Code ou copie o código abaixo.</p>
+
+    <div class="qr-container">
+      <div class="qr-box">
+        <img src="${qrUrl}" alt="QR Code PIX" width="220" height="220" />
+      </div>
+
+      <div class="qr-info">
+        <div class="qr-info-row">
+          <span class="label">Valor</span>
+          <span class="value" style="color:var(--emerald);font-size:1.1rem;font-family:var(--display);font-weight:700;">${formatBRL(amount)}</span>
+        </div>
+        <div class="qr-info-row">
+          <span class="label">Destinatário</span>
+          <span class="value">AI SCHOOL</span>
+        </div>
+      </div>
+
+      <div style="width:100%;">
+        <label class="form-label">PIX Copia e Cola</label>
+        <div class="qr-copy">
+          <input type="text" readonly value="${pixCode}" id="pixCodeField" />
+          <button class="qr-copy-btn" onclick="copyPix()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div style="width:100%;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:0.75rem;display:flex;gap:0.5rem;align-items:flex-start;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--amber);flex-shrink:0;margin-top:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <p style="font-size:0.7rem;color:rgba(245,158,11,0.95);line-height:1.5;">Após pagar, clique em <strong>"Já paguei"</strong> para confirmar. O retorno é automático assim que o banco confirma o PIX.</p>
+      </div>
+
+      <button class="btn btn-emerald" style="width:100%;" onclick="confirmPayment()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Já paguei — Confirmar
+      </button>
+    </div>
+  `;
+}
+
+function copyPix() {
+  const field = document.getElementById('pixCodeField');
+  field.select();
+  field.setSelectionRange(0, 99999);
+  try {
+    document.execCommand('copy');
+    const btn = document.querySelector('.qr-copy-btn');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+    btn.style.background = 'var(--emerald)';
+    setTimeout(() => {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      btn.style.background = 'var(--violet)';
+    }, 3000);
+  } catch (e) { alert('Selecione e copie manualmente.'); }
+}
+
+function confirmPayment() {
+  document.getElementById('checkoutContent').innerHTML = `
+    <div class="processing">
+      <div class="spinner"></div>
+      <p style="color:var(--text-muted);font-size:0.875rem;">Aguardando confirmação do banco...</p>
+      <p style="font-size:0.7rem;color:var(--text-dim);text-align:center;">Em produção, este passo é substituído pelo webhook automático do Mercado Pago.</p>
+    </div>
+  `;
+  setTimeout(() => { renderSuccess(); }, 2500);
+}
+
+function renderSuccess() {
+  const { buyerEmail, slug } = currentCheckout;
+  document.getElementById('checkoutContent').innerHTML = `
+    <div style="text-center;padding:1rem 0;">
+      <div class="success-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3 class="modal-title" style="justify-content:center;margin-top:1rem;">Pagamento confirmado!</h3>
+      <p style="color:var(--text-muted);font-size:0.85rem;margin:0.5rem 0 1.5rem;">Enviamos os detalhes para <strong style="color:var(--text);">${buyerEmail}</strong>.</p>
+      <a href="https://superaplicativos.github.io/aischoll/#/sucesso/${slug || 'curso'}" class="btn btn-primary" style="width:100%;">
+        Acessar área do aluno
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  `;
+}
+
+// ===== HEADER + MOBILE MENU =====
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 20) header.classList.add('scrolled');
+  else header.classList.remove('scrolled');
+});
+
+const mobileToggle = document.getElementById('mobileToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+mobileToggle.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+});
+mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mobileMenu.classList.remove('open');
+}));
+
+// Close modal on overlay click
+document.getElementById('checkoutModal').addEventListener('click', (e) => {
+  if (e.target.id === 'checkoutModal') closeCheckout();
+});
+
+// ESC to close
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeCheckout();
+});
+
+// ===== Reveal on scroll =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('section').forEach(s => {
+  if (s.id !== 'hero') {
+    s.style.opacity = '0';
+    s.style.transform = 'translateY(20px)';
+    s.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(s);
+  }
+});
+</script>
+
+</body>
+</html>
