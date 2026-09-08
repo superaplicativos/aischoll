@@ -835,7 +835,7 @@
   }
 
   // ===== UI =====
-  let fab, window, messagesEl, inputEl, sendBtn, quickEl, actionsEl, badge;
+  let fab, chatWindow, messagesEl, inputEl, sendBtn, quickEl, actionsEl, badge;
   let isOpen = false;
   let isTyping = false;
 
@@ -848,7 +848,7 @@
     fab.addEventListener('click', toggleWindow);
 
     // Window
-    window = el('div', { class: 'aichat-window', 'aria-label': 'Chat com a Aria' });
+    chatWindow = el('div', { class: 'aichat-window', 'aria-label': 'Chat com a Aria' });
 
     // Header
     const header = el('div', { class: 'aichat-header' });
@@ -900,14 +900,14 @@
     actionsEl.appendChild(downloadBtn);
     actionsEl.appendChild(sendWaBtn);
 
-    window.appendChild(header);
-    window.appendChild(messagesEl);
-    window.appendChild(quickEl);
-    window.appendChild(inputWrap);
-    window.appendChild(actionsEl);
+    chatWindow.appendChild(header);
+    chatWindow.appendChild(messagesEl);
+    chatWindow.appendChild(quickEl);
+    chatWindow.appendChild(inputWrap);
+    chatWindow.appendChild(actionsEl);
 
     document.body.appendChild(fab);
-    document.body.appendChild(window);
+    document.body.appendChild(chatWindow);
 
     // Auto-open after 5s if never interacted
     setTimeout(() => {
@@ -921,7 +921,7 @@
     isOpen = !isOpen;
     if (isOpen) {
       fab.classList.add('open');
-      window.classList.add('open');
+      chatWindow.classList.add('open');
       badge.style.display = 'none';
       localStorage.setItem('aichat_opened', '1');
       // Start conversation if empty
@@ -931,7 +931,7 @@
       setTimeout(() => inputEl.focus(), 300);
     } else {
       fab.classList.remove('open');
-      window.classList.remove('open');
+      chatWindow.classList.remove('open');
     }
   }
 
