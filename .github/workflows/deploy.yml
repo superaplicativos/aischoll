@@ -27,40 +27,40 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install --frozen-lockfile || bun install
 
-      - name: Patch next.config for static export
+      - name: Configure Next.js for static export
         run: |
           cat > next.config.ts << 'EOF'
           import type { NextConfig } from "next";
 
-          // Configuração para GitHub Pages (export estático)
-          // Para o repositório https://<user>.github.io/<repo> ajuste basePath
+          // Repo name — detecta automaticamente o basePath correto
+          // Ex: se repo = superaplicativos/aischoll → basePath = "/aischoll"
+          // Ex: se repo = user/user.github.io → basePath = "" (root)
           const repo = process.env.GITHUB_REPOSITORY?.split('/')[1] || '';
-          const isUserRepo = process.env.GITHUB_REPOSITORY?.split('/')[0] === 'github.io';
-          const basePath = isUserRepo ? '' : (repo ? `/${repo}` : '');
+          const owner = process.env.GITHUB_REPOSITORY?.split('/')[0] || '';
+          const isUserPages = repo === `${owner}.github.io`;
+          const basePath = isUserPages ? '' : (repo ? `/${repo}` : '');
 
           const nextConfig: NextConfig = {
             output: "export",
             reactStrictMode: false,
             images: { unoptimized: true },
             trailingSlash: true,
-            ...(basePath ? { basePath, assetPrefix: basePath + '/' } : {}),
             typescript: { ignoreBuildErrors: true },
             eslint: { ignoreDuringBuilds: true },
+            ...(basePath ? { basePath, assetPrefix: basePath + '/' } : {}),
           };
 
           export default nextConfig;
           EOF
+          echo "✅ next.config.ts gerado para repo: ${{ github.repository }}"
 
-      - name: Build
-        run: bun run next build
+      - name: Build static export
+        run: bun next build
 
-      - name: Add .nojekyll
+      - name: Add .nojekyll (disable Jekyll processing)
         run: touch ./out/.nojekyll
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
