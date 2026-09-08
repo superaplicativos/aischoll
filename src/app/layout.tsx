@@ -74,6 +74,8 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
+        {/* Chatbot de Vendas com RAG - Aria */}
+        <script src="/chatbot.js" async></script>
       </body>
     </html>
   );
