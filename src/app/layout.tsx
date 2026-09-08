@@ -100,12 +100,6 @@ export default function RootLayout({
                     var s = document.createElement('script');
                     s.src = path;
                     s.async = true;
-                    s.onload = function() {
-                      if (!window.AISchoolChatbot) {
-                        console.warn('[AI School Chatbot] Script carregou mas não inicializou');
-                      }
-                    };
-                    s.onerror = function() { tryNext(); };
                     document.body.appendChild(s);
                   } else {
                     tryNext();
