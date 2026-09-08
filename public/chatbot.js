@@ -26,6 +26,8 @@
     accentColor: '#10b981',
     botName: 'Aria',
     botAvatar: '🤖',
+    // Google Apps Script Web App URL (Google Sheets integration)
+    googleSheetsUrl: 'https://script.google.com/macros/s/AKfycbyivl0Vkeks75M3sbxXIXCKmHyPkSvECgP5K1ds-D1MC8F5z5H_ZDYf4jpqlILCYI9Y/exec',
   };
 
   // ===== KNOWLEDGE BASE =====
@@ -615,6 +617,10 @@
     if (course && !state.lead.course_interest.includes(course.slug)) {
       state.lead.course_interest.push(course.slug);
       saveSession();
+      // Atualiza o lead no Sheets com o novo interesse detectado
+      if (state.lead.name && state.lead.whatsapp) {
+        sendLeadToSheets();
+      }
     }
   }
 
@@ -774,6 +780,111 @@
     } catch (e) {}
   }
 
+  // ===== GOOGLE SHEETS INTEGRATION =====
+  // Envia o lead para a planilha via Google Apps Script Web App.
+  // Usa POST com Content-Type text/plain (evita CORS preflight no Apps Script).
+  // Em caso de falha, faz retry silencioso + mantém no localStorage.
+  let sheetsSyncQueue = [];
+
+  function sendLeadToSheets(force) {
+    if (!CONFIG.googleSheetsUrl) return Promise.resolve(false);
+    if (!state.lead || !state.lead.name || !state.lead.whatsapp) return Promise.resolve(false);
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      name: state.lead.name,
+      whatsapp: state.lead.whatsapp,
+      course_interest: state.lead.course_interest || [],
+      messageCount: state.messages.length,
+      lastMessages: state.messages.slice(-5).map(m => ({
+        from: m.from,
+        text: m.text,
+        time: new Date(m.timestamp).toISOString()
+      })),
+      source: window.location.pathname,
+      userAgent: navigator.userAgent.substring(0, 200),
+      force: !!force
+    };
+
+    // Não reenvia o mesmo lead em menos de 60s (a menos que force=true)
+    const lastSentKey = 'aichat_sheets_last_' + state.lead.whatsapp;
+    const lastSent = parseInt(localStorage.getItem(lastSentKey) || '0', 10);
+    if (!force && Date.now() - lastSent < 60000) {
+      return Promise.resolve(false);
+    }
+    localStorage.setItem(lastSentKey, Date.now().toString());
+
+    return fetch(CONFIG.googleSheetsUrl, {
+      method: 'POST',
+      mode: 'no-cors', // Apps Script sempre responde opaco
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      console.log('[AI School] Lead enviado para Google Sheets:', state.lead.name);
+      // Marca como sincronizado
+      try {
+        const syncKey = 'aichat_sheets_synced_' + state.lead.whatsapp;
+        localStorage.setItem(syncKey, Date.now().toString());
+      } catch (e) {}
+      return true;
+    })
+    .catch((err) => {
+      console.warn('[AI School] Falha ao enviar para Sheets (será retentado):', err);
+      // Coloca na fila para retry
+      sheetsSyncQueue.push(payload);
+      return false;
+    });
+  }
+
+  // Retry de envios que falharam
+  function retrySheetsQueue() {
+    if (sheetsSyncQueue.length === 0) return;
+    const queue = sheetsSyncQueue.slice();
+    sheetsSyncQueue = [];
+    queue.forEach((payload) => {
+      fetch(CONFIG.googleSheetsUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(() => {
+        // Re-coloca na fila (máximo 5 retries)
+        if (queue.length < 5) sheetsSyncQueue.push(payload);
+      });
+    });
+  }
+  setInterval(retrySheetsQueue, 60000);
+
+  // Envia a versão final completa do lead (chamado quando o usuário encerra / clica em "Enviar lead")
+  function sendFullLeadToSheets() {
+    if (!state.lead || !state.lead.name || !state.lead.whatsapp) {
+      return Promise.resolve(false);
+    }
+    const payload = {
+      timestamp: new Date().toISOString(),
+      name: state.lead.name,
+      whatsapp: state.lead.whatsapp,
+      course_interest: state.lead.course_interest || [],
+      messageCount: state.messages.length,
+      fullConversation: state.messages.map(m => ({
+        from: m.from,
+        text: m.text,
+        time: new Date(m.timestamp).toISOString()
+      })),
+      source: window.location.pathname,
+      userAgent: navigator.userAgent.substring(0, 200),
+      force: true,
+      final: true
+    };
+    return fetch(CONFIG.googleSheetsUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(() => true).catch(() => false);
+  }
+
   // ===== TXT GENERATOR =====
   function generateLeadTxt() {
     const now = new Date();
@@ -828,6 +939,8 @@
 
   function sendLeadToWhatsApp() {
     const txt = generateLeadTxt();
+    // Envia o lead completo para Google Sheets (envio final com conversa inteira)
+    sendFullLeadToSheets();
     // WhatsApp has a limit of ~4096 chars in wa.me links, so we truncate if needed
     const summary = `🤖 NOVO LEAD - AI SCHOOL\n\nNome: ${state.lead.name}\nWhatsApp: ${state.lead.whatsapp}\nInteresse: ${state.lead.course_interest.length > 0 ? state.lead.course_interest.join(', ') : 'A definir'}\n\nMensagens: ${state.messages.length}\n\n---\n\n${state.messages.slice(-10).map(m => `${m.from === 'bot' ? 'Bot' : state.lead.name}: ${m.text}`).join('\n\n').substring(0, 3000)}`;
     const url = `https://wa.me/${CONFIG.whatsappSchool}?text=${encodeURIComponent(summary)}`;
@@ -894,10 +1007,26 @@
     const downloadBtn = el('button', { class: 'aichat-action-btn', title: 'Baixar conversa em TXT' });
     downloadBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> TXT`;
     downloadBtn.addEventListener('click', downloadTxt);
+    const sheetsBtn = el('button', { class: 'aichat-action-btn', title: 'Salvar lead na planilha Google Sheets', style: 'color:#10b981;border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.1);' });
+    sheetsBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha`;
+    sheetsBtn.addEventListener('click', function() {
+      sendFullLeadToSheets().then(function(ok) {
+        if (ok) {
+          // Feedback visual
+          sheetsBtn.style.background = 'rgba(16, 185, 129, 0.3)';
+          sheetsBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Salvo!`;
+          setTimeout(function() {
+            sheetsBtn.style.background = 'rgba(16,185,129,0.1)';
+            sheetsBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha`;
+          }, 3000);
+        }
+      });
+    });
     const sendWaBtn = el('button', { class: 'aichat-action-btn primary', title: 'Enviar conversa para a escola' });
     sendWaBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Enviar lead`;
     sendWaBtn.addEventListener('click', sendLeadToWhatsApp);
     actionsEl.appendChild(downloadBtn);
+    actionsEl.appendChild(sheetsBtn);
     actionsEl.appendChild(sendWaBtn);
 
     chatWindow.appendChild(header);
@@ -1049,6 +1178,8 @@
       state.lead.whatsapp = digits;
       saveSession();
       saveLead();
+      // Envia o lead assim que capturar nome + WhatsApp (sync automático com Sheets)
+      sendLeadToSheets();
       await botSay(`Perfeito, ${state.lead.name}! ✅ Seu WhatsApp foi salvo com segurança.\n\nAgora me conta: o que você quer aprender? Posso te recomendar o curso ideal ou responder qualquer dúvida.`, ['Ver cursos', 'Preços', 'Mentoria VIP', 'Qual curso é pra mim?']);
       state.step = 'chatting';
       return;
