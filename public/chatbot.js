@@ -39,25 +39,25 @@
       slug: 'ia-iniciante',
       title: 'IA Iniciante',
       keywords: ['iniciante', 'iniciar', 'comecar', 'começar', 'do zero', 'primeiros passos', 'basico', 'básico', 'chatgpt', 'claude', 'gemini', 'prompt', 'prompts', 'nunca usei', 'nao sei nada'],
-      short: 'Para quem nunca usou IA. ChatGPT, Claude, Gemini, prompts e criação de imagens em 10h.',
+      short: 'Para quem nunca usou IA. ChatGPT, Gemini, prompts e criação de imagens com Gemini Imagen em 10h.',
       level: 'Iniciante',
       price: 4000,
       hours: 10,
       audience: 'qualquer pessoa que quer começar a usar IA',
       benefits: [
-        'Sair do zero para fluente em ChatGPT, Claude e Gemini',
+        'Dominar ChatGPT e Gemini (ferramentas Google)',
         'Aprender a fórmula CRISPE de prompts que funcionam',
-        'Criar imagens com IA em segundos',
+        'Criar imagens com Gemini Imagen',
         'Aplicar IA no trabalho, estudos e vida pessoal',
         'Certificado digital + comunidade de alunos',
       ],
-      objection: 'Não precisa de conhecimento técnico. Se você sabe usar WhatsApp, vai aprender IA.',
+      objection: 'São R$4.000 por 10h (R$400/hora online). Aula presencial R$450/h. Aceitamos PIX, boleto 2x sem juros ou cartão em até 12x com juros da operadora.',
     },
     {
       slug: 'ia-intermediario',
       title: 'IA Intermediário',
       keywords: ['intermediario', 'intermediário', 'automacao', 'automação', 'agente', 'agentes', 'n8n', 'make', 'fluxo', 'encadear', 'integrar', 'workflow', 'automatizar'],
-      short: 'Fluxos, automações e agentes. n8n, Make, RAG básico em 10h.',
+      short: 'Fluxos, automações e agentes. n8n, Make, RAG básico com Gemini em 10h.',
       level: 'Intermediário',
       price: 4000,
       hours: 10,
@@ -75,7 +75,7 @@
       slug: 'ia-avancado',
       title: 'IA Avançado',
       keywords: ['avancado', 'avançado', 'api', 'apis', 'rag', 'llm', 'fine-tuning', 'finetuning', 'mcp', 'langchain', 'langgraph', 'vector', 'embedding', 'desenvolvedor', 'tecnico', 'técnico'],
-      short: 'APIs de LLM, RAG em produção, agentes autônomos, MCP, fine-tuning em 10h.',
+      short: 'APIs de LLM, RAG em produção, agentes autônomos, MCP, fine-tuning em 10h. Foco em Gemini API.',
       level: 'Avançado',
       price: 4000,
       hours: 10,
@@ -93,7 +93,7 @@
       slug: 'vibe-code',
       title: 'Vibe Code',
       keywords: ['vibe code', 'vibecode', 'cursor', 'windsurf', 'claude code', 'programar com ia', 'criar app', 'criar site', 'lovable', 'v0', 'sem programar', 'sem saber programar'],
-      short: 'Programe com IA usando Cursor, Windsurf, Claude Code. Construa apps sem ser engenheiro.',
+      short: 'Programe com IA usando Cursor e Gemini Code Assist. Construa apps sem ser engenheiro. 10h.',
       level: 'Iniciante',
       price: 4000,
       hours: 10,
@@ -111,7 +111,7 @@
       slug: 'edicao-videos-ia',
       title: 'Edição de Vídeos com IA',
       keywords: ['video', 'vídeo', 'videos', 'vídeos', 'edicao', 'edição', 'editar', 'capcut', 'runway', 'pika', 'kling', 'sora', 'youtube', 'tiktok', 'reels', 'shorts', 'criador de conteudo', 'criador de conteúdo', 'social media'],
-      short: 'CapCut, Runway, Pika, Kling, Sora. Edição profissional com IA em 10h.',
+      short: 'Edição profissional com Gemini e Google Flow. Foco total nas ferramentas Google. 10h.',
       level: 'Intermediário',
       price: 4000,
       hours: 10,
@@ -129,7 +129,7 @@
       slug: 'ia-engenheiros-arquitetos',
       title: 'IA para Engenheiros e Arquitetos',
       keywords: ['engenheiro', 'engenheiros', 'arquiteto', 'arquitetos', 'engenharia', 'arquitetura', 'bim', 'revit', 'sketchup', 'render', 'renderizacao', 'renderização', 'memoria de calculo', 'memória de cálculo', 'projeto', 'projetos', 'construcao', 'construção'],
-      short: 'BIM, renderização, projetos e propostas com IA em 10h.',
+      short: 'BIM, renderização, projetos e propostas com IA. Foco em Gemini + Google Workspace. 10h.',
       level: 'Intermediário',
       price: 4000,
       hours: 10,
@@ -219,7 +219,7 @@
       slug: 'canva-ia',
       title: 'Canva com IA',
       keywords: ['canva', 'design', 'magic studio', 'magic design', 'logo', 'logotipo', 'identidade visual', 'social media', 'posts', 'instagram', 'thumbnail'],
-      short: 'Magic Studio completo. Design profissional sem saber design em 10h.',
+      short: 'Criação de imagens com Gemini Imagen + GPT. Sem Midjourney/Stable Diffusion. 10h.',
       level: 'Iniciante',
       price: 4000,
       hours: 10,
@@ -331,7 +331,7 @@
   const OBJECTIONS = [
     {
       triggers: ['caro', 'caro demais', 'muito caro', 'nao tenho dinheiro', 'não tenho dinheiro', 'custa muito', 'valor alto', 'ta pago', 'tá caro', 'fora do orcamento', 'fora do orçamento'],
-      response: `Entendo perfeitamente, ${'$NAME'}. R$4.000 é um investimento sério. Mas deixa eu te mostrar o lado positivo:\n\n✅ São só 10 horas — você sai aplicando no dia seguinte\n✅ R$400/hora é menos que uma hora de consultoria técnica\n✅ Garantia de 7 dias: se não gostar, devolvemos 100%\n✅ Você sai com projeto pronto, não só teoria\n✅ A maioria dos nossos alunos recupera o investimento em 1-2 meses aplicando no trabalho\n\nSe preferir, temos a opção de Mentoria VIP (a partir de R$4.500) com plano sob medida. Ou posso te passar no WhatsApp pra discutir formas de pagamento?`
+      response: `Entendo perfeitamente, ${'$NAME'}. Vou te mostrar as opções de pagamento:\n\n✅ PIX: R$4.000 à vista (10h online)\n✅ Boleto: 2x de R$2.000 sem juros\n✅ Cartão: até 12x com juros da operadora\n\nE você escolhe a modalidade:\n💻 Online: R$400/hora (pacote 10h = R$4.000)\n📍 Presencial: R$450/hora (pacote 10h = R$4.500)\n\nPara automatização total, temos o curso modular: R$4.000 por módulo (mínimo 3 módulos). Quer que eu te mostre o curso ideal pro seu momento?`
     },
     {
       triggers: ['nao tenho tempo', 'não tenho tempo', 'sem tempo', 'ocupado', 'muito corrido', 'trabalho muito'],
@@ -343,7 +343,7 @@
     },
     {
       triggers: ['preciso pensar', 'vou pensar', 'depois eu vejo', 'mais pra frente', 'amanha', 'amanhã', 'vou analisis', 'vou ver'],
-      response: `Compreensível, ${'$NAME'}. Mas deixa eu te dar 2 informações importantes pra te ajudar a decidir:\n\n📊 Turmas novas toda semana — começar agora = começar a aplicar IA no trabalho mais cedo\n⏰ Garantia de 7 dias: se nas duas primeiras aulas você não curtir, devolvemos 100% do valor, sem perguntas\n\nPosso te salvar uma vaga na próxima turma e você decide até lá? É só me confirmar.`
+      response: `Compreensível, ${'$NAME'}. Mas deixa eu te dar 2 informações importantes pra te ajudar a decidir:\n\n📊 Turmas novas toda semana — começar agora = começar a aplicar IA no trabalho mais cedo\n⏰ Aulas ao vivo (não é só vídeo gravado) — você interage com o instrutor\n\nPosso te salvar uma vaga na próxima turma e você decide até lá? É só me confirmar.`
     },
     {
       triggers: ['já fiz curso', 'ja fiz curso', 'ja estudei', 'já estudei', 'conheço IA', 'sei usar'],
@@ -351,7 +351,7 @@
     },
     {
       triggers: ['funciona mesmo', 'realmente funciona', 'é verdade', 'é confiavel', 'é confiável', 'é golpe', 'é furada'],
-      response: `Entendo a preocupação, ${'$NAME'}. Sobre confiabilidade:\n\n✅ +1.200 alunos formados\n✅ Garantia incondicional de 7 dias (100% reembolso)\n✅ Certificado digital com verificação de autenticidade\n✅ Aulas ao vivo (não é só vídeo gravado)\n✅ Comunidade ativa no WhatsApp\n✅ Pagamento 100% via PIX (você paga direto pra escola, não tem intermediário)\n\nSe quiser, posso te passar o WhatsApp de algum ex-aluno pra conversar. Ou você pode começar com 1 aula avulsa e decidir depois.`
+      response: `Entendo a preocupação, ${'$NAME'}. Sobre confiabilidade:\n\n✅ +1.200 alunos formados\n✅ Aulas ao vivo (não é só vídeo gravado)\n✅ Certificado digital com verificação de autenticidade\n✅ Comunidade ativa no WhatsApp\n✅ Instrutores experientes no mercado\n✅ Pagamento via PIX, boleto ou cartão\n\nSe quiser, posso te passar no WhatsApp da escola pra conversar com algum ex-aluno.`
     }
   ];
 
@@ -366,8 +366,8 @@
       response: `📅 Os cursos são 100% online ao vivo via Zoom, ${'$NAME'}:\n\n• Cada curso = 10 horas (5 encontros de 2h ou 10 de 1h)\n• Turmas novas toda semana\n• Horários: manhã, tarde, noite ou fim de semana\n• Gravações disponíveis por 12 meses\n• Turmas pequenas (máx. 10 alunos; infantil máx. 8)\n\nMentoria VIP: horários 100% flexíveis, você agenda direto com o mentor.`
     },
     guarantee: {
-      triggers: ['garantia', 'reembolso', 'devolver', 'devolucao', 'devolução', 'nao gostei', 'não gostei', 'arrependimento', 'cancelar', 'cancelamento', 'reembolsar'],
-      response: `🛡️ Garantia incondicional de 7 dias, ${'$NAME'}:\n\nSe nas duas primeiras aulas você não gostar por qualquer motivo, devolvemos 100% do valor. Sem perguntas, sem burocracia, sem letras miúdas.\n\nVocê só paga se ficar. Simples assim.`
+      triggers: ['garantia', 'confianca', 'confiança', 'seguranca', 'segurança', 'nao gostei', 'não gostei', 'arrependimento', 'cancelar', 'cancelamento'],
+      response: `🛡️ Transparência total, ${'$NAME'}:\n\n• Aulas ao vivo (não é só vídeo gravado)\n• Material de apoio completo incluso\n• Certificado digital com verificação\n• Comunidade ativa no WhatsApp\n• Suporte direto com os instrutores\n• Você escolhe online ou presencial\n\nNossa prioridade é seu aprendizado real. Em cada aula você sai com algo prático pronto.`
     },
     certificate: {
       triggers: ['certificado', 'certificados', 'diploma', 'comprovante', 'horas complementares'],
@@ -1227,7 +1227,7 @@
     if (/(nunca usei|comecar do zero|começar do zero|iniciante total)/.test(input)) {
       trackInterest('ia-iniciante');
       state.suggestedCourse = COURSES.find(c => c.slug === 'ia-iniciante');
-      await botSay(`Para você, ${state.lead.name}, o curso ideal é o **IA Iniciante**. ✨\n\nEm 10 horas você sai do zero a fluente em ChatGPT, Claude e Gemini. Aprende a fórmula de prompts que funcionam, cria imagens com IA e aplica tudo no trabalho e nos estudos.\n\nR$4.000 (10h) · Certificado incluso · Garantia 7 dias`, {
+      await botSay(`Para você, ${state.lead.name}, o curso ideal é o **IA Iniciante**. ✨\n\nEm 10 horas você sai do zero a fluente em ChatGPT e Gemini. Aprende a fórmula de prompts que funcionam, cria imagens com Gemini Imagen e aplica tudo no trabalho e nos estudos.\n\nR$4.000 (10h online) · R$4.500 (10h presencial) · Certificado incluso`, {
         cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-iniciante') }
       });
       return;
@@ -1339,7 +1339,7 @@
       ? `A partir de R$ ${course.price.toLocaleString('pt-BR')} (${course.hours}h 1-a-1)`
       : `R$ ${course.price.toLocaleString('pt-BR')} (${course.hours} horas)`;
 
-    await botSay(`🚀 Bora fechar isso, ${state.lead.name}!\n\n**${course.title}**\n${course.short}\n\n💰 ${priceStr}\n💳 Pagamento via PIX (QR Code na hora)\n🛡️ Garantia 7 dias (100% reembolso)\n📜 Certificado incluso\n\nVou te levar pro checkout. Lá você gera o PIX e paga em segundos.`, {
+    await botSay(`🚀 Bora fechar isso, ${state.lead.name}!\n\n**${course.title}**\n${course.short}\n\n💰 ${priceStr}\n💳 PIX, boleto 2x sem juros ou cartão 12x com juros da operadora\n📜 Certificado incluso\n💻 Online ou 📍 presencial — você escolhe\n\nVou te levar pro checkout.`, {
       cta: { label: '🚀 Ir para o checkout', handler: () => redirectToCheckout(course.slug) },
       quick: ['Tirar dúvida antes', 'Ver outros cursos', 'Falar com humano']
     });

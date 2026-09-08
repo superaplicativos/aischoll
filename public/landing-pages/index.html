@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI School - Landing Pages por público</title>
+<link rel="icon" href="../favicon.svg">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0a0a14; color: #f4f4fb; min-height: 100vh; padding: 2rem; line-height: 1.6; }
+body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,58,237,0.18), transparent), radial-gradient(ellipse 60% 50% at 100% 100%, rgba(16,185,129,0.10), transparent); z-index: -1; }
+.container { max-width: 1100px; margin: 0 auto; padding-top: 4rem; }
+.back { display: inline-flex; align-items: center; gap: 0.4rem; color: #a78bfa; text-decoration: none; font-size: 0.85rem; margin-bottom: 1.5rem; }
+.back:hover { color: white; }
+h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; background: linear-gradient(90deg, #7c3aed, #ec4899, #f59e0b); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.5rem; }
+.subtitle { color: #a4a4b8; margin-bottom: 3rem; font-size: 1rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+.card { background: rgba(22,22,38,0.6); border: 1px solid rgba(124,58,237,0.2); border-radius: 16px; padding: 1.75rem; text-decoration: none; color: inherit; transition: all 0.3s; display: block; }
+.card:hover { transform: translateY(-4px); border-color: rgba(124,58,237,0.5); box-shadow: 0 12px 40px rgba(124,58,237,0.15); }
+.card-icon { font-size: 36px; margin-bottom: 0.5rem; }
+.card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; margin-bottom: 0.5rem; }
+.card p { color: #a4a4b8; font-size: 0.875rem; margin-bottom: 1rem; }
+.card-tag { display: inline-block; padding: 0.2rem 0.6rem; background: rgba(124,58,237,0.15); color: #a78bfa; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
+.card-price { color: #10b981; font-weight: 700; font-size: 1rem; margin-top: 0.5rem; }
+.note { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 1rem 1.25rem; margin-top: 2rem; font-size: 0.85rem; color: #fcd34d; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../" class="back">← Voltar para site principal</a>
+  <h1>AI School - Landing Pages por público</h1>
+  <p class="subtitle">Escolha o público-alvo e acesse a landing page específica. Cada uma tem foco em Mentoria VIP e cursos direcionados.</p>
+
+  <div class="grid">
+    <a href="pais.html" class="card">
+      <div class="card-icon">👨</div>
+      <h3>Para Pais</h3>
+      <p>Pais que querem preparar os filhos para o futuro com IA. Foco em acompanhamento familiar e Mentoria Pai + Filho.</p>
+      <span class="card-tag">PAIS</span>
+      <div class="card-price">Mentoria VIP: R$4.500</div>
+    </a>
+
+    <a href="maes.html" class="card">
+      <div class="card-icon">💪</div>
+      <h3>Para Mães</h3>
+      <p>Mães que querem aprender IA, empreender de casa e estar com os filhos. Horários flexíveis, parcelamento facilitado.</p>
+      <span class="card-tag">MÃES</span>
+      <div class="card-price">Mentoria VIP: R$4.500</div>
+    </a>
+
+    <a href="criancas.html" class="card">
+      <div class="card-icon">🤖</div>
+      <h3>Para Crianças (7-12)</h3>
+      <p>IA + Robótica lúdica. Primeiro contato com tecnologia de forma segura. Turmas pequenas, supervisão total.</p>
+      <span class="card-tag">KIDS</span>
+      <div class="card-price">Curso: R$4.000 (10h)</div>
+    </a>
+
+    <a href="adolescentes.html" class="card">
+      <div class="card-icon">🎮</div>
+      <h3>Para Adolescentes (13-17)</h3>
+      <p>Criação de apps, jogos, arte digital. Portfólio real publicado. Saída de consumidor para criador.</p>
+      <span class="card-tag">TEENS</span>
+      <div class="card-price">Curso: R$4.000 (10h)</div>
+    </a>
+
+    <a href="empreendedores.html" class="card">
+      <div class="card-icon">🚀</div>
+      <h3>Para Empreendedores</h3>
+      <p>Solo First Framework. Saia do CLT em 90 dias. Curso de automação modular (mínimo 3 módulos de R$4.000).</p>
+      <span class="card-tag">FOUNDERS</span>
+      <div class="card-price">Mentoria VIP: R$4.500</div>
+    </a>
+
+    <a href="../landing-page.html" class="card">
+      <div class="card-icon">🎨</div>
+      <h3>Landing 3D Principal</h3>
+      <p>Homepage com efeito 3D avançado (Three.js). Para campanhas gerais e primeira impressão.</p>
+      <span class="card-tag">GERAL</span>
+      <div class="card-price">Ver landing principal</div>
+    </a>
+  </div>
+
+  <div class="note">
+    💡 <strong>Como visualizar leads do chatbot:</strong> Acesse sua URL do Apps Script com <code>?acao=listar</code> no final. Ex: <code>https://script.google.com/macros/s/AKfyc.../exec?acao=listar</code>. Os leads aparecem em formato visual. Para JSON, use <code>?acao=listarjson</code>.
+  </div>
+</div>
+</body>
+</html>
