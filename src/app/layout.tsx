@@ -78,26 +78,39 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: `
           (function(){
             function loadChatbot() {
-              // Tenta vários paths até achar o chatbot.js
+              // Estratégia: tenta paths em ordem até um carregar com sucesso
+              var base = window.location.pathname.replace(/\\/+$/, '');
               var paths = [
+                base + '/chatbot.js',
                 './chatbot.js',
-                '../chatbot.js',
                 '/chatbot.js'
               ];
-              var base = window.location.pathname.replace(/\\/$/, '');
-              // Se temos basePath tipo /aischoll, base = /aischoll
-              if (base && base !== '' && window.location.pathname !== '/') {
-                paths.unshift(base + '/chatbot.js');
-              }
+              var tried = {};
               var i = 0;
               function tryNext() {
-                if (i >= paths.length) return;
-                var s = document.createElement('script');
-                s.src = paths[i];
-                s.async = true;
-                s.onerror = function() { i++; tryNext(); };
-                s.onload = function() { if (!window.AISchoolChatbot) { i++; tryNext(); } };
-                document.body.appendChild(s);
+                if (i >= paths.length) {
+                  console.warn('[AI School Chatbot] Não foi possível carregar o chatbot.js');
+                  return;
+                }
+                var path = paths[i++];
+                if (tried[path]) { tryNext(); return; }
+                tried[path] = true;
+                fetch(path, { method: 'HEAD' }).then(function(r) {
+                  if (r.ok) {
+                    var s = document.createElement('script');
+                    s.src = path;
+                    s.async = true;
+                    s.onload = function() {
+                      if (!window.AISchoolChatbot) {
+                        console.warn('[AI School Chatbot] Script carregou mas não inicializou');
+                      }
+                    };
+                    s.onerror = function() { tryNext(); };
+                    document.body.appendChild(s);
+                  } else {
+                    tryNext();
+                  }
+                }).catch(function() { tryNext(); });
               }
               tryNext();
             }
