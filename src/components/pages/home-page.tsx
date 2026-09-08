@@ -490,7 +490,7 @@ export function HomePage() {
                   size="lg"
                   variant="outline"
                   className="border-emerald-500/50 hover:bg-emerald-500/10"
-                  onClick={() => window.open("https://wa.me/5511999999999", "_blank")}
+                  onClick={() => window.open("https://wa.me/55119666161611", "_blank")}
                 >
                   <MessageCircle className="mr-2 h-4 w-4 text-emerald-400" />
                   Falar no WhatsApp

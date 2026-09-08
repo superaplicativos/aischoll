@@ -231,7 +231,7 @@ export function MentoriaPage() {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => window.open("https://wa.me/5511999999999?text=Quero%20conversa%20inicial%20gratuita%20da%20Mentoria%20VIP", "_blank")}
+              onClick={() => window.open("https://wa.me/55119666161611?text=Quero%20conversa%20inicial%20gratuita%20da%20Mentoria%20VIP", "_blank")}
               className="border-emerald-500/30 hover:bg-emerald-500/10"
             >
               <MessageCircle className="mr-2 h-4 w-4 text-emerald-400" />

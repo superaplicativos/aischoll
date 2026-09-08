@@ -56,7 +56,7 @@ export function SiteFooter() {
                 <Linkedin className="h-5 w-5" />
               </a>
               <a
-                href="https://wa.me/5511999999999"
+                href="https://wa.me/55119666161611"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
@@ -119,7 +119,7 @@ export function SiteFooter() {
                 <Mail className="h-4 w-4" /> contato@aischool.com.br
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4" /> +55 11 99999-9999
+                <Phone className="h-4 w-4" /> +55 11 96616-1611
               </li>
               <li className="flex items-center gap-2">
                 <MessageCircle className="h-4 w-4" /> WhatsApp 24/7

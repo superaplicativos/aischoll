@@ -130,7 +130,7 @@ export function CursoDetailPage({ slug }: Props) {
                     variant="outline"
                     size="sm"
                     className="w-full border-emerald-500/30 hover:bg-emerald-500/10"
-                    onClick={() => window.open("https://wa.me/5511999999999", "_blank")}
+                    onClick={() => window.open("https://wa.me/55119666161611", "_blank")}
                   >
                     Tirar dúvidas no WhatsApp
                   </Button>

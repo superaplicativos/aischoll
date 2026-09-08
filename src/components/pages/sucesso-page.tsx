@@ -134,7 +134,7 @@ export function SucessoPage({ slug }: Props) {
           </p>
           <div className="space-y-2">
             <a
-              href="https://wa.me/5511999999999?text=Quero%20receber%20o%20guia%20gratuito%20de%20IA"
+              href="https://wa.me/55119666161611?text=Quero%20receber%20o%20guia%20gratuito%20de%20IA"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between p-3 rounded-lg bg-card/50 border border-border hover:border-violet-500/50 transition-colors"
