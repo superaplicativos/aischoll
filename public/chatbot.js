@@ -1,18 +1,23 @@
 /**
- * AI School - Chatbot de Vendas com RAG
- * Standalone vanilla JS — funciona em qualquer site (GitHub Pages, Next.js, etc.)
+ * AI School - Aria (SDR Senior Chatbot)
+ * v3.0 - Script de vendas profissional, UX limpa, sem bugs
  *
- * Recursos:
- * - Botão flutuante com pulse + badge de notificação
- * - Captura de lead (nome + WhatsApp) no início
- * - Knowledge base com 15 cursos + mentoria + pagamento + FAQ
- * - Matching inteligente por palavras-chave (RAG-like)
- * - Recomendação de curso por perfil
- * - Geração de .txt com conversa completa
- * - Envio do lead para WhatsApp da escola (55119666161611)
- * - Persistência em localStorage
+ * Fluxo de SDR senior:
+ *   1. Hook (benefício imediato)
+ *   2. Qualificação (perfil + objetivo)
+ *   3. Discovery (problema real)
+ *   4. Apresentação de solução (curso certo)
+ *   5. Quebra de objeções
+ *   6. Fechamento (CTA de matrícula)
+ *
+ * Features:
+ * - Botão flutuante com animação sutil
+ * - Captação de lead no primeiro contato
+ * - RAG com knowledge base completa
+ * - Sincronização Google Sheets (silenciosa)
+ * - Exportação TXT
+ * - Persistência de sessão (continua de onde parou)
  */
-
 (function () {
   'use strict';
 
@@ -20,735 +25,369 @@
   const CONFIG = {
     whatsappSchool: '55119666161611',
     appName: 'AI School',
-    storageKey: 'aischool_chatbot_leads',
-    sessionKey: 'aischool_chatbot_session',
+    storageKey: 'aischool_leads_v3',
+    sessionKey: 'aischool_session_v3',
     primaryColor: '#7c3aed',
     accentColor: '#10b981',
     botName: 'Aria',
-    botAvatar: '🤖',
-    // Google Apps Script Web App URL (Google Sheets integration)
     googleSheetsUrl: 'https://script.google.com/macros/s/AKfycbyivl0Vkeks75M3sbxXIXCKmHyPkSvECgP5K1ds-D1MC8F5z5H_ZDYf4jpqlILCYI9Y/exec',
   };
 
-  // ===== KNOWLEDGE BASE =====
+  // ===== KNOWLEDGE BASE (CURSOS) =====
   const COURSES = [
     {
       slug: 'ia-iniciante',
       title: 'IA Iniciante',
-      keywords: ['iniciante', 'iniciar', 'comecar', 'começar', 'do zero', 'primeiros passos', 'basico', 'básico', 'chatgpt', 'claude', 'gemini', 'prompt', 'prompts'],
-      short: 'Para quem nunca usou IA. ChatGPT, Claude, Gemini, prompts, criação de imagens. 10h por R$4.000.',
-      level: 'iniciante',
+      keywords: ['iniciante', 'iniciar', 'comecar', 'começar', 'do zero', 'primeiros passos', 'basico', 'básico', 'chatgpt', 'claude', 'gemini', 'prompt', 'prompts', 'nunca usei', 'nao sei nada'],
+      short: 'Para quem nunca usou IA. ChatGPT, Claude, Gemini, prompts e criação de imagens em 10h.',
+      level: 'Iniciante',
       price: 4000,
-      audience: 'qualquer pessoa que quer começar a usar IA no dia a dia'
+      hours: 10,
+      audience: 'qualquer pessoa que quer começar a usar IA',
+      benefits: [
+        'Sair do zero para fluente em ChatGPT, Claude e Gemini',
+        'Aprender a fórmula CRISPE de prompts que funcionam',
+        'Criar imagens com IA em segundos',
+        'Aplicar IA no trabalho, estudos e vida pessoal',
+        'Certificado digital + comunidade de alunos',
+      ],
+      objection: 'Não precisa de conhecimento técnico. Se você sabe usar WhatsApp, vai aprender IA.',
     },
     {
       slug: 'ia-intermediario',
       title: 'IA Intermediário',
-      keywords: ['intermediario', 'intermediário', 'automacao', 'automação', 'agente', 'agentes', 'n8n', 'make', 'fluxo', 'encadear', 'integrar', 'workflow'],
-      short: 'Fluxos, automações e agentes. n8n, Make, RAG básico. 10h por R$4.000.',
-      level: 'intermediario',
+      keywords: ['intermediario', 'intermediário', 'automacao', 'automação', 'agente', 'agentes', 'n8n', 'make', 'fluxo', 'encadear', 'integrar', 'workflow', 'automatizar'],
+      short: 'Fluxos, automações e agentes. n8n, Make, RAG básico em 10h.',
+      level: 'Intermediário',
       price: 4000,
-      audience: 'profissionais que já usam ChatGPT e querem automatizar tarefas'
+      hours: 10,
+      audience: 'profissionais que já usam ChatGPT e querem automatizar tarefas',
+      benefits: [
+        'Construir agentes de IA que trabalham sozinhos',
+        'Automatizar tarefas com n8n (gratuito)',
+        'Conectar IA com Gmail, Sheets, WhatsApp',
+        'Criar RAG com seus documentos',
+        'Sair com 10 templates de automação prontos',
+      ],
+      objection: 'Você não precisa ser programador. Se já usa ChatGPT, dá pra acompanhar tranquilo.',
     },
     {
       slug: 'ia-avancado',
       title: 'IA Avançado',
       keywords: ['avancado', 'avançado', 'api', 'apis', 'rag', 'llm', 'fine-tuning', 'finetuning', 'mcp', 'langchain', 'langgraph', 'vector', 'embedding', 'desenvolvedor', 'tecnico', 'técnico'],
-      short: 'APIs de LLM, RAG em produção, agentes autônomos, MCP, fine-tuning. 10h por R$4.000.',
-      level: 'avancado',
+      short: 'APIs de LLM, RAG em produção, agentes autônomos, MCP, fine-tuning em 10h.',
+      level: 'Avançado',
       price: 4000,
-      audience: 'desenvolvedores, analistas de dados, CTOs, fundadores de startup'
+      hours: 10,
+      audience: 'desenvolvedores, analistas de dados, CTOs, fundadores de startup',
+      benefits: [
+        'Dominar APIs de OpenAI, Anthropic, Google',
+        'Construir agentes autônomos com LangGraph',
+        'RAG em produção com vector DB',
+        'Model Context Protocol (MCP) do zero',
+        'Eval e guardrails para produtos em produção',
+      ],
+      objection: 'Exige programação básica (Python ou JS). Se você é dev, vai se sentir em casa.',
     },
     {
       slug: 'vibe-code',
       title: 'Vibe Code',
-      keywords: ['vibe code', 'vibecode', 'cursor', 'windsurf', 'claude code', 'programar com ia', 'programar com ia', 'criar app', 'criar site', 'lovable', 'v0'],
-      short: 'Programe com IA usando Cursor, Windsurf, Claude Code, v0. Construa apps sem ser engenheiro. 10h por R$4.000.',
-      level: 'iniciante',
+      keywords: ['vibe code', 'vibecode', 'cursor', 'windsurf', 'claude code', 'programar com ia', 'criar app', 'criar site', 'lovable', 'v0', 'sem programar', 'sem saber programar'],
+      short: 'Programe com IA usando Cursor, Windsurf, Claude Code. Construa apps sem ser engenheiro.',
+      level: 'Iniciante',
       price: 4000,
-      audience: 'empreendedores, designers, qualquer pessoa que queira criar apps sem saber programar'
+      hours: 10,
+      audience: 'empreendedores, designers, qualquer pessoa que queira criar apps',
+      benefits: [
+        'Construir apps reais sem saber programar',
+        'Dominar Cursor (editor que programa com você)',
+        'Publicar 2 apps no ar em 10 horas',
+        'Deploy na Vercel com domínio próprio',
+        'Sem pré-requisito técnico',
+      ],
+      objection: 'Se você sabe usar um computador, consegue. IA escreve o código por você.',
     },
     {
       slug: 'edicao-videos-ia',
       title: 'Edição de Vídeos com IA',
-      keywords: ['video', 'vídeo', 'videos', 'vídeos', 'edicao', 'edição', 'editar', 'capcut', 'runway', 'pika', 'kling', 'sora', 'youtube', 'tiktok', 'reels', 'shorts', 'content creator', 'criador de conteudo'],
-      short: 'CapCut, Runway, Pika, Kling, Sora. Edição profissional, b-roll com IA, legendas automáticas. 10h por R$4.000.',
-      level: 'intermediario',
+      keywords: ['video', 'vídeo', 'videos', 'vídeos', 'edicao', 'edição', 'editar', 'capcut', 'runway', 'pika', 'kling', 'sora', 'youtube', 'tiktok', 'reels', 'shorts', 'criador de conteudo', 'criador de conteúdo', 'social media'],
+      short: 'CapCut, Runway, Pika, Kling, Sora. Edição profissional com IA em 10h.',
+      level: 'Intermediário',
       price: 4000,
-      audience: 'criadores de conteúdo, social media, youtubers, tiktokers'
+      hours: 10,
+      audience: 'criadores de conteúdo, social media, youtubers, tiktokers',
+      benefits: [
+        'Editar vídeos 5x mais rápido com CapCut IA',
+        'Gerar b-roll com Runway e Pika',
+        'Voz com IA (ElevenLabs)',
+        'Legendas automáticas estilizadas',
+        'Workflow completo: roteiro → post',
+      ],
+      objection: 'Não precisa saber edição. CapCut é grátis e você aprende em 1 aula.',
     },
     {
       slug: 'ia-engenheiros-arquitetos',
       title: 'IA para Engenheiros e Arquitetos',
       keywords: ['engenheiro', 'engenheiros', 'arquiteto', 'arquitetos', 'engenharia', 'arquitetura', 'bim', 'revit', 'sketchup', 'render', 'renderizacao', 'renderização', 'memoria de calculo', 'memória de cálculo', 'projeto', 'projetos', 'construcao', 'construção'],
-      short: 'BIM, renderização, projetos, cálculos, propostas. IA aplicada à engenharia e arquitetura. 10h por R$4.000.',
-      level: 'intermediario',
+      short: 'BIM, renderização, projetos e propostas com IA em 10h.',
+      level: 'Intermediário',
       price: 4000,
-      audience: 'engenheiros civis, arquitetos, calculistas, projetistas'
+      hours: 10,
+      audience: 'engenheiros civis, arquitetos, calculistas, projetistas',
+      benefits: [
+        'Renderizar 10x mais rápido com Midjourney + Veras',
+        'Gerar memória de cálculo assistida por IA',
+        'Criar propostas comerciais impactantes',
+        'Analisar normas técnicas com RAG',
+        'Workflow completo: briefing → entrega',
+      ],
+      objection: 'IA não substitui o engenheiro, ela o multiplica. Você mantém a responsabilidade técnica.',
     },
     {
       slug: 'ia-operadores-drone',
       title: 'IA para Operadores de Drone',
       keywords: ['drone', 'drones', 'operador', 'piloto', 'anac', 'aerofotogrametria', 'mapeamento', 'inspecao', 'inspeção', 'filmagem', 'aereo', 'aéreo', 'ortomosaico'],
-      short: 'Pós-processamento, mapeamento, inspeção e edição de filmagens aéreas com IA. 10h por R$4.000.',
-      level: 'intermediario',
+      short: 'Pós-processamento, mapeamento, inspeção com IA em 10h.',
+      level: 'Intermediário',
       price: 4000,
-      audience: 'operadores de drone, pilotos ANAC, empresas de aerolevantamento'
+      hours: 10,
+      audience: 'operadores de drone, pilotos ANAC, empresas de aerolevantamento',
+      benefits: [
+        'Editar filmagens aéreas 3x mais rápido',
+        'Gerar ortomosaicos inteligentes',
+        'Detectar defeitos em inspeções com visão computacional',
+        'Relatórios automáticos com IA',
+        'Precificar seus serviços com confiança',
+      ],
+      objection: 'Curso específico para sua área. Aumenta seu ticket médio em 40-60%.',
     },
     {
       slug: 'ia-robotica-criancas',
-      title: 'IA + Robótica para Crianças (7-12)',
-      keywords: ['crianca', 'criança', 'criancas', 'crianças', 'filho', 'filhos', 'infantil', 'kids', 'robotica', 'robótica', 'scratch', 'lego', 'microbit', '7 anos', '8 anos', '9 anos', '10 anos', '11 anos', '12 anos', 'primeiro contato'],
-      short: 'Curso lúdico onde crianças aprendem IA criando robôs, games e histórias. 10h por R$4.000.',
-      level: 'infantil',
+      title: 'IA + Robótica para Crianças (7-12 anos)',
+      keywords: ['crianca', 'criança', 'criancas', 'crianças', 'filho', 'filha', 'infantil', 'kids', 'robotica', 'robótica', 'scratch', 'lego', 'microbit', '7 anos', '8 anos', '9 anos', '10 anos', '11 anos', '12 anos'],
+      short: 'Curso lúdico onde crianças criam robôs, games e histórias com IA. 10h.',
+      level: 'Infantil',
       price: 4000,
-      audience: 'crianças de 7 a 12 anos curiosas por tecnologia'
+      hours: 10,
+      audience: 'crianças de 7 a 12 anos curiosas por tecnologia',
+      benefits: [
+        'Primeiro contato com IA de forma segura e divertida',
+        'Programação visual com Scratch',
+        'Montagem de robôs educacionais',
+        'Lógica de programação (loop, condição, variável)',
+        'Apresentação final para os pais',
+      ],
+      objection: 'Turmas pequenas (máx. 8 crianças), supervisão total e conteúdo adaptado por idade.',
     },
     {
       slug: 'ia-adolescentes',
-      title: 'IA para Adolescentes (13-17)',
+      title: 'IA para Adolescentes (13-17 anos)',
       keywords: ['adolescente', 'adolescentes', 'jovem', 'jovens', '13 anos', '14 anos', '15 anos', '16 anos', '17 anos', 'filho adolescente', 'game', 'jogos', 'itch.io'],
-      short: 'Criação de apps, jogos, arte digital e automações. IA para a próxima geração. 10h por R$4.000.',
-      level: 'intermediario',
+      short: 'Criação de apps, jogos, arte digital com IA em 10h.',
+      level: 'Intermediário',
       price: 4000,
-      audience: 'adolescentes de 13 a 17 anos interessados em tecnologia'
+      hours: 10,
+      audience: 'adolescentes de 13 a 17 anos interessados em tecnologia',
+      benefits: [
+        'Construir primeiro app com IA',
+        'Criar jogos e publicar na itch.io',
+        'Arte digital com Midjourney',
+        'Edição de vídeo para TikTok/YouTube',
+        'Portfólio digital publicado',
+      ],
+      objection: 'Estimula criatividade, responsabilidade digital e prepara para o mercado futuro.',
     },
     {
       slug: 'pacote-office-ia',
       title: 'Pacote Office com IA',
       keywords: ['office', 'excel', 'word', 'powerpoint', 'outlook', 'copilot', 'microsoft 365', 'm365', 'planilha', 'apresentacao', 'apresentação', 'ppt', 'produtividade'],
-      short: 'Excel, Word e PowerPoint turbinados com Copilot e ChatGPT. 10h por R$4.000.',
-      level: 'iniciante',
+      short: 'Excel, Word e PowerPoint turbinados com Copilot e ChatGPT em 10h.',
+      level: 'Iniciante',
       price: 4000,
-      audience: 'profissionais administrativos, analistas, assistentes, gerentes'
+      hours: 10,
+      audience: 'profissionais administrativos, analistas, gerentes',
+      benefits: [
+        'Análise de dados em linguagem natural no Excel',
+        'Apresentações em 60 segundos com Copilot',
+        'E-mails automáticos no Outlook',
+        'Automação entre apps com Power Automate',
+        '50 templates prontos para levar pro trabalho',
+      ],
+      objection: 'Você já usa Office. Agora vai usá-lo 5x mais rápido.',
     },
     {
       slug: 'canva-ia',
       title: 'Canva com IA',
       keywords: ['canva', 'design', 'magic studio', 'magic design', 'logo', 'logotipo', 'identidade visual', 'social media', 'posts', 'instagram', 'thumbnail'],
-      short: 'Magic Studio, Magic Design, Magic Edit. Design profissional sem saber design. 10h por R$4.000.',
-      level: 'iniciante',
+      short: 'Magic Studio completo. Design profissional sem saber design em 10h.',
+      level: 'Iniciante',
       price: 4000,
-      audience: 'empreendedores, social media, professores, pequenos negócios'
+      hours: 10,
+      audience: 'empreendedores, social media, professores, pequenos negócios',
+      benefits: [
+        'Magic Design: do prompt ao layout pronto',
+        'Magic Edit: edição de imagem com IA',
+        'Branding completo (logo, paleta, manual)',
+        'Templates para social media',
+        'Apresentações e impressos profissionais',
+      ],
+      objection: 'Se você nunca abriu o Canva, vai sair criando peças profissionais. Se já usa, vai 5x mais rápido.',
     },
     {
       slug: 'criacao-sites-lovable',
       title: 'Criação de Sites no Lovable',
       keywords: ['lovable', 'no-code', 'nocode', 'site', 'sites', 'landing page', 'app', 'supabase', 'sem programar', 'sem saber programar'],
-      short: 'Crie sites e apps completos no Lovable com 1 prompt. 10h por R$4.000.',
-      level: 'iniciante',
+      short: 'Crie sites e apps completos no Lovable com 1 prompt. 10h.',
+      level: 'Iniciante',
       price: 4000,
-      audience: 'empreendedores, designers, pequenos negócios que querem ter um site'
+      hours: 10,
+      audience: 'empreendedores, designers, pequenos negócios',
+      benefits: [
+        'Publicar 3 projetos reais no ar',
+        'Integração com Supabase (banco + auth)',
+        'Landing page de alta conversão',
+        'Deploy em domínio próprio',
+        'Sem programar uma linha',
+      ],
+      objection: 'Lovable é a ferramenta mais simples do mercado. Não exige nada técnico.',
     },
     {
       slug: 'criacao-sites-avancado',
       title: 'Criação de Sites Avançado',
       keywords: ['next.js', 'nextjs', 'cursor', 'v0', 'bolt', 'saas', 'shadcn', 'tailwind', 'deploy', 'vercel', 'desenvolvedor web'],
-      short: 'Vibe coding profissional. Cursor, v0, Bolt, Next.js, deploy de apps reais com IA. 10h por R$4.000.',
-      level: 'avancado',
+      short: 'Vibe coding profissional com Cursor, v0, Bolt, Next.js em 10h.',
+      level: 'Avançado',
       price: 4000,
-      audience: 'desenvolvedores, designers técnicos, fundadores'
+      hours: 10,
+      audience: 'desenvolvedores, designers técnicos, fundadores',
+      benefits: [
+        'Dominar Cursor Composer + Agent mode',
+        'Gerar UIs completas com v0',
+        'Auth + banco com Supabase',
+        'Pagamentos com Stripe',
+        'Publicar um SaaS no ar',
+      ],
+      objection: 'Exige JS básico. Se você é dev, vai multiplicar produtividade por 5.',
     },
     {
       slug: 'poe-bots-ia',
       title: 'Poe: Crie Seus Próprios Bots de IA',
       keywords: ['poe', 'bot', 'bots', 'gpt bot', 'claude bot', 'monetizar', 'monetizacao', 'monetização', 'poe store'],
-      short: 'Crie bots com IA para vender, atender e automatizar. Monetize com Poe. 10h por R$4.000.',
-      level: 'intermediario',
+      short: 'Crie bots com IA para vender, atender e automatizar. Monetize com Poe. 10h.',
+      level: 'Intermediário',
       price: 4000,
-      audience: 'criadores de conteúdo, empreendedores, social media, suporte'
+      hours: 10,
+      audience: 'criadores de conteúdo, empreendedores, social media',
+      benefits: [
+        'Criar bots personalizados em 5 minutos',
+        'Usar múltiplos modelos (GPT-4, Claude, Llama)',
+        'Subir knowledge base com seus PDFs',
+        'Publicar na Poe Store',
+        'Monetizar com bots',
+      ],
+      objection: 'Poe tem plano gratuito. Dá pra começar sem investir nada.',
     },
     {
       slug: 'ia-empreendedorismo',
       title: 'IA + Empreendedorismo (Solo First)',
       keywords: ['empreender', 'empreendedorismo', 'empreendedor', 'solo first', 'sair do clt', 'clt', 'consultor', 'negocio proprio', 'próprio negócio', 'freelancer', 't-shaped', 'dharma', 'posicionamento'],
-      short: 'Torne-se um Empreendedor T-Shaped com IA. Do posicionamento ao primeiro cliente. 10h por R$4.000.',
-      level: 'intermediario',
+      short: 'Torne-se um Empreendedor T-Shaped com IA. Do posicionamento ao primeiro cliente. 10h.',
+      level: 'Intermediário',
       price: 4000,
-      audience: 'profissionais que querem sair do CLT, freelancers que querem escalar'
+      hours: 10,
+      audience: 'profissionais que querem sair do CLT, freelancers que querem escalar',
+      benefits: [
+        'Definir seu Dharma (posicionamento de excelência)',
+        'Construir Soft Assets (intelectual, reputacional, social)',
+        'Criar oferta irresistível',
+        'Prospecção e vendas com IA',
+        'Plano 90 dias para sair do CLT',
+      ],
+      objection: 'Baseado no Solo First Framework. Curso mais procurado por quem quer transição de carreira.',
     }
   ];
 
   const MENTORIA = {
     slug: 'mentoria-vip',
     title: 'Mentoria VIP',
-    keywords: ['mentoria', 'mentor', 'vip', '1-a-1', 'individual', 'personalizada', 'personalizado', 'exclusivo', 'sob medida', 'premium'],
-    short: 'Mentoria 1-a-1 sob medida. Você define o que quer aprender e desenhamos um plano só seu. A partir de R$4.500 (10h).',
-    price: 4500
+    isMentoria: true,
+    keywords: ['mentoria', 'mentor', 'vip', '1-a-1', 'individual', 'personalizada', 'personalizado', 'exclusivo', 'sob medida', 'premium', 'acelerar'],
+    short: 'Mentoria 1-a-1 sob medida. Você define o que quer aprender e desenhamos um plano só seu.',
+    level: 'VIP',
+    price: 4500,
+    hours: 10,
+    audience: 'executivos, fundadores, profissionais que precisam de resultados rápidos',
+    benefits: [
+      'Plano de aprendizado 100% personalizado',
+      'Sessões 1-a-1 ao vivo no seu ritmo',
+      'Canal direto com mentor no WhatsApp',
+      'Acompanhamento de projeto real',
+      'Horários flexíveis (manhã, tarde, noite, fim de semana)',
+    ],
+    objection: 'A partir de R$4.500. Para quem precisa de resultado rápido e focado.',
   };
 
-  const PAYMENT_INFO = {
-    keywords: ['pagar', 'pagamento', 'pix', 'mercado pago', 'cartao', 'cartão', 'boleto', 'parcelar', 'parcela', 'forma de pagamento'],
-    answer: '💳 Aceitamos pagamento 100% via PIX (com QR Code automático) — chaves na CPF 33783362857.\n\n✅ Após clicar em "Matricular", o sistema gera um QR Code na hora. Você paga em segundos pelo app do seu banco.\n✅ Retorno automático assim que o pagamento é confirmado.\n✅ Em produção, integração via webhook Mercado Pago (sem intervenção humana).\n✅ Não trabalhamos com cartão ou boleto — apenas PIX (mais rápido e seguro).'
-  };
-
-  const SCHEDULE_INFO = {
-    keywords: ['horario', 'horário', 'quando', 'aula', 'aulas', 'encontro', 'encontros', 'data', 'turma', 'turmas', 'inicio', 'início', 'disponibilidade'],
-    answer: '📅 Os cursos são 100% online ao vivo via Zoom, com gravações disponíveis por 12 meses.\n\n• Cada curso = 10 horas (5 encontros de 2h ou 10 de 1h)\n• Turmas novas toda semana\n• Mentoria VIP: horários flexíveis (manhã, tarde, noite ou fim de semana)\n• Turmas infantis: máximo 8 crianças por turma\n• Demais turmas: máximo 10 alunos'
-  };
-
-  const GUARANTEE_INFO = {
-    keywords: ['garantia', 'reembolso', 'devolver', 'devolucao', 'devolução', 'nao gostei', 'não gostei', 'arrependimento', 'cancelar', 'cancelamento'],
-    answer: '🛡️ Garantia incondicional de 7 dias.\n\nSe nas duas primeiras aulas você não gostar por qualquer motivo, devolvemos 100% do valor. Sem perguntas, sem burocracia.'
-  };
-
-  const PRICE_INFO = {
-    keywords: ['preco', 'preço', 'valor', 'custo', 'quanto custa', 'quanto', 'quanto fica', 'valor do curso', 'valor da mentoria'],
-    answer: '💰 Tabela de preços:\n\n• Todos os cursos: R$ 4.000 / 10 horas (R$ 400/hora)\n• Mentoria VIP: a partir de R$ 4.500 (10h 1-a-1)\n• Horas extras: R$ 400/hora avulsa\n\nNosso diferencial: você paga por hora, não por "curso de 200 horas".'
-  };
-
-  const FAQ = [
+  // ===== OBJECTIONS HANDLER =====
+  const OBJECTIONS = [
     {
-      keywords: ['certificado', 'certificados', 'diploma'],
-      answer: '📜 Sim, todos os cursos emitem certificado digital da AI School com carga horária e verificação de autenticidade. A Mentoria VIP emite certificado personalizado.'
+      triggers: ['caro', 'caro demais', 'muito caro', 'nao tenho dinheiro', 'não tenho dinheiro', 'custa muito', 'valor alto', 'ta pago', 'tá caro', 'fora do orcamento', 'fora do orçamento'],
+      response: `Entendo perfeitamente, ${'$NAME'}. R$4.000 é um investimento sério. Mas deixa eu te mostrar o lado positivo:\n\n✅ São só 10 horas — você sai aplicando no dia seguinte\n✅ R$400/hora é menos que uma hora de consultoria técnica\n✅ Garantia de 7 dias: se não gostar, devolvemos 100%\n✅ Você sai com projeto pronto, não só teoria\n✅ A maioria dos nossos alunos recupera o investimento em 1-2 meses aplicando no trabalho\n\nSe preferir, temos a opção de Mentoria VIP (a partir de R$4.500) com plano sob medida. Ou posso te passar no WhatsApp pra discutir formas de pagamento?`
     },
     {
-      keywords: ['presencial', 'presenciais', 'fisico', 'físico', 'loja fisica', 'loja física', 'endereco', 'endereço', 'onde fica'],
-      answer: '📍 A maioria dos cursos é 100% online ao vivo via Zoom. As turmas infantis (IA + Robótica) têm modalidade presencial opcional em São Paulo.'
+      triggers: ['nao tenho tempo', 'não tenho tempo', 'sem tempo', 'ocupado', 'muito corrido', 'trabalho muito'],
+      response: `Entendo, ${'$NAME'}. Tempo é o bem mais escasso hoje. Por isso nosso curso é só 10 horas:\n\n✅ 5 encontros de 2h (ou 10 de 1h, você escolhe)\n✅ Online ao vivo via Zoom + gravações por 12 meses\n✅ Horários flexíveis (manhã, tarde, noite ou fim de semana)\n✅ Turmas novas toda semana\n\nEm 2 semanas você termina o curso. Ou prefere começar com a Mentoria VIP e definir seu próprio cronograma?`
     },
     {
-      keywords: ['programar', 'programacao', 'programação', 'codar', 'codigo', 'código', 'javascript', 'python', 'preciso saber programar', 'nao sei programar', 'não sei programar'],
-      answer: '👨‍💻 Não! Cursos como IA Iniciante, Canva com IA, Pacote Office com IA e Criação de Sites no Lovable são para quem nunca programou. Os cursos de Vibe Code ensinam a programar com IA sem precisar saber JavaScript.'
+      triggers: ['nao sei qual curso', 'não sei qual curso', 'qual curso', 'indeciso', 'nao sei', 'não sei', 'dúvida qual', 'duvida qual'],
+      response: `Tranquilo, ${'$NAME'}. Vou te ajudar a escolher. Me conta rapidinho:\n\n1. Você quer IA pra uso pessoal/profissional geral, ou pra uma área específica?\n2. Você já usou ChatGPT ou alguma IA antes?\n3. Para você mesmo ou pra outra pessoa (filho, equipe)?\n\nCom essas 3 respostas eu te indico o curso ideal em 10 segundos.`
     },
     {
-      keywords: ['idade', 'idades', 'qual idade', 'idade minima', 'mínima', 'crianca pode', 'criança pode', 'menor'],
-      answer: '👶 Temos cursos para todas as idades:\n\n• 7-12 anos: IA + Robótica para Crianças\n• 13-17 anos: IA para Adolescentes\n• 18+: todos os demais cursos\n• Não há idade máxima — já tivemos alunos de 70+ anos no curso de IA Iniciante!'
+      triggers: ['preciso pensar', 'vou pensar', 'depois eu vejo', 'mais pra frente', 'amanha', 'amanhã', 'vou analisis', 'vou ver'],
+      response: `Compreensível, ${'$NAME'}. Mas deixa eu te dar 2 informações importantes pra te ajudar a decidir:\n\n📊 Turmas novas toda semana — começar agora = começar a aplicar IA no trabalho mais cedo\n⏰ Garantia de 7 dias: se nas duas primeiras aulas você não curtir, devolvemos 100% do valor, sem perguntas\n\nPosso te salvar uma vaga na próxima turma e você decide até lá? É só me confirmar.`
     },
     {
-      keywords: ['empresa', 'empresas', 'corporativo', 'in company', 'in-company', 'equipe', 'equipes', 'treinamento', 'treinar', 'grupo'],
-      answer: '🏢 Sim, fazemos treinamentos in-company sob medida. Para empresas, montamos um plano específico para a equipe. Fale com nosso time no WhatsApp 11 96616-1611.'
+      triggers: ['já fiz curso', 'ja fiz curso', 'ja estudei', 'já estudei', 'conheço IA', 'sei usar'],
+      response: `Ótimo, ${'$NAME'}. Já ter uma base é excelente. Me conta: o que você já domina?\n\n1. Já usa ChatGPT/Claude/Gemini no dia a dia?\n2. Já fez automação com n8n ou Zapier?\n3. Já programou com IA (Cursor, Claude Code)?\n\nCom base na sua resposta, eu te indico o nível certo: Intermediário (automações) ou Avançado (APIs, RAG, agentes). Ou, se já é avançado, a Mentoria VIP pra projetos específicos.`
+    },
+    {
+      triggers: ['funciona mesmo', 'realmente funciona', 'é verdade', 'é confiavel', 'é confiável', 'é golpe', 'é furada'],
+      response: `Entendo a preocupação, ${'$NAME'}. Sobre confiabilidade:\n\n✅ +1.200 alunos formados\n✅ Garantia incondicional de 7 dias (100% reembolso)\n✅ Certificado digital com verificação de autenticidade\n✅ Aulas ao vivo (não é só vídeo gravado)\n✅ Comunidade ativa no WhatsApp\n✅ Pagamento 100% via PIX (você paga direto pra escola, não tem intermediário)\n\nSe quiser, posso te passar o WhatsApp de algum ex-aluno pra conversar. Ou você pode começar com 1 aula avulsa e decidir depois.`
     }
   ];
 
-  // ===== STATE =====
-  let state = {
-    step: 'greeting', // greeting → ask_name → ask_whatsapp → menu → chatting
-    lead: { name: '', whatsapp: '', startedAt: null, course_interest: [] },
-    messages: [],
-    lastIntent: null
+  // ===== INTENT DETECTION =====
+  const INTENTS = {
+    payment: {
+      triggers: ['pagar', 'pagamento', 'pix', 'mercado pago', 'cartao', 'cartão', 'boleto', 'parcelar', 'parcela', 'forma de pagamento', 'como pagar', 'como funciona o pagamento'],
+      response: `💳 Pagamento 100% via PIX, ${'$NAME'}:\n\n✅ QR Code gerado na hora quando você clica em "Matricular"\n✅ Você paga em segundos pelo app do seu banco\n✅ Retorno automático assim que o banco confirma\n✅ Sem burocracia, sem espera\n\nNão trabalhamos com cartão ou boleto — PIX é mais rápido, mais barato e mais seguro. Pronto pra matricular?`
+    },
+    schedule: {
+      triggers: ['horario', 'horário', 'quando', 'aula', 'aulas', 'encontro', 'encontros', 'data', 'turma', 'turmas', 'inicio', 'início', 'disponibilidade', 'dias'],
+      response: `📅 Os cursos são 100% online ao vivo via Zoom, ${'$NAME'}:\n\n• Cada curso = 10 horas (5 encontros de 2h ou 10 de 1h)\n• Turmas novas toda semana\n• Horários: manhã, tarde, noite ou fim de semana\n• Gravações disponíveis por 12 meses\n• Turmas pequenas (máx. 10 alunos; infantil máx. 8)\n\nMentoria VIP: horários 100% flexíveis, você agenda direto com o mentor.`
+    },
+    guarantee: {
+      triggers: ['garantia', 'reembolso', 'devolver', 'devolucao', 'devolução', 'nao gostei', 'não gostei', 'arrependimento', 'cancelar', 'cancelamento', 'reembolsar'],
+      response: `🛡️ Garantia incondicional de 7 dias, ${'$NAME'}:\n\nSe nas duas primeiras aulas você não gostar por qualquer motivo, devolvemos 100% do valor. Sem perguntas, sem burocracia, sem letras miúdas.\n\nVocê só paga se ficar. Simples assim.`
+    },
+    certificate: {
+      triggers: ['certificado', 'certificados', 'diploma', 'comprovante', 'horas complementares'],
+      response: `📜 Sim, todos os cursos emitem certificado digital, ${'$NAME'}:\n\n• Carga horária de 10 horas\n• Verificação de autenticidade\n• Válido para horas complementares\n• Mentoria VIP emite certificado personalizado`
+    },
+    price: {
+      triggers: ['preco', 'preço', 'valor', 'custo', 'quanto custa', 'quanto', 'quanto fica', 'valor do curso', 'valor da mentoria', 'tabela'],
+      response: `💰 Tabela de preços, ${'$NAME'}:\n\n• Todos os cursos: R$4.000 / 10 horas (R$400/h)\n• Mentoria VIP: a partir de R$4.500 (10h 1-a-1)\n• Horas extras avulsas: R$400/h\n\nNosso diferencial: você paga por hora, não por "curso de 200 horas". Quer que eu te mostre qual curso se encaixa no seu momento?`
+    }
   };
 
-  // ===== DOM HELPER =====
-  function el(tag, attrs = {}, children = []) {
-    const e = document.createElement(tag);
-    Object.entries(attrs).forEach(([k, v]) => {
-      if (k === 'class') e.className = v;
-      else if (k === 'style') e.setAttribute('style', v);
-      else if (k === 'html') e.innerHTML = v;
-      else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2).toLowerCase(), v);
-      else if (v !== null && v !== undefined) e.setAttribute(k, v);
-    });
-    (Array.isArray(children) ? children : [children]).forEach(c => {
-      if (c === null || c === undefined) return;
-      if (typeof c === 'string') e.appendChild(document.createTextNode(c));
-      else e.appendChild(c);
-    });
-    return e;
-  }
-
-  // ===== STYLES =====
-  const STYLES = `
-    .aichat-fab {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, ${CONFIG.primaryColor}, #ec4899);
-      border: none;
-      cursor: pointer;
-      z-index: 9998;
-      box-shadow: 0 8px 32px rgba(124, 58, 237, 0.5), 0 4px 12px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: aichat-pulse 2.5s ease-in-out infinite;
-    }
-    .aichat-fab:hover { transform: scale(1.08) rotate(5deg); }
-    .aichat-fab svg { width: 32px; height: 32px; color: white; }
-    .aichat-fab.open { transform: scale(0); opacity: 0; pointer-events: none; }
-
-    @keyframes aichat-pulse {
-      0%, 100% { box-shadow: 0 8px 32px rgba(124, 58, 237, 0.5), 0 0 0 0 rgba(124, 58, 237, 0.4); }
-      50% { box-shadow: 0 8px 32px rgba(124, 58, 237, 0.6), 0 0 0 16px rgba(124, 58, 237, 0); }
-    }
-
-    .aichat-badge {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      background: #ef4444;
-      color: white;
-      font-size: 11px;
-      font-weight: bold;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #0a0a14;
-      animation: aichat-bounce 1s ease-in-out infinite;
-    }
-    @keyframes aichat-bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
-    .aichat-window {
-      position: fixed;
-      bottom: 100px;
-      right: 24px;
-      width: 380px;
-      max-width: calc(100vw - 32px);
-      height: 600px;
-      max-height: calc(100vh - 140px);
-      background: #11111f;
-      border: 1px solid rgba(124, 58, 237, 0.3);
-      border-radius: 20px;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(124, 58, 237, 0.1);
-      z-index: 9999;
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
-      color: #f4f4fb;
-      animation: aichat-slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .aichat-window.open { display: flex; }
-
-    @keyframes aichat-slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .aichat-header {
-      background: linear-gradient(135deg, ${CONFIG.primaryColor}, #ec4899);
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: relative;
-    }
-    .aichat-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-    }
-    .aichat-info { flex: 1; min-width: 0; }
-    .aichat-info-name { font-weight: 700; font-size: 15px; color: white; }
-    .aichat-info-status { font-size: 11px; color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 4px; }
-    .aichat-info-status::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 6px #10b981;
-    }
-    .aichat-close {
-      background: transparent;
-      border: none;
-      color: white;
-      cursor: pointer;
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0.8;
-    }
-    .aichat-close:hover { background: rgba(255,255,255,0.15); opacity: 1; }
-
-    .aichat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(124, 58, 237, 0.08), transparent),
-        #0a0a14;
-    }
-    .aichat-messages::-webkit-scrollbar { width: 6px; }
-    .aichat-messages::-webkit-scrollbar-track { background: transparent; }
-    .aichat-messages::-webkit-scrollbar-thumb { background: rgba(124, 58, 237, 0.4); border-radius: 3px; }
-
-    .aichat-msg {
-      max-width: 85%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      font-size: 13.5px;
-      line-height: 1.5;
-      animation: aichat-fadeIn 0.3s ease;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    @keyframes aichat-fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .aichat-msg-bot {
-      align-self: flex-start;
-      background: rgba(124, 58, 237, 0.15);
-      border: 1px solid rgba(124, 58, 237, 0.25);
-      border-bottom-left-radius: 4px;
-    }
-    .aichat-msg-user {
-      align-self: flex-end;
-      background: linear-gradient(135deg, ${CONFIG.primaryColor}, #ec4899);
-      color: white;
-      border-bottom-right-radius: 4px;
-    }
-
-    .aichat-typing {
-      align-self: flex-start;
-      background: rgba(124, 58, 237, 0.15);
-      border: 1px solid rgba(124, 58, 237, 0.25);
-      padding: 12px 16px;
-      border-radius: 16px;
-      border-bottom-left-radius: 4px;
-      display: flex;
-      gap: 4px;
-    }
-    .aichat-typing span {
-      width: 6px; height: 6px;
-      background: #a78bfa;
-      border-radius: 50%;
-      animation: aichat-typingBounce 1.4s infinite;
-    }
-    .aichat-typing span:nth-child(2) { animation-delay: 0.2s; }
-    .aichat-typing span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes aichat-typingBounce {
-      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-      30% { transform: translateY(-6px); opacity: 1; }
-    }
-
-    .aichat-quick {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 0 16px 8px;
-    }
-    .aichat-quick-btn {
-      background: rgba(124, 58, 237, 0.1);
-      border: 1px solid rgba(124, 58, 237, 0.3);
-      color: #a78bfa;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-    .aichat-quick-btn:hover {
-      background: rgba(124, 58, 237, 0.25);
-      color: white;
-    }
-
-    .aichat-input-wrap {
-      padding: 12px 16px;
-      border-top: 1px solid rgba(124, 58, 237, 0.2);
-      background: rgba(22, 22, 38, 0.6);
-      backdrop-filter: blur(8px);
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .aichat-input {
-      flex: 1;
-      background: rgba(10, 10, 20, 0.6);
-      border: 1px solid rgba(124, 58, 237, 0.3);
-      border-radius: 999px;
-      padding: 10px 16px;
-      color: #f4f4fb;
-      font-size: 13.5px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .aichat-input:focus { border-color: ${CONFIG.primaryColor}; }
-    .aichat-input::placeholder { color: #70708a; }
-
-    .aichat-send {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, ${CONFIG.primaryColor}, #ec4899);
-      border: none;
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .aichat-send:hover { transform: scale(1.05); }
-    .aichat-send:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .aichat-actions {
-      padding: 8px 16px 12px;
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      background: rgba(22, 22, 38, 0.4);
-      border-top: 1px solid rgba(124, 58, 237, 0.15);
-    }
-    .aichat-action-btn {
-      flex: 1;
-      min-width: 80px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #10b981;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 11px;
-      cursor: pointer;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-    .aichat-action-btn:hover { background: rgba(16, 185, 129, 0.2); }
-    .aichat-action-btn.primary {
-      background: rgba(245, 158, 11, 0.1);
-      border-color: rgba(245, 158, 11, 0.3);
-      color: #f59e0b;
-    }
-
-    @media (max-width: 480px) {
-      .aichat-fab { width: 56px; height: 56px; bottom: 16px; right: 16px; }
-      .aichat-fab svg { width: 28px; height: 28px; }
-      .aichat-window {
-        right: 8px;
-        left: 8px;
-        bottom: 80px;
-        width: auto;
-        height: calc(100vh - 110px);
-        max-height: 600px;
-      }
-    }
-  `;
-
-  // ===== CSS INJECT =====
-  function injectStyles() {
-    if (document.getElementById('aichat-styles')) return;
-    const style = document.createElement('style');
-    style.id = 'aichat-styles';
-    style.textContent = STYLES;
-    document.head.appendChild(style);
-  }
-
-  // ===== RAG / MATCHING =====
-  function normalize(text) {
-    return text.toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .trim();
-  }
-
-  function scoreMatch(userInput, keywords) {
-    const input = normalize(userInput);
-    let score = 0;
-    keywords.forEach(k => {
-      const kn = normalize(k);
-      if (input.includes(kn)) {
-        score += kn.length > 4 ? 3 : 2;
-      }
-      // partial word match
-      const words = input.split(/\s+/);
-      words.forEach(w => {
-        if (w.length > 2 && kn.includes(w)) score += 1;
-      });
-    });
-    return score;
-  }
-
-  function findCourse(query) {
-    let best = null;
-    let bestScore = 0;
-    COURSES.forEach(c => {
-      const s = scoreMatch(query, c.keywords);
-      if (s > bestScore) { bestScore = s; best = c; }
-    });
-    // Also check mentoria
-    const mScore = scoreMatch(query, MENTORIA.keywords);
-    if (mScore > bestScore) { bestScore = mScore; best = { ...MENTORIA, isMentoria: true }; }
-    return bestScore >= 2 ? best : null;
-  }
-
-  function findIntent(query) {
-    const intents = [
-      { type: 'payment', data: PAYMENT_INFO },
-      { type: 'schedule', data: SCHEDULE_INFO },
-      { type: 'guarantee', data: GUARANTEE_INFO },
-      { type: 'price', data: PRICE_INFO }
-    ];
-
-    let best = null;
-    let bestScore = 0;
-    intents.forEach(i => {
-      const s = scoreMatch(query, i.data.keywords);
-      if (s > bestScore) { bestScore = s; best = i; }
-    });
-
-    if (bestScore >= 2) return best;
-
-    // FAQ
-    for (const faq of FAQ) {
-      if (scoreMatch(query, faq.keywords) >= 2) return { type: 'faq', data: faq };
-    }
-
-    return null;
-  }
-
-  function detectCourseInterest(query) {
-    const course = findCourse(query);
-    if (course && !state.lead.course_interest.includes(course.slug)) {
-      state.lead.course_interest.push(course.slug);
-      saveSession();
-      // Atualiza o lead no Sheets com o novo interesse detectado
-      if (state.lead.name && state.lead.whatsapp) {
-        sendLeadToSheets();
-      }
-    }
-  }
-
-  // ===== BOT RESPONSES =====
-  function getBotResponse(userInput) {
-    const input = normalize(userInput);
-
-    // Check for buy intent
-    if (/^(quero|comprar|matricular|matricula|inscrever|inscricao|pagar|compra|fechar|to dentro|topo|bora)/.test(input)) {
-      const course = findCourse(input);
-      if (course) {
-        return {
-          text: `🚀 Perfeito! Vou te levar direto para a matrícula do curso "${course.title}".\n\nValor: ${formatBRL(course.price)} (${course.isMentoria ? 'a partir de' : ''} 10 horas)\nPagamento: PIX na hora com QR Code\n\nClique no botão "Matricular" abaixo para gerar seu PIX.`,
-          action: { type: 'redirect_course', slug: course.slug, isMentoria: course.isMentoria }
-        };
-      }
-      return {
-        text: 'Ótimo! Qual curso você quer fazer? Posso te ajudar a escolher. Me conta um pouco sobre o que você quer aprender ou qual sua área de atuação.',
-        quick: ['IA Iniciante', 'Vibe Code', 'Edição de Vídeos', 'Mentoria VIP', 'Ver todos os cursos']
-      };
-    }
-
-    // Check for greeting
-    if (/^(oi|ola|olá|opa|eai|e ai|bom dia|boa tarde|boa noite|hello|hi)/.test(input)) {
-      return {
-        text: `Olá${state.lead.name ? ', ' + state.lead.name : ''}! 👋 Tudo bem?\n\nSobre o que você quer saber mais? Posso falar sobre cursos, preços, mentoria VIP, formas de pagamento...`,
-        quick: ['Ver cursos', 'Preços', 'Mentoria VIP', 'Falar com humano']
-      };
-    }
-
-    // Check for human / atendente
-    if (/(humano|pessoa|atendente|falar com alguem|falar com alguém|whatsapp|telefone|contato)/.test(input)) {
-      return {
-        text: '🧑‍💼 Posso te redirecionar para o WhatsApp da escola. Lá você fala direto com nosso time.\n\nClique no botão abaixo para abrir o WhatsApp:',
-        action: { type: 'redirect_whatsapp' }
-      };
-    }
-
-    // Check for "what courses" / "ver cursos"
-    if (/(curso|cursos|opcoes|opções|quais|categoria|categoria|areas|áreas)/.test(input) && !findCourse(input)) {
-      return {
-        text: '📚 Temos 15 cursos de IA para todos os públicos:\n\n• IA Iniciante, Intermediário e Avançado\n• Vibe Code (programar com IA)\n• Edição de Vídeos com IA\n• IA para Engenheiros e Arquitetos\n• IA para Operadores de Drone\n• IA + Robótica para Crianças (7-12)\n• IA para Adolescentes (13-17)\n• Pacote Office com IA (Copilot)\n• Canva com IA\n• Criação de Sites no Lovable\n• Criação de Sites Avançado\n• Poe Bots de IA\n• IA + Empreendedorismo\n• Mentoria VIP (1-a-1)\n\nTodos: R$4.000 / 10h. Qual desses te interessa?',
-        quick: ['IA Iniciante', 'Vibe Code', 'IA para Crianças', 'Mentoria VIP']
-      };
-    }
-
-    // Check intents (payment, schedule, guarantee, price, faq)
-    const intent = findIntent(input);
-    if (intent) {
-      return { text: intent.data.answer };
-    }
-
-    // Check for specific course
-    const course = findCourse(input);
-    if (course) {
-      detectCourseInterest(userInput);
-      const priceStr = course.isMentoria ? `A partir de R$ ${course.price.toLocaleString('pt-BR')}` : `R$ ${course.price.toLocaleString('pt-BR')} (10 horas)`;
-      const audienceLine = course.audience ? `\n👥 Para: ${course.audience}` : '';
-      return {
-        text: `🎓 ${course.title}\n\n${course.short}\n\n💰 ${priceStr}${audienceLine}\n\nQuer matricular? É só clicar no botão abaixo.`,
-        quick: ['Quero matricular', 'Ver outros cursos', 'Falar com humano'],
-        action: { type: 'suggest_course', slug: course.slug, isMentoria: course.isMentoria }
-      };
-    }
-
-    // Profile-based recommendation
-    if (/(recomend|indic|qual curso|nao sei|não sei|qual o melhor|me ajuda|ajuda|sugest|acho|perfil)/.test(input)) {
-      return {
-        text: '🎯 Para te recomendar o curso ideal, me conta:\n\n1. Qual sua área de atuação? (ex: estudante, profissional de marketing, engenheiro, aposentado, dona de casa...)\n2. Para você mesmo ou para alguém? (filho, você, empresa)\n3. Já usou IA antes? (ChatGPT, etc)\n\nResponde rapidinho que eu te indico o melhor caminho!',
-        quick: ['Sou iniciante total', 'Para meu filho (criança)', 'Sou criador de conteúdo', 'Sou empreendedor']
-      };
-    }
-
-    // Profile answers
-    if (/iniciante total|nunca usei|comecar do zero|começar do zero/.test(input)) {
-      detectCourseInterest('ia-iniciante');
-      return {
-        text: '✨ Perfeito! Para você o curso ideal é o **IA Iniciante**.\n\nEm 10 horas você sai do zero a fluente em ChatGPT, Claude, Gemini, prompts, criação de imagens. Cada aula tem entrega prática.\n\nValor: R$4.000 (10h)\n\nQuer matricular?',
-        quick: ['Quero matricular', 'Ver outros cursos'],
-        action: { type: 'suggest_course', slug: 'ia-iniciante' }
-      };
-    }
-
-    if (/meu filho|filha|crianca|criança|kid|infantil/.test(input)) {
-      detectCourseInterest('ia-robotica-criancas');
-      return {
-        text: '👶 Para seu filho o curso ideal é o **IA + Robótica para Crianças (7-12 anos)**.\n\nCurso lúdico onde crianças aprendem IA criando robôs, games e histórias. Primeiro contato com tecnologia de forma divertida e segura.\n\nValor: R$4.000 (10h)\nTurmas: máximo 8 crianças\n\nQuer matricular?',
-        quick: ['Quero matricular', 'Para adolescente (13-17)', 'Ver outros cursos'],
-        action: { type: 'suggest_course', slug: 'ia-robotica-criancas' }
-      };
-    }
-
-    if (/criador de conteudo|conteúdo|content|youtube|tiktok|instagram|social media|edicao|edição/.test(input)) {
-      detectCourseInterest('edicao-videos-ia');
-      return {
-        text: '🎬 Para criadores de conteúdo, o curso ideal é **Edição de Vídeos com IA**.\n\nCapCut, Runway, Pika, Kling, Sora. Edição profissional, b-roll gerado por IA, legendas automáticas estilizadas.\n\nValor: R$4.000 (10h)\n\nQuer matricular?',
-        quick: ['Quero matricular', 'Também quero Canva com IA', 'Ver outros cursos'],
-        action: { type: 'suggest_course', slug: 'edicao-videos-ia' }
-      };
-    }
-
-    if (/empreendedor|empreender|negocio|negócio|startup|sair do clt|clt/.test(input)) {
-      detectCourseInterest('ia-empreendedorismo');
-      return {
-        text: '🚀 Para empreendedores, recomendamos o curso **IA + Empreendedorismo (Solo First Framework)**.\n\nTorne-se um Empreendedor T-Shaped com IA. Do posicionamento ao primeiro cliente.\n\nValor: R$4.000 (10h)\n\nOu, se quiser algo 1-a-1 sob medida, a Mentoria VIP começa em R$4.500.',
-        quick: ['Quero matricular', 'Quero Mentoria VIP', 'Ver outros cursos'],
-        action: { type: 'suggest_course', slug: 'ia-empreendedorismo' }
-      };
-    }
-
-    // Default fallback
-    return {
-      text: '🤔 Hmm, não tenho certeza se entendi. Posso te ajudar com:\n\n• Informações sobre cursos (qualquer um dos 15)\n• Preços e formas de pagamento\n• Mentoria VIP\n• Horários e formato das aulas\n• Garantia e reembolso\n• Certificado\n\nO que você quer saber? Ou me conta o que você faz / quer aprender que eu te recomendo o curso certo!',
-      quick: ['Ver cursos', 'Preços', 'Mentoria VIP', 'Falar com humano']
-    };
-  }
-
-  function formatBRL(value) {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  }
+  // ===== STATE =====
+  let state = {
+    stage: 'greeting',
+    lead: { name: '', whatsapp: '', startedAt: null, course_interest: [], lastIntent: null },
+    messages: [],
+    suggestedCourse: null,
+  };
 
   // ===== STORAGE =====
-  function saveSession() {
-    try {
-      localStorage.setItem(CONFIG.sessionKey, JSON.stringify(state));
-    } catch (e) {}
-  }
-
   function loadSession() {
     try {
       const s = localStorage.getItem(CONFIG.sessionKey);
@@ -762,33 +401,43 @@
     return null;
   }
 
+  function saveSession() {
+    try {
+      localStorage.setItem(CONFIG.sessionKey, JSON.stringify(state));
+    } catch (e) {}
+  }
+
   function saveLead() {
+    if (!state.lead.name || !state.lead.whatsapp) return;
     try {
       const leads = JSON.parse(localStorage.getItem(CONFIG.storageKey) || '[]');
-      const existingIdx = leads.findIndex(l => l.whatsapp === state.lead.whatsapp);
-      const leadData = {
+      const idx = leads.findIndex(l => l.whatsapp === state.lead.whatsapp);
+      const data = {
         ...state.lead,
         updatedAt: new Date().toISOString(),
         messages: state.messages
       };
-      if (existingIdx >= 0) {
-        leads[existingIdx] = leadData;
-      } else {
-        leads.push(leadData);
-      }
+      if (idx >= 0) leads[idx] = data;
+      else leads.push(data);
       localStorage.setItem(CONFIG.storageKey, JSON.stringify(leads));
     } catch (e) {}
   }
 
-  // ===== GOOGLE SHEETS INTEGRATION =====
-  // Envia o lead para a planilha via Google Apps Script Web App.
-  // Usa POST com Content-Type text/plain (evita CORS preflight no Apps Script).
-  // Em caso de falha, faz retry silencioso + mantém no localStorage.
+  // ===== GOOGLE SHEETS SYNC =====
   let sheetsSyncQueue = [];
+  let lastSheetsSync = 0;
 
-  function sendLeadToSheets(force) {
+  function sendLeadToSheets(opts) {
+    opts = opts || {};
     if (!CONFIG.googleSheetsUrl) return Promise.resolve(false);
-    if (!state.lead || !state.lead.name || !state.lead.whatsapp) return Promise.resolve(false);
+    if (!state.lead.name || !state.lead.whatsapp) return Promise.resolve(false);
+
+    // Throttle: 30s entre envios (a menos que force)
+    const now = Date.now();
+    if (!opts.force && now - lastSheetsSync < 30000) {
+      return Promise.resolve(false);
+    }
+    lastSheetsSync = now;
 
     const payload = {
       timestamp: new Date().toISOString(),
@@ -797,198 +446,488 @@
       course_interest: state.lead.course_interest || [],
       messageCount: state.messages.length,
       lastMessages: state.messages.slice(-5).map(m => ({
-        from: m.from,
-        text: m.text,
-        time: new Date(m.timestamp).toISOString()
+        from: m.from, text: m.text, time: new Date(m.timestamp).toISOString()
       })),
       source: window.location.pathname,
       userAgent: navigator.userAgent.substring(0, 200),
-      force: !!force
+      final: !!opts.final,
+      force: !!opts.force
     };
 
-    // Não reenvia o mesmo lead em menos de 60s (a menos que force=true)
-    const lastSentKey = 'aichat_sheets_last_' + state.lead.whatsapp;
-    const lastSent = parseInt(localStorage.getItem(lastSentKey) || '0', 10);
-    if (!force && Date.now() - lastSent < 60000) {
-      return Promise.resolve(false);
-    }
-    localStorage.setItem(lastSentKey, Date.now().toString());
-
-    return fetch(CONFIG.googleSheetsUrl, {
-      method: 'POST',
-      mode: 'no-cors', // Apps Script sempre responde opaco
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    })
-    .then(() => {
-      console.log('[AI School] Lead enviado para Google Sheets:', state.lead.name);
-      // Marca como sincronizado
-      try {
-        const syncKey = 'aichat_sheets_synced_' + state.lead.whatsapp;
-        localStorage.setItem(syncKey, Date.now().toString());
-      } catch (e) {}
-      return true;
-    })
-    .catch((err) => {
-      console.warn('[AI School] Falha ao enviar para Sheets (será retentado):', err);
-      // Coloca na fila para retry
-      sheetsSyncQueue.push(payload);
-      return false;
-    });
-  }
-
-  // Retry de envios que falharam
-  function retrySheetsQueue() {
-    if (sheetsSyncQueue.length === 0) return;
-    const queue = sheetsSyncQueue.slice();
-    sheetsSyncQueue = [];
-    queue.forEach((payload) => {
-      fetch(CONFIG.googleSheetsUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).catch(() => {
-        // Re-coloca na fila (máximo 5 retries)
-        if (queue.length < 5) sheetsSyncQueue.push(payload);
-      });
-    });
-  }
-  setInterval(retrySheetsQueue, 60000);
-
-  // Envia a versão final completa do lead (chamado quando o usuário encerra / clica em "Enviar lead")
-  function sendFullLeadToSheets() {
-    if (!state.lead || !state.lead.name || !state.lead.whatsapp) {
-      return Promise.resolve(false);
-    }
-    const payload = {
-      timestamp: new Date().toISOString(),
-      name: state.lead.name,
-      whatsapp: state.lead.whatsapp,
-      course_interest: state.lead.course_interest || [],
-      messageCount: state.messages.length,
-      fullConversation: state.messages.map(m => ({
-        from: m.from,
-        text: m.text,
-        time: new Date(m.timestamp).toISOString()
-      })),
-      source: window.location.pathname,
-      userAgent: navigator.userAgent.substring(0, 200),
-      force: true,
-      final: true
-    };
     return fetch(CONFIG.googleSheetsUrl, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload)
-    }).then(() => true).catch(() => false);
-  }
-
-  // ===== TXT GENERATOR =====
-  function generateLeadTxt() {
-    const now = new Date();
-    const dateStr = now.toLocaleString('pt-BR');
-    const txt = [];
-    txt.push('========================================');
-    txt.push('  AI SCHOOL - LEAD CAPTURADO PELO CHATBOT');
-    txt.push('========================================');
-    txt.push('');
-    txt.push(`Data: ${dateStr}`);
-    txt.push(`Nome: ${state.lead.name}`);
-    txt.push(`WhatsApp: ${state.lead.whatsapp}`);
-    txt.push(`Cursos de interesse: ${state.lead.course_interest.length > 0 ? state.lead.course_interest.join(', ') : 'Nenhum específico'}`);
-    txt.push(`Total de mensagens: ${state.messages.length}`);
-    txt.push('');
-    txt.push('----------------------------------------');
-    txt.push('CONVERSA COMPLETA');
-    txt.push('----------------------------------------');
-    txt.push('');
-    state.messages.forEach(m => {
-      const time = new Date(m.timestamp).toLocaleTimeString('pt-BR');
-      const sender = m.from === 'bot' ? 'ARIA (BOT)' : state.lead.name.toUpperCase();
-      txt.push(`[${time}] ${sender}:`);
-      txt.push(m.text);
-      txt.push('');
+    }).then(() => {
+      console.log('[Aria] Lead sincronizado com Google Sheets');
+      return true;
+    }).catch(() => {
+      sheetsSyncQueue.push(payload);
+      return false;
     });
-    txt.push('----------------------------------------');
-    txt.push('AÇÃO RECOMENDADA:');
-    if (state.lead.course_interest.length > 0) {
-      txt.push(`Entrar em contato para fechar matrícula do(s) curso(s): ${state.lead.course_interest.join(', ')}`);
-    } else {
-      txt.push('Entrar em contato para entender necessidade e recomendar curso');
+  }
+
+  setInterval(() => {
+    if (sheetsSyncQueue.length === 0) return;
+    const queue = sheetsSyncQueue.slice();
+    sheetsSyncQueue = [];
+    queue.forEach(p => {
+      fetch(CONFIG.googleSheetsUrl, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(p)
+      }).catch(() => { if (sheetsSyncQueue.length < 5) sheetsSyncQueue.push(p); });
+    });
+  }, 60000);
+
+  // ===== TEXT HELPERS =====
+  function normalize(text) {
+    return (text || '').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+
+  function scoreMatch(input, keywords) {
+    let score = 0;
+    keywords.forEach(k => {
+      const kn = normalize(k);
+      if (input.includes(kn)) score += kn.length > 4 ? 3 : 2;
+    });
+    return score;
+  }
+
+  function findCourse(query) {
+    const input = normalize(query);
+    let best = null, bestScore = 0;
+    [...COURSES, MENTORIA].forEach(c => {
+      const s = scoreMatch(input, c.keywords);
+      if (s > bestScore) { bestScore = s; best = c; }
+    });
+    return bestScore >= 2 ? best : null;
+  }
+
+  function detectIntent(query) {
+    const input = normalize(query);
+    let best = null, bestScore = 0;
+    Object.entries(INTENTS).forEach(([name, intent]) => {
+      const s = scoreMatch(input, intent.triggers);
+      if (s > bestScore) { bestScore = s; best = { name, ...intent }; }
+    });
+    return bestScore >= 2 ? best : null;
+  }
+
+  function detectObjection(query) {
+    const input = normalize(query);
+    let best = null, bestScore = 0;
+    OBJECTIONS.forEach(o => {
+      const s = scoreMatch(input, o.triggers);
+      if (s > bestScore) { bestScore = s; best = o; }
+    });
+    return bestScore >= 2 ? best : null;
+  }
+
+  function formatBRL(v) {
+    return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 });
+  }
+
+  function personalize(text) {
+    return text.replace(/\$\{?NAME\}?/g, state.lead.name || '');
+  }
+
+  // ===== STYLES (UX LIMPA, SEM HOVER PRETO) =====
+  const STYLES = `
+    .aria-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border: none;
+      cursor: pointer;
+      z-index: 9998;
+      box-shadow: 0 6px 24px rgba(124, 58, 237, 0.4), 0 2px 8px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: aria-pulse 3s ease-in-out infinite;
     }
-    txt.push('');
-    txt.push('========================================');
-    return txt.join('\n');
+    .aria-fab:hover { transform: scale(1.06); box-shadow: 0 8px 32px rgba(124, 58, 237, 0.5); }
+    .aria-fab:active { transform: scale(0.96); }
+    .aria-fab svg { width: 28px; height: 28px; color: #ffffff; }
+    .aria-fab.open { transform: scale(0); opacity: 0; pointer-events: none; animation: none; }
+
+    @keyframes aria-pulse {
+      0%, 100% { box-shadow: 0 6px 24px rgba(124, 58, 237, 0.4), 0 0 0 0 rgba(124, 58, 237, 0.3); }
+      50% { box-shadow: 0 6px 24px rgba(124, 58, 237, 0.4), 0 0 0 12px rgba(124, 58, 237, 0); }
+    }
+
+    .aria-badge {
+      position: absolute;
+      top: -4px; right: -4px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #0a0a14;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .aria-window {
+      position: fixed;
+      bottom: 96px;
+      right: 24px;
+      width: 380px;
+      max-width: calc(100vw - 32px);
+      height: 600px;
+      max-height: calc(100vh - 130px);
+      background: #15151f;
+      border: 1px solid rgba(124, 58, 237, 0.25);
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+      color: #f4f4fb;
+      animation: aria-slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .aria-window.open { display: flex; }
+
+    @keyframes aria-slideUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .aria-header {
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .aria-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .aria-info { flex: 1; min-width: 0; }
+    .aria-name { font-weight: 700; font-size: 14px; color: #ffffff; }
+    .aria-status { font-size: 11px; color: rgba(255,255,255,0.9); display: flex; align-items: center; gap: 4px; }
+    .aria-status::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981;
+    }
+    .aria-close {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0.85;
+      transition: background 0.15s ease;
+    }
+    .aria-close:hover { background: rgba(255,255,255,0.18); opacity: 1; }
+
+    .aria-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #0e0e16;
+    }
+    .aria-messages::-webkit-scrollbar { width: 6px; }
+    .aria-messages::-webkit-scrollbar-track { background: transparent; }
+    .aria-messages::-webkit-scrollbar-thumb { background: rgba(124, 58, 237, 0.4); border-radius: 3px; }
+    .aria-messages::-webkit-scrollbar-thumb:hover { background: rgba(124, 58, 237, 0.6); }
+
+    .aria-msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      animation: aria-fadeIn 0.25s ease;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    @keyframes aria-fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .aria-msg-bot {
+      align-self: flex-start;
+      background: #1f1f2e;
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-bottom-left-radius: 4px;
+      color: #f4f4fb;
+    }
+    .aria-msg-user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .aria-typing {
+      align-self: flex-start;
+      background: #1f1f2e;
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      padding: 12px 16px;
+      border-radius: 14px;
+      border-bottom-left-radius: 4px;
+      display: flex;
+      gap: 4px;
+    }
+    .aria-typing span {
+      width: 6px; height: 6px;
+      background: #a78bfa;
+      border-radius: 50%;
+      animation: aria-typingBounce 1.4s infinite;
+    }
+    .aria-typing span:nth-child(2) { animation-delay: 0.2s; }
+    .aria-typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes aria-typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    .aria-quick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 14px 4px;
+      background: #13131c;
+      flex-shrink: 0;
+    }
+    .aria-quick-btn {
+      background: rgba(124, 58, 237, 0.12);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      color: #c4b5fd;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .aria-quick-btn:hover {
+      background: rgba(124, 58, 237, 0.22);
+      color: #ffffff;
+      border-color: rgba(124, 58, 237, 0.5);
+    }
+
+    .aria-cta {
+      display: block;
+      width: 100%;
+      max-width: 240px;
+      margin: 8px auto 4px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: #ffffff;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .aria-cta:hover { opacity: 0.92; }
+    .aria-cta:active { transform: scale(0.98); }
+
+    .aria-input-wrap {
+      padding: 10px 14px;
+      border-top: 1px solid rgba(124, 58, 237, 0.2);
+      background: #13131c;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .aria-input {
+      flex: 1;
+      background: #0e0e16;
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: #f4f4fb;
+      font-size: 13.5px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .aria-input:hover { background: #13131c; }
+    .aria-input:focus { border-color: #7c3aed; background: #13131c; }
+    .aria-input::placeholder { color: #6b7280; }
+
+    .aria-send {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .aria-send:hover { opacity: 0.92; }
+    .aria-send:active { transform: scale(0.94); }
+    .aria-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .aria-actions {
+      padding: 8px 14px 10px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: #13131c;
+      border-top: 1px solid rgba(124, 58, 237, 0.12);
+      flex-shrink: 0;
+    }
+    .aria-action-btn {
+      flex: 1;
+      min-width: 70px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #d1d5db;
+      padding: 6px 8px;
+      border-radius: 7px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .aria-action-btn:hover {
+      background: rgba(124, 58, 237, 0.18);
+      color: #ffffff;
+      border-color: rgba(124, 58, 237, 0.4);
+    }
+    .aria-action-btn.green {
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.08);
+    }
+    .aria-action-btn.green:hover {
+      background: rgba(16, 185, 129, 0.18);
+      color: #ffffff;
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+    .aria-action-btn.amber {
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .aria-action-btn.amber:hover {
+      background: rgba(245, 158, 11, 0.18);
+      color: #ffffff;
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    @media (max-width: 480px) {
+      .aria-fab { width: 56px; height: 56px; bottom: 16px; right: 16px; }
+      .aria-fab svg { width: 26px; height: 26px; }
+      .aria-window {
+        right: 8px; left: 8px; bottom: 80px;
+        width: auto;
+        height: calc(100vh - 110px);
+        max-height: 600px;
+      }
+    }
+  `;
+
+  function injectStyles() {
+    if (document.getElementById('aria-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'aria-styles';
+    s.textContent = STYLES;
+    document.head.appendChild(s);
   }
 
-  function downloadTxt() {
-    const content = generateLeadTxt();
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const filename = `lead_${state.lead.name.replace(/\s+/g, '_')}_${state.lead.whatsapp.replace(/\D/g, '')}.txt`;
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  // ===== DOM HELPERS =====
+  function el(tag, attrs, children) {
+    const e = document.createElement(tag);
+    if (attrs) {
+      Object.entries(attrs).forEach(([k, v]) => {
+        if (v === null || v === undefined) return;
+        if (k === 'class') e.className = v;
+        else if (k === 'html') e.innerHTML = v;
+        else if (k === 'style') e.setAttribute('style', v);
+        else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2).toLowerCase(), v);
+        else e.setAttribute(k, v);
+      });
+    }
+    if (children) {
+      (Array.isArray(children) ? children : [children]).forEach(c => {
+        if (c === null || c === undefined) return;
+        if (typeof c === 'string') e.appendChild(document.createTextNode(c));
+        else if (typeof c === 'object') e.appendChild(c);
+      });
+    }
+    return e;
   }
 
-  function sendLeadToWhatsApp() {
-    const txt = generateLeadTxt();
-    // Envia o lead completo para Google Sheets (envio final com conversa inteira)
-    sendFullLeadToSheets();
-    // WhatsApp has a limit of ~4096 chars in wa.me links, so we truncate if needed
-    const summary = `🤖 NOVO LEAD - AI SCHOOL\n\nNome: ${state.lead.name}\nWhatsApp: ${state.lead.whatsapp}\nInteresse: ${state.lead.course_interest.length > 0 ? state.lead.course_interest.join(', ') : 'A definir'}\n\nMensagens: ${state.messages.length}\n\n---\n\n${state.messages.slice(-10).map(m => `${m.from === 'bot' ? 'Bot' : state.lead.name}: ${m.text}`).join('\n\n').substring(0, 3000)}`;
-    const url = `https://wa.me/${CONFIG.whatsappSchool}?text=${encodeURIComponent(summary)}`;
-    window.open(url, '_blank');
-  }
-
-  // ===== UI =====
+  // ===== UI ELEMENTS =====
   let fab, chatWindow, messagesEl, inputEl, sendBtn, quickEl, actionsEl, badge;
   let isOpen = false;
-  let isTyping = false;
 
   function createUI() {
-    // FAB
-    fab = el('button', { class: 'aichat-fab', 'aria-label': 'Abrir chatbot', title: 'Fale com a Aria' });
-    fab.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`;
-    badge = el('span', { class: 'aichat-badge' }, '1');
+    fab = el('button', { class: 'aria-fab', 'aria-label': 'Conversar com Aria', title: 'Converse com a Aria' });
+    fab.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
+    badge = el('span', { class: 'aria-badge' }, '1');
     fab.appendChild(badge);
     fab.addEventListener('click', toggleWindow);
 
-    // Window
-    chatWindow = el('div', { class: 'aichat-window', 'aria-label': 'Chat com a Aria' });
+    chatWindow = el('div', { class: 'aria-window', 'aria-label': 'Chat com Aria' });
 
-    // Header
-    const header = el('div', { class: 'aichat-header' });
-    const avatar = el('div', { class: 'aichat-avatar' }, '🤖');
-    const info = el('div', { class: 'aichat-info' });
-    info.appendChild(el('div', { class: 'aichat-info-name' }, `${CONFIG.botName} · AI School`));
-    info.appendChild(el('div', { class: 'aichat-info-status' }, 'Online agora · responde em segundos'));
-    const closeBtn = el('button', { class: 'aichat-close', 'aria-label': 'Fechar' });
-    closeBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+    const header = el('div', { class: 'aria-header' });
+    const avatar = el('div', { class: 'aria-avatar' }, '✨');
+    const info = el('div', { class: 'aria-info' });
+    info.appendChild(el('div', { class: 'aria-name' }, `${CONFIG.botName} · AI School`));
+    info.appendChild(el('div', { class: 'aria-status' }, 'Online agora · responde em segundos'));
+    const closeBtn = el('button', { class: 'aria-close', 'aria-label': 'Fechar chat', title: 'Fechar' });
+    closeBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
     closeBtn.addEventListener('click', toggleWindow);
     header.appendChild(avatar);
     header.appendChild(info);
     header.appendChild(closeBtn);
 
-    // Messages
-    messagesEl = el('div', { class: 'aichat-messages' });
+    messagesEl = el('div', { class: 'aria-messages' });
+    quickEl = el('div', { class: 'aria-quick' });
 
-    // Quick replies
-    quickEl = el('div', { class: 'aichat-quick' });
-
-    // Input wrap
-    const inputWrap = el('div', { class: 'aichat-input-wrap' });
+    const inputWrap = el('div', { class: 'aria-input-wrap' });
     inputEl = el('input', {
-      class: 'aichat-input',
+      class: 'aria-input',
       type: 'text',
       placeholder: 'Digite sua mensagem...',
-      autocomplete: 'off'
+      autocomplete: 'off',
+      'aria-label': 'Mensagem'
     });
     inputEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -996,38 +935,39 @@
         handleSend();
       }
     });
-    sendBtn = el('button', { class: 'aichat-send', 'aria-label': 'Enviar' });
-    sendBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+    sendBtn = el('button', { class: 'aria-send', 'aria-label': 'Enviar mensagem', title: 'Enviar' });
+    sendBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
     sendBtn.addEventListener('click', handleSend);
     inputWrap.appendChild(inputEl);
     inputWrap.appendChild(sendBtn);
 
-    // Actions (download txt + send to whatsapp)
-    actionsEl = el('div', { class: 'aichat-actions' });
-    const downloadBtn = el('button', { class: 'aichat-action-btn', title: 'Baixar conversa em TXT' });
-    downloadBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> TXT`;
-    downloadBtn.addEventListener('click', downloadTxt);
-    const sheetsBtn = el('button', { class: 'aichat-action-btn', title: 'Salvar lead na planilha Google Sheets', style: 'color:#10b981;border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.1);' });
-    sheetsBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha`;
-    sheetsBtn.addEventListener('click', function() {
-      sendFullLeadToSheets().then(function(ok) {
+    actionsEl = el('div', { class: 'aria-actions' });
+    const txtBtn = el('button', { class: 'aria-action-btn', title: 'Baixar conversa em TXT' });
+    txtBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> TXT';
+    txtBtn.addEventListener('click', downloadTxt);
+    const sheetsBtn = el('button', { class: 'aria-action-btn green', title: 'Salvar lead na planilha' });
+    sheetsBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha';
+    sheetsBtn.addEventListener('click', () => {
+      sendLeadToSheets({ final: true, force: true }).then(ok => {
         if (ok) {
-          // Feedback visual
-          sheetsBtn.style.background = 'rgba(16, 185, 129, 0.3)';
-          sheetsBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Salvo!`;
-          setTimeout(function() {
-            sheetsBtn.style.background = 'rgba(16,185,129,0.1)';
-            sheetsBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha`;
+          sheetsBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Salvo!';
+          setTimeout(() => {
+            sheetsBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha';
+          }, 3000);
+        } else {
+          sheetsBtn.innerHTML = '⚠️ Falha';
+          setTimeout(() => {
+            sheetsBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha';
           }, 3000);
         }
       });
     });
-    const sendWaBtn = el('button', { class: 'aichat-action-btn primary', title: 'Enviar conversa para a escola' });
-    sendWaBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Enviar lead`;
-    sendWaBtn.addEventListener('click', sendLeadToWhatsApp);
-    actionsEl.appendChild(downloadBtn);
+    const waBtn = el('button', { class: 'aria-action-btn amber', title: 'Falar com a escola no WhatsApp' });
+    waBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp';
+    waBtn.addEventListener('click', sendLeadToWhatsApp);
+    actionsEl.appendChild(txtBtn);
     actionsEl.appendChild(sheetsBtn);
-    actionsEl.appendChild(sendWaBtn);
+    actionsEl.appendChild(waBtn);
 
     chatWindow.appendChild(header);
     chatWindow.appendChild(messagesEl);
@@ -1037,13 +977,6 @@
 
     document.body.appendChild(fab);
     document.body.appendChild(chatWindow);
-
-    // Auto-open after 5s if never interacted
-    setTimeout(() => {
-      if (!localStorage.getItem('aichat_opened')) {
-        // gentle nudge
-      }
-    }, 5000);
   }
 
   function toggleWindow() {
@@ -1052,31 +985,27 @@
       fab.classList.add('open');
       chatWindow.classList.add('open');
       badge.style.display = 'none';
-      localStorage.setItem('aichat_opened', '1');
-      // Start conversation if empty
-      if (state.messages.length === 0) {
-        startConversation();
-      }
-      setTimeout(() => inputEl.focus(), 300);
+      if (state.messages.length === 0) startConversation();
+      setTimeout(() => inputEl && inputEl.focus(), 300);
     } else {
       fab.classList.remove('open');
       chatWindow.classList.remove('open');
     }
   }
 
+  // ===== MESSAGES =====
   function addMessage(text, from) {
     const msg = { text, from, timestamp: Date.now() };
     state.messages.push(msg);
     saveSession();
 
-    const msgEl = el('div', { class: `aichat-msg aichat-msg-${from}` }, text);
+    const msgEl = el('div', { class: `aria-msg aria-msg-${from}` }, text);
     messagesEl.appendChild(msgEl);
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
   function showTyping() {
-    isTyping = true;
-    const t = el('div', { class: 'aichat-typing', id: 'aichat-typing-indicator' });
+    const t = el('div', { class: 'aria-typing', id: 'aria-typing-indicator' });
     t.appendChild(el('span'));
     t.appendChild(el('span'));
     t.appendChild(el('span'));
@@ -1085,124 +1014,343 @@
   }
 
   function hideTyping() {
-    isTyping = false;
-    const t = document.getElementById('aichat-typing-indicator');
+    const t = document.getElementById('aria-typing-indicator');
     if (t) t.remove();
   }
 
-  function showQuick(replies) {
+  function clearQuick() {
     quickEl.innerHTML = '';
+  }
+
+  function showQuick(replies) {
+    clearQuick();
     if (!replies || replies.length === 0) return;
     replies.forEach(r => {
-      const btn = el('button', { class: 'aichat-quick-btn' }, r);
+      const btn = el('button', { class: 'aria-quick-btn' }, r);
       btn.addEventListener('click', () => {
-        quickEl.innerHTML = '';
+        clearQuick();
         handleUserInput(r);
       });
       quickEl.appendChild(btn);
     });
   }
 
-  async function botSay(text, quick, action) {
+  function showCTA(label, handler) {
+    const cta = el('button', { class: 'aria-cta' }, label);
+    cta.addEventListener('click', handler);
+    // Adiciona no quickEl para ser limpo junto com os quick replies
+    quickEl.appendChild(cta);
+  }
+
+  async function botSay(text, opts) {
+    opts = opts || {};
     showTyping();
-    await new Promise(r => setTimeout(r, 700 + Math.random() * 600));
+    await new Promise(r => setTimeout(r, 600 + Math.random() * 500));
     hideTyping();
-    addMessage(text, 'bot');
-    if (quick) showQuick(quick);
-    if (action && action.type === 'suggest_course') {
-      // Show matricular button
-      const ctaBtn = el('button', { class: 'aichat-action-btn primary', style: 'margin-top:8px;width:100%;max-width:200px;' }, '🚀 Matricular agora');
-      ctaBtn.addEventListener('click', () => redirectToCourse(action.slug, action.isMentoria));
-      quickEl.appendChild(ctaBtn);
-    }
+    const personalized = personalize(text);
+    addMessage(personalized, 'bot');
+    if (opts.quick) showQuick(opts.quick);
+    if (opts.cta) showCTA(opts.cta.label, opts.cta.handler);
   }
 
-  function redirectToCourse(slug, isMentoria) {
-    saveLead();
-    if (isMentoria) {
-      window.location.hash = '#/checkout/mentoria';
+  // ===== TXT EXPORT =====
+  function downloadTxt() {
+    if (!state.lead.name) {
+      botSay('Você precisa informar seu nome e WhatsApp primeiro para gerar o TXT da conversa.');
+      return;
+    }
+    const now = new Date();
+    const lines = [];
+    lines.push('========================================');
+    lines.push('  AI SCHOOL - LEAD CAPTURADO PELA ARIA');
+    lines.push('========================================');
+    lines.push('');
+    lines.push(`Data: ${now.toLocaleString('pt-BR')}`);
+    lines.push(`Nome: ${state.lead.name}`);
+    lines.push(`WhatsApp: ${state.lead.whatsapp}`);
+    lines.push(`Cursos de interesse: ${state.lead.course_interest.length > 0 ? state.lead.course_interest.join(', ') : 'Nenhum específico'}`);
+    lines.push(`Total de mensagens: ${state.messages.length}`);
+    lines.push('');
+    lines.push('----------------------------------------');
+    lines.push('CONVERSA COMPLETA');
+    lines.push('----------------------------------------');
+    lines.push('');
+    state.messages.forEach(m => {
+      const time = new Date(m.timestamp).toLocaleTimeString('pt-BR');
+      const sender = m.from === 'bot' ? 'ARIA' : state.lead.name.toUpperCase();
+      lines.push(`[${time}] ${sender}:`);
+      lines.push(m.text);
+      lines.push('');
+    });
+    lines.push('----------------------------------------');
+    lines.push('AÇÃO RECOMENDADA:');
+    if (state.lead.course_interest.length > 0) {
+      lines.push(`Entrar em contato para fechar matrícula do(s) curso(s): ${state.lead.course_interest.join(', ')}`);
     } else {
-      // Try Next.js router hash first, fallback to landing page
-      window.location.hash = `#/checkout/${slug}`;
+      lines.push('Entrar em contato para entender necessidade e recomendar curso');
     }
-    // Close chat
-    toggleWindow();
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `lead_${state.lead.name.replace(/\s+/g, '_')}_${state.lead.whatsapp.replace(/\D/g, '')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
-  function redirectToWhatsApp() {
-    saveLead();
-    window.open(`https://wa.me/${CONFIG.whatsappSchool}`, '_blank');
+  function sendLeadToWhatsApp() {
+    if (!state.lead.name || !state.lead.whatsapp) {
+      botSay('Preciso do seu nome e WhatsApp antes de enviar pra escola. Pode me passar?');
+      return;
+    }
+    sendLeadToSheets({ final: true, force: true });
+    const summary = `🤖 NOVO LEAD - AI SCHOOL\n\nNome: ${state.lead.name}\nWhatsApp: ${state.lead.whatsapp}\nInteresse: ${state.lead.course_interest.length > 0 ? state.lead.course_interest.join(', ') : 'A definir'}\nMensagens: ${state.messages.length}\n\n---\n\n${state.messages.slice(-8).map(m => `${m.from === 'bot' ? 'Aria' : state.lead.name}: ${m.text}`).join('\n\n').substring(0, 2500)}`;
+    window.open(`https://wa.me/${CONFIG.whatsappSchool}?text=${encodeURIComponent(summary)}`, '_blank');
   }
 
-  // ===== FLOW =====
+  // ===== CONVERSATION FLOW (SDR SENIOR) =====
   function startConversation() {
     const existing = loadSession();
     if (existing && existing.lead && existing.lead.name && existing.lead.whatsapp) {
       state = existing;
       state.messages.forEach(m => {
-        const msgEl = el('div', { class: `aichat-msg aichat-msg-${m.from}` }, m.text);
+        const msgEl = el('div', { class: `aria-msg aria-msg-${m.from}` }, m.text);
         messagesEl.appendChild(msgEl);
       });
       messagesEl.scrollTop = messagesEl.scrollHeight;
-      botSay(`Bem-vindo de volta, ${state.lead.name}! 👋\n\nJá tenho seus dados salvos. Posso te ajudar com mais alguma coisa?`, ['Ver cursos', 'Preços', 'Mentoria VIP']);
+      botSay(`Oi, ${state.lead.name}! 👋 Bem-vindo de volta à AI School. Posso te ajudar com mais alguma coisa agora?`, {
+        quick: ['Quero matricular', 'Ver cursos', 'Tirar dúvida', 'Falar com humano']
+      });
       return;
     }
 
     state.lead.startedAt = new Date().toISOString();
     saveSession();
-    botSay(`Olá! 👋 Eu sou a ${CONFIG.botName}, sua assistente da AI School.\n\nVou te ajudar a encontrar o curso perfeito e tirar todas suas dúvidas — sem reunião, sem enrolação. 🚀\n\nPara começar, qual o seu nome?`);
-    state.step = 'ask_name';
+    botSay(`Oi! 👋 Eu sou a ${CONFIG.botName}, sua consultora de IA aqui na AI School.\n\nVou te ajudar a encontrar o curso perfeito e tirar todas suas dúvidas. Sem reunião, sem enrolação — direto ao ponto. 🚀\n\nPra começar, qual o seu nome?`);
+    state.stage = 'ask_name';
   }
 
   async function handleUserInput(input) {
-    const text = (typeof input === 'string' ? input : inputEl.value).trim();
+    const text = (typeof input === 'string' ? input : '').trim();
     if (!text) return;
     inputEl.value = '';
-
     addMessage(text, 'user');
 
-    if (state.step === 'ask_name') {
-      state.lead.name = text;
+    // STAGE: GREETING → ASK NAME
+    if (state.stage === 'ask_name') {
+      const name = text.split(' ').slice(0, 2).join(' ').substring(0, 40);
+      state.lead.name = name;
       saveSession();
-      await botSay(`Prazer em conhecer você, ${text}! 😊\n\nAgora me passa seu WhatsApp (com DDD) para eu poder te enviar informações e, se quiser, te contatar depois:\n\nEx: 11966161611 ou 11 96616-1611`);
-      state.step = 'ask_whatsapp';
+      await botSay(`Prazer em conhecer você, ${name}! 😊\n\nAgora me passa seu WhatsApp (com DDD) — só pra te enviar novidades e, se você quiser, alguém da escola poder te contatar depois:\n\nEx: 11966161611 ou 11 96616-1611`);
+      state.stage = 'ask_whatsapp';
       return;
     }
 
-    if (state.step === 'ask_whatsapp') {
+    // STAGE: ASK WHATSAPP
+    if (state.stage === 'ask_whatsapp') {
       const digits = text.replace(/\D/g, '');
       if (digits.length < 10) {
-        await botSay('Hmm, esse número parece incompleto. Pode me passar novamente? Preciso do DDD + número. Ex: 11966161611');
+        await botSay('Hmm, esse número parece incompleto. Pode me passar novamente? Preciso do DDD + número (ex: 11966161611).');
         return;
       }
       state.lead.whatsapp = digits;
       saveSession();
       saveLead();
-      // Envia o lead assim que capturar nome + WhatsApp (sync automático com Sheets)
       sendLeadToSheets();
-      await botSay(`Perfeito, ${state.lead.name}! ✅ Seu WhatsApp foi salvo com segurança.\n\nAgora me conta: o que você quer aprender? Posso te recomendar o curso ideal ou responder qualquer dúvida.`, ['Ver cursos', 'Preços', 'Mentoria VIP', 'Qual curso é pra mim?']);
-      state.step = 'chatting';
+      await botSay(`Perfeito, ${state.lead.name}! ✅ Seus dados estão salvos com segurança.\n\nAgora me conta: o que te trouxe aqui hoje? Posso te recomendar o curso ideal.`, {
+        quick: ['Quero aprender IA do zero', 'Quero programar com IA', 'Quero editar vídeos com IA', 'É pra meu filho(a)', 'Quero mentoria VIP']
+      });
+      state.stage = 'chatting';
       return;
     }
 
-    // Chatting mode
-    const response = getBotResponse(text);
-    await botSay(response.text, response.quick, response.action);
+    // STAGE: CHATTING — usar SDR senior flow
+    await handleChat(text);
+  }
 
-    if (response.action) {
-      if (response.action.type === 'redirect_course') {
-        // Already shown CTA in quick
-      } else if (response.action.type === 'redirect_whatsapp') {
-        const waBtn = el('button', { class: 'aichat-action-btn primary', style: 'margin-top:8px;width:100%;max-width:240px;' }, 'Abrir WhatsApp');
-        waBtn.addEventListener('click', redirectToWhatsApp);
-        quickEl.appendChild(waBtn);
+  async function handleChat(text) {
+    const input = normalize(text);
+
+    // 1. INTENT: comprando / matricular
+    if (/^(quero|comprar|matricular|matricula|inscrever|inscricao|fechar|bora|to dentro|tô dentro|topo|vamos|pode ser|fechado)/.test(input)) {
+      const course = findCourse(input) || state.suggestedCourse;
+      if (course) {
+        await presentCourseForEnrollment(course);
+        return;
+      }
+      await botSay('Boa! Vamos fechar isso. 🚀 Qual curso você quer fazer? Se não souber, me conta o que você quer aprender que eu te indico.', {
+        quick: ['IA Iniciante', 'Vibe Code', 'Edição de Vídeos', 'Mentoria VIP', 'Ver todos os 15 cursos']
+      });
+      return;
+    }
+
+    // 2. OBJECTION HANDLER
+    const objection = detectObjection(input);
+    if (objection) {
+      await botSay(personalize(objection.response), {
+        quick: ['Quero matricular', 'Ver outros cursos', 'Falar com humano', 'Tirar outra dúvida']
+      });
+      return;
+    }
+
+    // 3. INTENT: falar com humano / whatsapp
+    if (/(humano|pessoa|atendente|falar com alguem|falar com alguém|whatsapp|telefone|contato|consultor|especialista)/.test(input)) {
+      await botSay('Claro! Posso te redirecionar para o WhatsApp da escola — lá você fala direto com nosso time. 👇', {
+        cta: { label: '📱 Abrir WhatsApp da escola', handler: sendLeadToWhatsApp }
+      });
+      return;
+    }
+
+    // 4. INTENT: ver cursos / lista
+    if (/^(curso|cursos|opcoes|opções|quais|categoria|ver todos|lista)/.test(input) && !findCourse(input)) {
+      await botSay('📚 Temos 15 cursos de IA para todos os públicos. Todos com 10h por R$4.000:\n\n• IA Iniciante, Intermediário e Avançado\n• Vibe Code (programar com IA)\n• Edição de Vídeos com IA\n• IA para Engenheiros e Arquitetos\n• IA para Operadores de Drone\n• IA + Robótica para Crianças (7-12)\n• IA para Adolescentes (13-17)\n• Pacote Office com IA\n• Canva com IA\n• Criação de Sites no Lovable\n• Criação de Sites Avançado\n• Poe Bots de IA\n• IA + Empreendedorismo (Solo First)\n\nE a Mentoria VIP (1-a-1) a partir de R$4.500.\n\nQual desses te chama atenção?', {
+        quick: ['IA Iniciante', 'Vibe Code', 'Mentoria VIP', 'Me ajuda a escolher']
+      });
+      return;
+    }
+
+    // 5. INTENT: ajuda pra escolher / perfil
+    if (/(recomend|indic|nao sei qual|não sei qual|me ajuda|ajuda|sugest|sugestão|qual o melhor|qual curso|qual recomenda|perfil|nao sei|não sei)/.test(input)) {
+      await botSay(`Boa, ${state.lead.name}! Vou te ajudar a encontrar o curso perfeito. Me conta rapidinho:\n\n1. Você já usou IA antes (ChatGPT, Claude, etc)?\n2. Pra você mesmo ou pra outra pessoa?\n3. Qual sua área de atuação? (ex: estudo, marketing, engenharia, aposentado, criador de conteúdo...)`, {
+        quick: ['Nunca usei IA', 'Já uso ChatGPT', 'Pra meu filho', 'Sou criador de conteúdo', 'Sou empreendedor']
+      });
+      return;
+    }
+
+    // 6. PROFILE ANSWERS → recomendar curso
+    if (/(nunca usei|comecar do zero|começar do zero|iniciante total)/.test(input)) {
+      trackInterest('ia-iniciante');
+      state.suggestedCourse = COURSES.find(c => c.slug === 'ia-iniciante');
+      await botSay(`Para você, ${state.lead.name}, o curso ideal é o **IA Iniciante**. ✨\n\nEm 10 horas você sai do zero a fluente em ChatGPT, Claude e Gemini. Aprende a fórmula de prompts que funcionam, cria imagens com IA e aplica tudo no trabalho e nos estudos.\n\nR$4.000 (10h) · Certificado incluso · Garantia 7 dias`, {
+        cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-iniciante') }
+      });
+      return;
+    }
+
+    if (/(filho|filha|crianca|criança|kid|infantil)/.test(input)) {
+      const ageMatch = input.match(/(\d+)\s*anos/);
+      const age = ageMatch ? parseInt(ageMatch[1]) : 10;
+      if (age >= 7 && age <= 12) {
+        trackInterest('ia-robotica-criancas');
+        state.suggestedCourse = COURSES.find(c => c.slug === 'ia-robotica-criancas');
+        await botSay(`Que delícia ter seu filho na AI School! 👶🤖\n\nPara crianças de 7 a 12 anos, o curso ideal é o **IA + Robótica**. Curso lúdico onde seu filho vai criar robôs, games e histórias com IA — primeiro contato com tecnologia de forma segura e divertida.\n\nR$4.000 (10h) · Turmas pequenas (máx. 8 crianças) · Certificado de "Pequeno Cientista"`, {
+          cta: { label: '🚀 Quero matricular meu filho', handler: () => redirectToCheckout('ia-robotica-criancas') }
+        });
+        return;
+      } else if (age >= 13 && age <= 17) {
+        trackInterest('ia-adolescentes');
+        state.suggestedCourse = COURSES.find(c => c.slug === 'ia-adolescentes');
+        await botSay(`Para adolescentes de 13-17 anos, o curso ideal é o **IA para Adolescentes**. 🎮\n\nCriação de apps, jogos, arte digital e automações. IA para a próxima geração de criadores. Sai com portfólio publicado.\n\nR$4.000 (10h) · Online ao vivo`, {
+          cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-adolescentes') }
+        });
+        return;
       }
     }
 
-    // Auto-save lead every few messages
-    if (state.messages.length % 5 === 0) {
-      saveLead();
+    if (/(criador de conteudo|criador de conteúdo|content|youtube|tiktok|instagram|social media|edicao|edição|editar video|editar vídeo)/.test(input)) {
+      trackInterest('edicao-videos-ia');
+      state.suggestedCourse = COURSES.find(c => c.slug === 'edicao-videos-ia');
+      await botSay(`Para criadores de conteúdo, o curso perfeito é **Edição de Vídeos com IA**. 🎬\n\nCapCut, Runway, Pika, Kling, Sora. Edição profissional, b-roll gerado por IA, legendas automáticas. Você vai editar 5x mais rápido.\n\nR$4.000 (10h) · Templates de edição inclusos`, {
+        cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('edicao-videos-ia') }
+      });
+      return;
     }
+
+    if (/(empreendedor|empreender|negocio|negócio|startup|sair do clt|clt|consultor|freelancer)/.test(input)) {
+      trackInterest('ia-empreendedorismo');
+      state.suggestedCourse = COURSES.find(c => c.slug === 'ia-empreendedorismo');
+      await botSay(`Para quem quer empreender, o curso ideal é **IA + Empreendedorismo (Solo First Framework)**. 🚀\n\nTorne-se um Empreendedor T-Shaped com IA. Do posicionamento ao primeiro cliente. Baseado no framework Solo First.\n\nR$4.000 (10h) · Plano 90 dias incluso`, {
+        cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-empreendedorismo') }
+      });
+      return;
+    }
+
+    if (/(ja uso|já uso|chatgpt|claude|gemini|automatizar|agente)/.test(input)) {
+      trackInterest('ia-intermediario');
+      state.suggestedCourse = COURSES.find(c => c.slug === 'ia-intermediario');
+      await botSay(`Você já tem base — perfeito! O curso ideal é **IA Intermediário**. ⚙️\n\nFluxos, automações e agentes. Aprende n8n (gratuito), Make, RAG básico. Sai com 10 templates de automação prontos pra usar.\n\nR$4.000 (10h)`, {
+        cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout('ia-intermediario') }
+      });
+      return;
+    }
+
+    // 7. INTENT: informações específicas (preço, pagamento, horário, garantia, certificado)
+    const intent = detectIntent(input);
+    if (intent) {
+      await botSay(personalize(intent.response), {
+        quick: ['Quero matricular', 'Ver cursos', 'Tirar outra dúvida']
+      });
+      return;
+    }
+
+    // 8. SAUDACAO
+    if (/^(oi|ola|olá|opa|eai|e ai|bom dia|boa tarde|boa noite|hello|hi)/.test(input)) {
+      await botSay(`Oi, ${state.lead.name}! 👋 Tudo beleza?\n\nSobre o que você quer saber? Posso falar sobre cursos, preços, formas de pagamento, mentoria VIP... ou te recomendar o curso ideal pro seu momento.`, {
+        quick: ['Quero aprender IA', 'Ver cursos', 'Preços', 'Mentoria VIP']
+      });
+      return;
+    }
+
+    // 9. RAG: buscar curso específico
+    const course = findCourse(input);
+    if (course) {
+      trackInterest(course.slug);
+      state.suggestedCourse = course;
+      await presentCourse(course);
+      return;
+    }
+
+    // 10. FALLBACK inteligente
+    await botSay(`Entendi, ${state.lead.name}. Posso te ajudar com várias coisas:\n\n• Encontrar o curso ideal (me conta sua área/objetivo)\n• Informações sobre preços e pagamento\n• Horários e formato das aulas\n• Mentoria VIP\n• Garantia e certificado\n\nO que você quer saber? Se preferir, posso te passar no WhatsApp da escola.`, {
+      quick: ['Quero aprender IA', 'Ver cursos', 'Preços', 'Falar com humano']
+    });
+  }
+
+  function trackInterest(slug) {
+    if (!state.lead.course_interest.includes(slug)) {
+      state.lead.course_interest.push(slug);
+      saveSession();
+      if (state.lead.name && state.lead.whatsapp) {
+        sendLeadToSheets();
+      }
+    }
+  }
+
+  async function presentCourse(course) {
+    const benefits = course.benefits.slice(0, 4).map(b => `✅ ${b}`).join('\n');
+    const priceStr = course.isMentoria
+      ? `A partir de R$ ${course.price.toLocaleString('pt-BR')} (${course.hours}h 1-a-1)`
+      : `R$ ${course.price.toLocaleString('pt-BR')} (${course.hours} horas)`;
+
+    await botSay(`Encontrei o curso ideal pra você: **${course.title}** 🎯\n\n${course.short}\n\n${benefits}\n\n💰 ${priceStr}\n👥 Para: ${course.audience}\n\nQuer matricular?`, {
+      cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout(course.slug) },
+      quick: ['Ver outros cursos', 'Tirar dúvida', 'Falar com humano']
+    });
+  }
+
+  async function presentCourseForEnrollment(course) {
+    const priceStr = course.isMentoria
+      ? `A partir de R$ ${course.price.toLocaleString('pt-BR')} (${course.hours}h 1-a-1)`
+      : `R$ ${course.price.toLocaleString('pt-BR')} (${course.hours} horas)`;
+
+    await botSay(`🚀 Bora fechar isso, ${state.lead.name}!\n\n**${course.title}**\n${course.short}\n\n💰 ${priceStr}\n💳 Pagamento via PIX (QR Code na hora)\n🛡️ Garantia 7 dias (100% reembolso)\n📜 Certificado incluso\n\nVou te levar pro checkout. Lá você gera o PIX e paga em segundos.`, {
+      cta: { label: '🚀 Ir para o checkout', handler: () => redirectToCheckout(course.slug) },
+      quick: ['Tirar dúvida antes', 'Ver outros cursos', 'Falar com humano']
+    });
+  }
+
+  function redirectToCheckout(slug) {
+    saveLead();
+    sendLeadToSheets({ final: true, force: true });
+    if (slug === 'mentoria-vip') {
+      window.location.hash = '#/checkout/mentoria';
+    } else {
+      window.location.hash = `#/checkout/${slug}`;
+    }
+    if (isOpen) toggleWindow();
   }
 
   function handleSend() {
@@ -1221,24 +1369,18 @@
     }
   }
 
-  // Expose API (antes do init para garantir que esteja disponível mesmo se init falhar)
-  window.AISchoolChatbot = {
+  // Expose API antes do init
+  window.AriaChatbot = {
     open: () => { if (!isOpen) toggleWindow(); },
     close: () => { if (isOpen) toggleWindow(); },
     getLeads: () => {
       try { return JSON.parse(localStorage.getItem(CONFIG.storageKey) || '[]'); }
-      catch(e) { return []; }
+      catch (e) { return []; }
     },
     exportAllLeads: function() {
       const leads = this.getLeads();
       const txt = leads.map(l => {
-        const lines = [];
-        lines.push(`Lead: ${l.name} | WhatsApp: ${l.whatsapp}`);
-        lines.push(`Interesse: ${l.course_interest ? l.course_interest.join(', ') : 'Nenhum'}`);
-        lines.push(`Capturado em: ${l.startedAt || 'N/A'}`);
-        lines.push(`Atualizado em: ${l.updatedAt || 'N/A'}`);
-        lines.push('---');
-        return lines.join('\n');
+        return `Lead: ${l.name} | WhatsApp: ${l.whatsapp}\nInteresse: ${l.course_interest ? l.course_interest.join(', ') : 'Nenhum'}\nCapturado em: ${l.startedAt || 'N/A'}\nAtualizado em: ${l.updatedAt || 'N/A'}\n---`;
       }).join('\n\n');
       const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -1250,10 +1392,9 @@
     }
   };
 
-  // Auto-init (com try/catch para nunca falhar silenciosamente)
   try {
     init();
   } catch (err) {
-    console.error('[AI School Chatbot] Erro ao inicializar:', err);
+    console.error('[Aria] Erro ao inicializar:', err);
   }
 })();
