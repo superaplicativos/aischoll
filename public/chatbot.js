@@ -1090,14 +1090,14 @@
     }
   }
 
-  // Auto-init
-  init();
-
-  // Expose API
+  // Expose API (antes do init para garantir que esteja disponível mesmo se init falhar)
   window.AISchoolChatbot = {
     open: () => { if (!isOpen) toggleWindow(); },
     close: () => { if (isOpen) toggleWindow(); },
-    getLeads: () => JSON.parse(localStorage.getItem(CONFIG.storageKey) || '[]'),
+    getLeads: () => {
+      try { return JSON.parse(localStorage.getItem(CONFIG.storageKey) || '[]'); }
+      catch(e) { return []; }
+    },
     exportAllLeads: function() {
       const leads = this.getLeads();
       const txt = leads.map(l => {
@@ -1118,4 +1118,11 @@
       URL.revokeObjectURL(url);
     }
   };
+
+  // Auto-init (com try/catch para nunca falhar silenciosamente)
+  try {
+    init();
+  } catch (err) {
+    console.error('[AI School Chatbot] Erro ao inicializar:', err);
+  }
 })();
