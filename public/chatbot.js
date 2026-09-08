@@ -1049,6 +1049,8 @@
     hideTyping();
     const personalized = personalize(text);
     addMessage(personalized, 'bot');
+    // Limpa quick replies e CTAs anteriores ANTES de adicionar novos
+    clearQuick();
     if (opts.quick) showQuick(opts.quick);
     if (opts.cta) showCTA(opts.cta.label, opts.cta.handler);
   }
