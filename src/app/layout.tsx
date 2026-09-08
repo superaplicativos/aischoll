@@ -74,8 +74,40 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
-        {/* Chatbot de Vendas com RAG - Aria */}
-        <script src="/chatbot.js" async></script>
+        {/* Chatbot de Vendas com RAG - Aria (carrega dinamicamente com basePath correto) */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){
+            function loadChatbot() {
+              // Tenta vários paths até achar o chatbot.js
+              var paths = [
+                './chatbot.js',
+                '../chatbot.js',
+                '/chatbot.js'
+              ];
+              var base = window.location.pathname.replace(/\\/$/, '');
+              // Se temos basePath tipo /aischoll, base = /aischoll
+              if (base && base !== '' && window.location.pathname !== '/') {
+                paths.unshift(base + '/chatbot.js');
+              }
+              var i = 0;
+              function tryNext() {
+                if (i >= paths.length) return;
+                var s = document.createElement('script');
+                s.src = paths[i];
+                s.async = true;
+                s.onerror = function() { i++; tryNext(); };
+                s.onload = function() { if (!window.AISchoolChatbot) { i++; tryNext(); } };
+                document.body.appendChild(s);
+              }
+              tryNext();
+            }
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', loadChatbot);
+            } else {
+              loadChatbot();
+            }
+          })();
+        `}} />
       </body>
     </html>
   );

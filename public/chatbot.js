@@ -672,8 +672,9 @@
     if (course) {
       detectCourseInterest(userInput);
       const priceStr = course.isMentoria ? `A partir de R$ ${course.price.toLocaleString('pt-BR')}` : `R$ ${course.price.toLocaleString('pt-BR')} (10 horas)`;
+      const audienceLine = course.audience ? `\n👥 Para: ${course.audience}` : '';
       return {
-        text: `🎓 ${course.title}\n\n${course.short}\n\n💰 ${priceStr}\n👥 Para: ${course.audience}\n\nQuer matricular? É só clicar no botão abaixo.`,
+        text: `🎓 ${course.title}\n\n${course.short}\n\n💰 ${priceStr}${audienceLine}\n\nQuer matricular? É só clicar no botão abaixo.`,
         quick: ['Quero matricular', 'Ver outros cursos', 'Falar com humano'],
         action: { type: 'suggest_course', slug: course.slug, isMentoria: course.isMentoria }
       };
