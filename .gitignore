@@ -27,3 +27,7 @@ agent-ctx/
 
 # Lockfiles ( regenerated on install )
 bun.lock
+
+# API keys (never commit)
+public/deepseek-key.json
+*.secret.json
