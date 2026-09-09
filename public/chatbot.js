@@ -27,6 +27,32 @@
     botName: 'Aria',
   };
 
+  // ===== PROXY CONFIG =====
+  // Lê a URL do Cloudflare Worker de config.json (arquivo público no site)
+  // Se existir, o bot usa a IA real do DeepSeek via proxy (sem CORS)
+  // Se não existir, usa o RAG local (knowledge base embutida)
+  let WORKER_URL = '';
+  async function loadWorkerUrl() {
+    try {
+      const base = window.location.pathname.replace(/\/+$/, '');
+      const paths = [base + '/config.json', './config.json', '/config.json'];
+      for (const p of paths) {
+        try {
+          const r = await fetch(p);
+          if (r.ok) {
+            const data = await r.json();
+            if (data.worker_url) {
+              WORKER_URL = data.worker_url;
+              console.log('[Aria] Worker URL carregado:', WORKER_URL);
+              return;
+            }
+          }
+        } catch (e) {}
+      }
+    } catch (e) {}
+    console.log('[Aria] Sem Worker URL configurado. Usando RAG local.');
+  }
+
   // ===== STATE =====
   let state = {
     stage: 'greeting',
@@ -408,7 +434,46 @@
       return;
     }
 
-    // 5. RAG: usar knowledge base pra responder
+    // 5. WORKER PROXY (se configurado) - usa IA real do DeepSeek
+    if (WORKER_URL) {
+      showTyping();
+      try {
+        const systemPrompt = buildSystemPrompt();
+        const messages = [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: text },
+        ];
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: 'deepseek-chat', messages: messages, max_tokens: 800, temperature: 0.7 }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const reply = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+          if (reply && reply.trim()) {
+            hideTyping();
+            addMessage(reply.trim(), 'bot');
+            // Detecta curso na resposta do bot pra sugerir CTA
+            const course = (window.AISchoolRAG && AISchoolRAG.findCourse(text)) || state.suggestedCourse;
+            if (course) {
+              state.suggestedCourse = course;
+              trackInterest(course.slug);
+              showCTA('🚀 Quero matricular', () => redirectToCheckout(course.slug));
+            }
+            showQuick(course ? ['Ver outros cursos', 'Tirar outra dúvida', 'Falar com humano'] : ['Quero ver cursos', 'Tirar outra dúvida', 'Falar com humano']);
+            return;
+          }
+        }
+        // Se falhou, cai pro RAG local
+        console.warn('[Aria] Worker falhou, usando RAG local');
+      } catch (err) {
+        console.warn('[Aria] Worker erro:', err);
+      }
+      hideTyping();
+    }
+
+    // 6. RAG: usar knowledge base pra responder
     if (window.AISchoolRAG) {
       const course = AISchoolRAG.findCourse(text);
       if (course) {
@@ -436,6 +501,55 @@
     });
   }
 
+  // ===== SYSTEM PROMPT PARA IA =====
+  function buildSystemPrompt() {
+    let catalogoResumido = '';
+    if (window.AISchoolRAG && AISchoolRAG.CURSOS) {
+      catalogoResumido = AISchoolRAG.CURSOS.map(c =>
+        `- ${c.titulo} | R$${c.preco.toLocaleString('pt-BR')} | ${c.duracao} | ${c.modalidades ? c.modalidades.join('/') : 'online'} | Para: ${c.publico} | Professor: ${c.professor || 'não definido'}`
+      ).join('\n');
+    }
+
+    return `Você é a Aria, consultora e vendedora sênior da AI School, escola brasileira de tecnologia e negócios digitais.
+
+SOBRE A ESCOLA:
+A AI School oferece cursos de informática, web, programação, design, marketing digital, IA, edição de vídeo, negócios digitais e mais. Atende crianças (7-12), adolescentes (13-17), adultos e profissionais. Modalidades online e presencial (São Paulo).
+
+PREÇOS (R$):
+- Cursos regulares: R$4.000 por 10h online, R$4.500 presencial (R$400/h online, R$450/h presencial)
+- Mentoria VIP: R$4.500 (10h online, R$450/h) ou R$5.000 (10h presencial, R$500/h)
+- Automação Modular: R$4.000 por módulo, mínimo 3 módulos (R$12.000)
+- Pagamento: PIX (à vista), Boleto (2x sem juros), Cartão (até 12x com juros da operadora)
+
+PAGAMENTO: PIX, boleto 2x sem juros, cartão até 12x (juros da operadora). Não fale de reembolso ou devolução.
+
+CATÁLOGO COMPLETO:
+${catalogoResumido || 'Catálogo não disponível. Pergunte sobre cursos específicos.'}
+
+FORMA DE ATUAR (você é uma SDR consultiva):
+1. Atenda com calma, sem pressa de vender
+2. Tira dúvidas técnicas com profundidade (use seu conhecimento)
+3. Quando o cliente perguntar sobre um tema, explique o conceito ANTES de oferecer curso
+4. Recomende o curso ideal baseado no perfil e objetivo
+5. Quando o cliente decidir, direciona pra matrícula (não empurra WhatsApp a toda hora)
+6. Não mencione reembolso, devolução ou "garantia de 7 dias"
+7. Não fale "falar com humano" o tempo todo, só se o cliente pedir explicitamente
+
+REGRAS:
+- Responda sempre em português brasileiro
+- Use linguagem natural, não robótica
+- Seja específico sobre os cursos (ementa, ferramentas, duração)
+- Quando mencionar preço, use o formato "R$4.000 (10h)"
+- Quando o cliente quiser matricular, diga que vai direcionar pro checkout
+- Não invente cursos que não estão no catálogo
+- Não use emojis em excesso (máximo 2-3 por mensagem)
+- Não use bullet points demais, prefira parágrafos naturais
+- Mantenha respostas concisas (máximo 200 palavras geralmente)
+
+NOME DO LEAD ATUAL: ${state.lead.name || 'ainda não informou'}
+INTERESSES JÁ DEMONSTRADOS: ${state.lead.course_interest.join(', ') || 'nenhum ainda'}`;
+  }
+
   function formatCourseDetails(course, nome) {
     const oque = (course.oque_aprende || []).map(o => '• ' + o).join('\n');
     const ferramentas = (course.ferramentas || []).join(', ');
@@ -457,6 +571,7 @@
   // ===== INIT =====
   function init() {
     injectStyles();
+    loadWorkerUrl(); // Carrega Worker URL (se existir config.json)
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', createUI);
     } else {
