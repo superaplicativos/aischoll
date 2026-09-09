@@ -495,7 +495,10 @@ Sobre o que você quer saber? Posso falar sobre cursos, preços, formas de pagam
   // ===== GERAR RESPOSTA =====
   function generateResponse(userInput, leadName, leadInteresses) {
     const nome = leadName || '';
-    const { chunk, course } = retrieve(userInput, nome);
+    const result = retrieve(userInput, nome);
+    const chunk = result.chunk;
+    const score = result.score;
+    const course = result.course;
 
     // Se encontrou curso E conceito, prioriza curso se a pergunta for sobre curso
     const input = normalize(userInput);
@@ -503,8 +506,8 @@ Sobre o que você quer saber? Posso falar sobre cursos, preços, formas de pagam
       return formatCourseResponse(course, nome);
     }
 
-    // Senão, usa o chunk recuperado
-    if (chunk && chunk.score !== undefined && chunk.score > 0) {
+    // Senão, usa o chunk recuperado (score >= 2 para evitar falsos positivos)
+    if (chunk && score >= 2) {
       return chunk.resposta(nome);
     }
 
