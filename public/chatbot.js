@@ -901,23 +901,9 @@
     inputWrap.appendChild(sendBtn);
 
     actionsEl = el('div', { class: 'aria-actions' });
-    const txtBtn = el('button', { class: 'aria-action-btn', title: 'Baixar conversa em TXT' });
-    txtBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> TXT';
-    txtBtn.addEventListener('click', downloadTxt);
-    const crmBtn = el('button', { class: 'aria-action-btn green', title: 'Salvar lead no CRM' });
-    crmBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> CRM';
-    crmBtn.addEventListener('click', () => {
-      saveLead();
-      crmBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Salvo!';
-      setTimeout(() => {
-        crmBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> CRM';
-      }, 2500);
-    });
-    const waBtn = el('button', { class: 'aria-action-btn amber', title: 'Falar com a escola no WhatsApp' });
-    waBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp';
+    const waBtn = el('button', { class: 'aria-action-btn amber', style: 'flex: 1; min-width: 100%;', title: 'Falar com humano no WhatsApp' });
+    waBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Falar com humano no WhatsApp';
     waBtn.addEventListener('click', sendLeadToWhatsApp);
-    actionsEl.appendChild(txtBtn);
-    actionsEl.appendChild(crmBtn);
     actionsEl.appendChild(waBtn);
 
     chatWindow.appendChild(header);
@@ -1082,7 +1068,7 @@
 
     state.lead.startedAt = new Date().toISOString();
     saveSession();
-    botSay(`Oi! 👋 Eu sou a ${CONFIG.botName}, sua consultora de IA aqui na AI School.\n\nVou te ajudar a encontrar o curso perfeito e tirar todas suas dúvidas. Sem reunião, sem enrolação, direto ao ponto. 🚀\n\nPra começar, qual o seu nome?`);
+    botSay(`Oi! 👋 Eu sou a ${CONFIG.botName}, da AI School.\n\nPosso te ajudar de várias formas: explicar o que é IA, te mostrar qual curso se encaixa no seu momento, tirar dúvidas sobre preços e formato, ou até te matricular.\n\nPra começar, qual o seu nome?`);
     state.stage = 'ask_name';
   }
 
@@ -1127,6 +1113,25 @@
 
   async function handleChat(text) {
     const input = normalize(text);
+
+    // 0. PEDIDO DE EXPLICAÇÃO DETALHADA DO CURSO ("o que vou aprender", "ementa", "conteúdo")
+    if (/((o que|que|quais|quero saber).*(aprender|conteudo|conteúdo|ementa|ver.*mais|saber mais)|me explica.*curso|detalhe.*curso|conteudo.*curso|ementa|quero entender.*curso)/.test(input)) {
+      const course = findCourse(input) || state.suggestedCourse;
+      if (course) {
+        await presentCourseDetails(course);
+        return;
+      }
+      await botSay(`Claro! Me diz qual curso você quer saber mais. Posso te passar a ementa completa, módulos e ferramentas.`, {
+        quick: ['IA Iniciante', 'Vibe Code', 'Mentoria VIP', 'Ver todos os cursos']
+      });
+      return;
+    }
+
+    // 0.1 EXPLICAÇÃO SOBRE IA / CONCEITOS
+    if (/(o que.*ia|inteligencia artificial|o que.*intelig.*artificial|como.*ia.*funciona|ia.*como funciona|preciso.*saber.*programar|o que.*chatgpt|o que.*gemini|o que.*prompt|o que.*automa.*ia|o que.*mentoria.*vip|como.*funciona.*mentoria)/.test(input)) {
+      await botSay(getEducationalAnswer(input, text));
+      return;
+    }
 
     // 1. INTENT: comprando / matricular
     // Só ativa se for uma intenção clara de compra (não apenas mencionando "quero curso")
@@ -1259,8 +1264,8 @@
     }
 
     // 10. FALLBACK inteligente
-    await botSay(`Entendi, ${state.lead.name}. Posso te ajudar com várias coisas:\n\nEncontrar o curso ideal (me conta sua área/objetivo)\nInformações sobre preços e pagamento\nHorários e formato das aulas\nMentoria VIP\nGarantia e certificado\n\nO que você quer saber? Se preferir, posso te passar no WhatsApp da escola.`, {
-      quick: ['Quero aprender IA', 'Ver cursos', 'Preços', 'Falar com humano']
+    await botSay(`Entendi, ${state.lead.name}. Posso te ajudar de várias formas:\n\n• Explicar conceitos: o que é IA, ChatGPT, Gemini, prompt\n• Recomendar curso: me conta sua área e objetivo\n• Detalhar ementa: o que você vai aprender em cada curso\n• Preços e pagamento: PIX, boleto 2x, cartão 12x\n• Mentoria VIP: diferença pra curso normal\n• Falar com humano: te passo no WhatsApp\n\nO que você quer saber?`, {
+      quick: ['O que é IA?', 'Quero ver cursos', 'Quero Mentoria VIP', 'Falar com humano']
     });
   }
 
@@ -1274,15 +1279,83 @@
     }
   }
 
+  // Resposta educativa para perguntas conceituais sobre IA
+  function getEducationalAnswer(input, originalText) {
+    const name = state.lead.name || '';
+    const answers = [
+      {
+        match: /(o que.*ia|inteligencia artificial|o que.*intelig.*artificial|como.*ia.*funciona|ia.*como funciona)/,
+        answer: `Boa pergunta${name ? ', ' + name : ''}! Vou te explicar de forma simples.\n\nIA (Inteligência Artificial) é uma área da computação que cria sistemas capazes de fazer tarefas que antes só humanos conseguiam fazer: entender texto, reconhecer imagens, conversar, recomendar coisas, tomar decisões.\n\nHOJE, quando falamos de IA no dia a dia, estamos falando de IA GENERATIVA, que é um tipo específico de IA que CRIA conteúdo novo (texto, imagem, vídeo, código) a partir do que você pede.\n\nExemplos que você provavelmente já usou:\n• ChatGPT (cria texto, responde perguntas)\n• Gemini do Google (mesma coisa, integrado com Google)\n• DALL-E / Imagen (criam imagens)\n• Sora / Google Flow (criam vídeos)\n\nNÃO É mágica nem consciência. É estatística avançada: a IA aprende padrões de bilhões de textos e imagens, e gera respostas baseadas nesses padrões.\n\nPor isso dominar IA agora é tão importante: ela vai estar em TODO trabalho nos próximos anos. Quer que eu te mostre qual curso ideal pro seu momento?`,
+        quick: ['Quero ver cursos', 'Não sei qual curso fazer', 'Tirar outra dúvida']
+      },
+      {
+        match: /(o que.*chatgpt|chatgpt.*o que|como.*usar.*chatgpt|para que.*chatgpt)/,
+        answer: `ChatGPT é um assistente de IA criado pela OpenAI em 2022. Ele conversa com você como um humano e pode:\n\n• Escrever textos (e-mails, redações, posts, código)\n• Resumir documentos longos em segundos\n• Explicar conceitos complexos de forma simples\n• Resolver problemas de matemática\n• Criar imagens (com DALL-E, na versão paga)\n• Programar em qualquer linguagem\n\nCOMO USAR: Acesse chat.openai.com (ou chatgpt.com), crie conta grátis, e digite o que quer. Você pode pedir "escreva um e-mail pra meu chefe pedindo aumento" ou "explique a teoria da relatividade pra uma criança de 10 anos".\n\nDICA: O ChatGPT responde melhor quando você é específico. Em vez de "me dá ideias", diga "me dá 10 ideias de posts pra Instagram sobre cachorros, com emojis, em tom divertido".\n\nNo nosso curso de IA Iniciante (10h, R$4.000), você aprende a dominar o ChatGPT em 2 semanas. Quer saber mais?`,
+        quick: ['Quero ver curso de IA Iniciante', 'Quero matricular', 'Tirar outra dúvida']
+      },
+      {
+        match: /(o que.*gemini|gemini.*o que|como.*usar.*gemini|para que.*gemini)/,
+        answer: `Gemini é o assistente de IA do Google, concorrente direto do ChatGPT. Foi lançado em dezembro de 2023 e tem algumas vantagens:\n\n• INTEGRAÇÃO GOOGLE: Funciona dentro do Gmail, Google Docs, Sheets, Slides\n• ACESSO À INTERNET: Pode buscar informações atualizadas em tempo real (ChatGPT grátis não faz isso)\n• MULTIMODAL: Entende texto, imagem, áudio e vídeo ao mesmo tempo\n• GRATUITO: A versão básica é de graça (gemini.google.com)\n\nQUAL ESCOLHER?\n• ChatGPT: melhor pra textos longos, código, criatividade\n• Gemini: melhor pra quem já usa Google Workspace (Docs, Gmail, Sheets) e quer integração\n• Claude: melhor pra analisar PDFs longos e documentos\n\nNo curso da AI School, focamos em Gemini + ChatGPT porque são as duas ferramentas que dominam o mercado. Quer que eu te mostre o curso ideal?`,
+        quick: ['Quero ver cursos', 'O que é IA generativa?', 'Tirar outra dúvida']
+      },
+      {
+        match: /(o que.*prompt|prompt.*o que|como.*fazer.*prompt|engenharia.*prompt|prompt.*engenharia)/,
+        answer: `Prompt é a instrução que você dá pra IA. Tipo a "pergunta" que você manda pro ChatGPT.\n\nA qualidade do prompt define a qualidade da resposta. Se você manda "fala sobre IA", recebe texto genérico. Se manda "explique IA em 3 parágrafos para uma criança de 8 anos, com exemplo de brinquedo", recebe algo muito melhor.\n\nFÓRMULA CRISPE (a que ensinamos no curso):\n• C - Contexto (quem é você, pra quem é)\n• R - Role (qual papel a IA deve assumir)\n• I - Instruction (o que exatamente fazer)\n• S - Specificity (quanto detalhe)\n• P - Personality (tom de voz)\n• E - Extras (formato, tamanho, exemplos)\n\nExemplo fraco: "escreve um e-mail"\nExemplo forte: "Você é um vendedor experiente. Escreva um e-mail de follow-up para um cliente que demonstrou interesse em curso de IA mas não comprou. Tom amigável mas profissional. Máximo 150 palavras. Inclua CTA no final." \n\nIsso é ENGENDRAR PROMPT, e é uma habilidade que todo mundo precisa ter. No curso IA Iniciante (R$4.000, 10h) você aprende isso na prática. Quer?`,
+        quick: ['Quero ver curso de IA Iniciante', 'Quero matricular', 'Tirar outra dúvida']
+      },
+      {
+        match: /(o que.*automa.*ia|automacao.*ia.*o que|como.*automatizar|n8n|make.*automa)/,
+        answer: `Automação com IA é quando você faz a IA trabalhar SOZINHA em tarefas repetitivas, sem você precisar ficar pedindo uma a uma.\n\nEXEMPLO PRÁTICO: Em vez de copiar cada e-mail que chega, ler, responder... você cria um fluxo onde:\n1. Chega e-mail → IA lê automaticamente\n2. IA classifica (urgente, normal, spam)\n3. IA rascunha resposta\n4. Você só revisa e aprova\n\nFERRAMENTAS MAIS USADAS:\n• n8n (grátis, open source, mais técnico)\n• Make.com (visual, fácil, plano grátis)\n• Zapier (popular, mas caro)\n• Microsoft Power Automate (se já usa Office)\n\nNOSSO CURSO: IA Intermediário (R$4.000, 10h) ensina a montar esses fluxos do zero. Você sai com 10 templates de automação prontos pra usar no trabalho.\n\nQuer entender melhor ou matricular?`,
+        quick: ['Quero ver curso IA Intermediário', 'Quero matricular', 'Tirar outra dúvida']
+      },
+      {
+        match: /(o que.*mentoria.*vip|mentoria.*vip.*o que|como.*funciona.*mentoria|mentoria.*como funciona|diferenca.*mentoria.*curso)/,
+        answer: `Mentoria VIP é diferente de curso normal. Te explico:\n\nCURSO NORMAL (10h, R$4.000):\n• Currículo pré-definido (você aprende o que está na ementa)\n• Turma com outros alunos (até 10)\n• Ritmo da turma\n• Excelente pra quem tá começando\n\nMENTORIA VIP (10h, R$4.500 online / R$5.000 presencial):\n• SEM currículo fixo. Você chega com seu objetivo e a gente desenha um plano só seu\n• 1-a-1 com mentor (ninguém mais na sala)\n• Ritmo seu, no seu tempo\n• Foco 100% no seu projeto real\n• Canal direto com mentor no WhatsApp\n\nPARA QUEM É MENTORIA VIP:\n• Executivos que precisam aprender IA rápido pra uma decisão\n• Empreendedores que querem aplicar IA no próprio negócio\n• Profissionais que querem sair do CLT (90 dias)\n• Alguém com projeto específico (lançar app, criar canal, automatizar empresa)\n\nQuer conversar comigo sobre seu caso, ou prefere ver curso normal?`,
+        quick: ['Quero Mentoria VIP', 'Ver cursos normais', 'Tirar outra dúvida']
+      },
+      {
+        match: /(preciso.*saber.*programar|nao sei programar|não sei programar|tenho.*programar|exige.*programa)/,
+        answer: `Boa pergunta! Depende do curso. Te explico quais precisam e quais não:\n\nNÃO PRECISA PROGRAMAR:\n✓ IA Iniciante (R$4.000) - do zero, só saber usar computador\n✓ Edição de Vídeos com IA - CapCut + Gemini\n✓ Canva com IA - design sem código\n✓ Pacote Office com IA - Excel/Word/PowerPoint\n✓ IA para Engenheiros - usa ferramentas, não código\n✓ IA para Operadores de Drone - foco em edição\n✓ Criação de Sites no Lovable - app com 1 prompt\n✓ IA para Crianças (7-12) - Scratch visual\n\nPRECISA PROGRAMAR UM POUCO:\n• Vibe Code - programa com IA (não precisa saber antes)\n• Poe Bots - cria bots sem código\n\nPRECISA PROGRAMAR BASTANTE:\n• IA Avançado - APIs, RAG, fine-tuning\n• Criação de Sites Avançado - Next.js + TS\n• Automação Modular (mínimo 3 módulos)\n\nSe você não sabe programar e quer começar, recomendo IA Iniciante. Se quer programar com IA (sem precisar saber JavaScript), Vibe Code. Quer?`,
+        quick: ['Quero IA Iniciante', 'Quero Vibe Code', 'Quero Mentoria VIP', 'Tirar outra dúvida']
+      }
+    ];
+
+    for (const a of answers) {
+      if (a.match.test(input)) return a.answer;
+    }
+
+    // Default educational fallback
+    return `Boa pergunta${name ? ', ' + name : ''}! Vou te ajudar a entender.\n\nSobre o que exatamente você quer saber? Posso explicar:\n\n• O que é IA / IA generativa\n• O que é ChatGPT / Gemini / Claude\n• O que é prompt e engenharia de prompt\n• Como funciona automação com IA\n• O que é Mentoria VIP (diferença pra curso)\n• Se precisa saber programar\n• Detalhes de qualquer curso específico\n\nMe diz o que você quer entender melhor!`;
+  }
+
   async function presentCourse(course) {
-    const benefits = course.benefits.slice(0, 4).map(b => `✅ ${b}`).join('\n');
+    trackInterest(course.slug);
+    state.suggestedCourse = course;
+
+    const benefits = course.benefits.slice(0, 4).map(b => `✓ ${b}`).join('\n');
     const priceStr = course.isMentoria
       ? `A partir de R$ ${course.price.toLocaleString('pt-BR')} (${course.hours}h 1-a-1)`
-      : `R$ ${course.price.toLocaleString('pt-BR')} (${course.hours} horas)`;
+      : `R$ ${course.price.toLocaleString('pt-BR')} (${course.hours}h online) ou R$ 4.500 (presencial)`;
 
-    await botSay(`Encontrei o curso ideal pra você: **${course.title}** 🎯\n\n${course.short}\n\n${benefits}\n\n💰 ${priceStr}\n👥 Para: ${course.audience}\n\nQuer matricular?`, {
-      cta: { label: '🚀 Quero matricular', handler: () => redirectToCheckout(course.slug) },
-      quick: ['Ver outros cursos', 'Tirar dúvida', 'Falar com humano']
+    // Apresentação consultiva: explica o curso, mostra o que vai aprender
+    await botSay(`Encontrei o curso ideal pra você: ${course.title} 🎯\n\n${course.short}\n\nO QUE VOCÊ VAI APRENDER:\n${benefits}\n\nPRA QUEM É: ${course.audience}.\n\nINVESTIMENTO: ${priceStr}.\n\nQuer que eu te explique mais sobre o conteúdo, ou prefere ver outros cursos?`, {
+      quick: ['O que vou aprender a mais?', 'Ver outros cursos', 'Quero matricular', 'Tirar outra dúvida']
+    });
+  }
+
+  // Resposta detalhada sobre um curso (ementa)
+  async function presentCourseDetails(course) {
+    const modules = course.modules || [
+      'Módulo 1: Fundamentos e setup das ferramentas',
+      'Módulo 2: Aplicações práticas no seu dia a dia',
+      'Módulo 3: Projeto real + certificado'
+    ];
+    const tools = course.tools || course.ferramentas || [];
+    const moduleList = modules.map(m => `• ${m.title || m}`).join('\n');
+    const toolsStr = tools.length > 0 ? tools.join(', ') : 'ferramentas Google + ChatGPT';
+
+    await botSay(`EMENTA DETALHADA: ${course.title}\n\n${moduleList}\n\nFERRAMENTAS QUE VAI USAR: ${toolsStr}\n\nFORMATO: 10 horas (5 encontros de 2h ou 10 de 1h), online ao vivo via Zoom ou presencial.\n\nCERTIFICADO: Incluso, com verificação de autenticidade.\n\nTem mais alguma dúvida sobre o curso?`, {
+      quick: ['Quero matricular', 'Como funciona o pagamento?', 'Tem horários diferentes?', 'Ver outros cursos']
     });
   }
 
