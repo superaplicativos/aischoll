@@ -507,13 +507,44 @@ Sobre o que você quer saber? Posso falar sobre cursos, preços, formas de pagam
     const score = result.score;
     const course = result.course;
 
-    // Se encontrou curso e a pergunta tem intenção de aprendizado, prioriza curso
+    // 1. Se a pergunta é conceitual ("o que é X", "como funciona X"), prioriza conceito
     const input = normalize(userInput);
-    if (course && (/\bcurso\b|\baprender\b|\bquero\b|\bfazer\b|\bestudar\b|\bpreciso\b/.test(input) || course.titulo.toLowerCase().includes('python') || course.titulo.toLowerCase().includes('ia '))) {
+    const isConceptualQuestion = /\bo que (e|é)\b|\bcomo funciona\b|\bpara que serve\b|\bdiferenca\b|\bdiferença\b/.test(input);
+    if (isConceptualQuestion && chunk && score >= 2) {
+      return chunk.resposta(nome);
+    }
+
+    // 2. Se é pergunta de preço/valor, prioriza info de preço
+    if (/\bpreco\b|\bpreço\b|\bvalor\b|\bcusto\b|\bquanto custa\b|\bquanto fica\b/.test(input) && chunk && score >= 2) {
+      return chunk.resposta(nome);
+    }
+
+    // 3. Se é pergunta de pagamento, prioriza info de pagamento
+    if (/\bpagamento\b|\bpagar\b|\bpix\b|\bboleto\b|\bcartao\b|\bcartão\b|\bparcelar\b|\bparcela\b/.test(input) && chunk && score >= 2) {
+      return chunk.resposta(nome);
+    }
+
+    // 4. Se é pergunta de horário, prioriza info de horário
+    if (/\bhorario\b|\bhorário\b|\bquando\b|\baulas?\b|\bencontros?\b|\bturma\b|\binicio\b|\binício\b|\bdisponibilidade\b/.test(input) && chunk && score >= 2) {
+      return chunk.resposta(nome);
+    }
+
+    // 5. Se é pergunta de modalidade, prioriza info de modalidade
+    if (/\bonline\b|\bpresencial\b|\bmodalidade\b/.test(input) && chunk && score >= 2) {
+      return chunk.resposta(nome);
+    }
+
+    // 6. Se é objeção (caro, tempo, etc), prioriza objeção
+    if (/\bcaro\b|\bnao tenho dinheiro\b|\bnão tenho dinheiro\b|\bcaro demais\b|\btempo\b|\bocupado\b/.test(input) && chunk && score >= 2) {
+      return chunk.resposta(nome);
+    }
+
+    // 7. Se achou curso e tem intenção de aprendizado, mostra curso
+    if (course && (/\bcurso\b|\baprender\b|\bquero\b|\bfazer\b|\bestudar\b|\bpreciso\b/.test(input) || (course.titulo.toLowerCase().includes('python') && /python/.test(input)))) {
       return formatCourseResponse(course, nome);
     }
 
-    // Senão, usa o chunk recuperado (score >= 2 para evitar falsos positivos)
+    // 8. Senão, usa o chunk recuperado (score >= 2)
     if (chunk && score >= 2) {
       return chunk.resposta(nome);
     }
