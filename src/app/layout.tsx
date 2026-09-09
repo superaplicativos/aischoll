@@ -74,7 +74,7 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
-        {/* Chatbot de Vendas com RAG - Aria + Leads.js (CRM) */}
+        {/* Chatbot Aria (CRM + RAG + Chatbot) */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function(){
             function loadScript(name, callback) {
@@ -111,9 +111,11 @@ export default function RootLayout({
               tryNext();
             }
             function loadAll() {
-              // Carrega leads.js primeiro, depois chatbot.js (que depende dele)
+              // Carrega em sequência: leads.js → rag.js → chatbot.js
               loadScript('leads.js', function() {
-                loadScript('chatbot.js');
+                loadScript('rag.js', function() {
+                  loadScript('chatbot.js');
+                });
               });
             }
             if (document.readyState === 'loading') {

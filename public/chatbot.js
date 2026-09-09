@@ -1,15 +1,19 @@
 /**
- * AI School - Chatbot com DeepSeek API (respostas reais de IA)
- * v4.0 - Atende, tira dúvidas, vende de forma consultiva
+ * AI School - Aria (SDR Senior Chatbot)
+ * v5.0 - RAG local (sem dependência externa, sem CORS)
  *
- * Comportamento:
- * - Atende como SDR sênior e consultor
- * - Conhece TODOS os cursos da escola (IA, informática, web, design, marketing, negócios digitais)
- * - Não menciona reembolso/devolução
- * - Não empurra WhatsApp a toda hora (só quando necessário)
- * - Responde perguntas técnicas com profundidade real (via DeepSeek)
+ * Funcionamento:
+ * - Usa RAG local (rag.js) com knowledge base completa
+ * - Resposta imediata, sem latência
+ * - 100% confiável, sem pausas nem erros de rede
+ *
+ * Recursos:
+ * - Botão flutuante com animação
+ * - Captação de lead (nome + WhatsApp) no início
+ * - Respostas consultivas via RAG (cursos, preços, conceitos)
+ * - Detecção de intenção de matrícula (direciona pro checkout)
  * - Salva lead no CRM automaticamente
- * - Fallback inteligente se API falhar
+ * - Persistência de sessão
  */
 (function () {
   'use strict';
@@ -20,121 +24,8 @@
     storageKey: 'aischool_leads_v3',
     sessionKey: 'aischool_session_v3',
     primaryColor: '#7c3aed',
-    accentColor: '#10b981',
     botName: 'Aria',
-    // DeepSeek API - lê a chave de um arquivo externo ou do localStorage
-    // (não deixamos a chave hardcoded aqui para segurança do GitHub)
-    deepseekUrl: 'https://api.deepseek.com/v1/chat/completions',
-    deepseekModel: 'deepseek-chat',
   };
-
-  // Carrega a chave da API dinamicamente (evita vazar no GitHub)
-  async function getApiKey() {
-    // 1. Tenta do localStorage (configurada pelo admin no CRM)
-    try {
-      const stored = localStorage.getItem('aischool_deepseek_key');
-      if (stored) return stored;
-    } catch (e) {}
-    // 2. Tenta de arquivo externo (config.json)
-    try {
-      const base = window.location.pathname.replace(/\/+$/, '');
-      const paths = [base + '/deepseek-key.json', './deepseek-key.json', '/deepseek-key.json'];
-      for (const p of paths) {
-        try {
-          const r = await fetch(p);
-          if (r.ok) {
-            const data = await r.json();
-            if (data.key) return data.key;
-          }
-        } catch (e) {}
-      }
-    } catch (e) {}
-    // 3. Fallback: chave vazia (bot usa respostas locais sem DeepSeek)
-    return '';
-  }
-
-  // ===== KNOWLEDGE BASE (CATÁLOGO COMPLETO) =====
-  const CURSOS = [
-    // === IA (já existentes) ===
-    { slug: 'ia-iniciante', titulo: 'IA Iniciante: ChatGPT e Gemini do Zero', nivel: 'Iniciante', area: 'IA', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Qualquer pessoa que quer começar com IA', ferramentas: ['ChatGPT', 'Gemini', 'Gemini Imagen', 'Perplexity'] },
-    { slug: 'ia-intermediario', titulo: 'IA Intermediário: Automação com Gemini + n8n', nivel: 'Intermediário', area: 'IA', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais que já usam ChatGPT e querem automatizar', ferramentas: ['n8n', 'Make.com', 'Gemini', 'Google Workspace'] },
-    { slug: 'ia-avancado', titulo: 'IA Avançado: APIs, RAG, Agentes, MCP', nivel: 'Avançado', area: 'IA', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Desenvolvedores, CTOs, analistas de dados', ferramentas: ['OpenAI API', 'Anthropic API', 'LangChain', 'Pinecone', 'MCP'] },
-    { slug: 'automacao-modular', titulo: 'Automação com IA (Curso Modular)', nivel: 'Avançado', area: 'IA', preco: 12000, modalidades: ['online', 'presencial'], duracao: 'Mínimo 3 módulos de 10h', publico: 'Empresas e profissionais que precisam de automação profissional', ferramentas: ['n8n', 'LangChain', 'Gemini', 'APIs Google'] },
-    { slug: 'vibe-code', titulo: 'Vibe Code: Programe com IA', nivel: 'Iniciante', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores, designers, qualquer pessoa que queira criar apps', ferramentas: ['Cursor', 'Gemini Code Assist', 'v0', 'Lovable'] },
-    { slug: 'edicao-videos-ia', titulo: 'Edição de Vídeos com IA (Gemini + Google Flow)', nivel: 'Intermediário', area: 'Criatividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Criadores de conteúdo, social media, youtubers', ferramentas: ['CapCut', 'Gemini', 'Google Flow', 'ElevenLabs'] },
-    { slug: 'ia-imagens-gemini', titulo: 'IA para Imagens (Gemini + GPT)', nivel: 'Iniciante', area: 'Criatividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Designers, social media, criadores', ferramentas: ['Gemini Imagen', 'GPT/DALL-E', 'Canva IA'] },
-    { slug: 'poe-bots-ia', titulo: 'Poe: Crie Seus Próprios Bots de IA', nivel: 'Intermediário', area: 'IA', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Criadores, empreendedores, suporte', ferramentas: ['Poe', 'GPT-4', 'Claude', 'Llama'] },
-    { slug: 'ia-empreendedorismo', titulo: 'IA + Empreendedorismo (Solo First)', nivel: 'Intermediário', area: 'Empreendedorismo', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais que querem sair do CLT, freelancers', ferramentas: ['Gemini', 'ChatGPT', 'Notion', 'LinkedIn'] },
-
-    // === INFORMÁTICA BÁSICA ===
-    { slug: 'informatica-basica', titulo: 'Informática Básica Completa', nivel: 'Iniciante', area: 'Informática', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Iniciantes, aposentados, donas de casa, estudantes', ferramentas: ['Windows', 'Navegador', 'E-mail', 'Pendrive', 'Google Drive'] },
-    { slug: 'word-profissional', titulo: 'Word Profissional', nivel: 'Iniciante', area: 'Informática', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais administrativos, estudantes', ferramentas: ['Microsoft Word', 'Google Docs'] },
-    { slug: 'excel-do-zero', titulo: 'Excel do Zero ao Avançado', nivel: 'Iniciante ao Avançado', area: 'Informática', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais administrativos, analistas, estudantes', ferramentas: ['Microsoft Excel', 'Planilhas Google'] },
-    { slug: 'excel-recem-admitidos', titulo: 'Excel para Recém-Admitidos', nivel: 'Iniciante', area: 'Informática', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Quem acabou de ser admitido e precisa dominar Excel rápido', ferramentas: ['Excel', 'Copilot', 'Power BI'] },
-    { slug: 'powerpoint-apresentacoes', titulo: 'PowerPoint: Apresentações Profissionais', nivel: 'Iniciante', area: 'Informática', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais, professores, estudantes', ferramentas: ['PowerPoint', 'Canva', 'Copilot'] },
-    { slug: 'office-copilot', titulo: 'Pacote Office com Copilot (IA)', nivel: 'Iniciante', area: 'Informática', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais que usam Excel/Word/PowerPoint', ferramentas: ['Microsoft 365 Copilot', 'Excel', 'Word', 'PowerPoint'] },
-    { slug: 'google-workspace', titulo: 'Google Workspace Completo', nivel: 'Iniciante', area: 'Informática', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empresas, freelancers, estudantes', ferramentas: ['Gmail', 'Docs', 'Sheets', 'Slides', 'Drive'] },
-
-    // === PROGRAMAÇÃO ===
-    { slug: 'html-css-basico', titulo: 'HTML e CSS: Crie Seus Primeiros Sites', nivel: 'Iniciante', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Iniciantes em programação web', ferramentas: ['HTML5', 'CSS3', 'VS Code'] },
-    { slug: 'javascript-basico', titulo: 'JavaScript Moderno do Zero', nivel: 'Iniciante', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Iniciantes que querem programar pra web', ferramentas: ['JavaScript', 'VS Code', 'Node.js'] },
-    { slug: 'python-basico', titulo: 'Python do Zero', nivel: 'Iniciante', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Iniciantes, analistas de dados, cientistas', ferramentas: ['Python', 'Jupyter', 'Pandas'] },
-    { slug: 'python-dados', titulo: 'Python para Análise de Dados', nivel: 'Intermediário', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Analistas, cientistas de dados', ferramentas: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'Jupyter'] },
-    { slug: 'react-nextjs', titulo: 'React + Next.js (Avançado)', nivel: 'Avançado', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Desenvolvedores front-end', ferramentas: ['React', 'Next.js', 'TypeScript', 'Tailwind'] },
-    { slug: 'nodejs-api', titulo: 'Node.js: APIs do Zero ao Deploy', nivel: 'Intermediário', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Desenvolvedores back-end', ferramentas: ['Node.js', 'Express', 'MongoDB', 'Postman'] },
-    { slug: 'sql-banco-dados', titulo: 'SQL e Bancos de Dados', nivel: 'Intermediário', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Desenvolvedores, analistas, DBAs iniciantes', ferramentas: ['MySQL', 'PostgreSQL', 'SQLite'] },
-    { slug: 'criacao-sites-lovable', titulo: 'Criação de Sites no Lovable (No-Code)', nivel: 'Iniciante', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores, designers, pequenos negócios', ferramentas: ['Lovable', 'Supabase', 'Vercel'] },
-    { slug: 'criacao-sites-avancado', titulo: 'Criação de Sites Avançado (Cursor + v0)', nivel: 'Avançado', area: 'Programação', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Desenvolvedores, designers técnicos, fundadores', ferramentas: ['Cursor', 'v0', 'Bolt.new', 'Next.js'] },
-
-    // === DESIGN ===
-    { slug: 'photoshop-basico', titulo: 'Photoshop do Zero', nivel: 'Iniciante', area: 'Design', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Designers iniciantes, fotógrafos, social media', ferramentas: ['Adobe Photoshop'] },
-    { slug: 'illustrator-basico', titulo: 'Illustrator: Vetores e Identidade Visual', nivel: 'Iniciante', area: 'Design', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Designers, ilustradores', ferramentas: ['Adobe Illustrator'] },
-    { slug: 'canva-ia', titulo: 'Canva com IA (Magic Studio)', nivel: 'Iniciante', area: 'Design', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores, social media, professores', ferramentas: ['Canva Pro', 'Magic Studio', 'Gemini'] },
-    { slug: 'figma-ux-ui', titulo: 'Figma + UX/UI Design', nivel: 'Intermediário', area: 'Design', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Designers, UX designers, front-end', ferramentas: ['Figma', 'Design System'] },
-    { slug: 'identidade-visual', titulo: 'Identidade Visual e Branding', nivel: 'Intermediário', area: 'Design', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Designers, empreendedores que querem criar marca', ferramentas: ['Illustrator', 'Canva', 'Figma'] },
-
-    // === MARKETING DIGITAL ===
-    { slug: 'marketing-digital-basico', titulo: 'Marketing Digital do Zero', nivel: 'Iniciante', area: 'Marketing', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores, social media iniciantes, estudantes', ferramentas: ['Meta Ads', 'Google Ads', 'Analytics'] },
-    { slug: 'social-media', titulo: 'Social Media Profissional', nivel: 'Intermediário', area: 'Marketing', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Social media, empreendedores', ferramentas: ['Instagram', 'TikTok', 'LinkedIn', 'Buffer'] },
-    { slug: 'google-ads', titulo: 'Google Ads: Tráfego Pago', nivel: 'Intermediário', area: 'Marketing', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores, gestores de tráfego', ferramentas: ['Google Ads', 'Google Analytics', 'Tag Manager'] },
-    { slug: 'meta-ads', titulo: 'Meta Ads (Facebook + Instagram)', nivel: 'Intermediário', area: 'Marketing', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Social media, empreendedores', ferramentas: ['Meta Business Suite', 'Ads Manager'] },
-    { slug: 'seo-trafego-org', titulo: 'SEO: Tráfego Orgânico', nivel: 'Intermediário', area: 'Marketing', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Blogueiros, empreendedores, marketers', ferramentas: ['Google Search Console', 'Ahrefs', 'SEMrush'] },
-    { slug: 'email-marketing', titulo: 'Email Marketing com IA', nivel: 'Iniciante', area: 'Marketing', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores, marketers', ferramentas: ['Mailchimp', 'RD Station', 'Gemini'] },
-    { slug: 'copywriting', titulo: 'Copywriting que Converte', nivel: 'Intermediário', area: 'Marketing', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Copywriters, empreendedores, social media', ferramentas: ['ChatGPT', 'Claude'] },
-
-    // === NEGÓCIOS DIGITAIS ===
-    { slug: 'ecommerce-shopify', titulo: 'E-commerce com Shopify', nivel: 'Iniciante', area: 'Negócios', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores e-commerce', ferramentas: ['Shopify', 'Facebook Ads', 'Google Shopping'] },
-    { slug: 'dropshipping', titulo: 'Dropshipping do Zero', nivel: 'Iniciante', area: 'Negócios', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores iniciantes', ferramentas: ['Shopify', 'AliExpress', 'Meta Ads'] },
-    { slug: 'afiliados', titulo: 'Marketing de Afiliados', nivel: 'Iniciante', area: 'Negócios', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores digitais', ferramentas: ['Hotmart', 'Monetizze', 'Eduzz'] },
-    { slug: 'infoprodutos', titulo: 'Criação de Infoprodutos', nivel: 'Intermediário', area: 'Negócios', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Especialistas que querem vender conhecimento', ferramentas: ['Hotmart', 'Kajabi', 'Canva'] },
-    { slug: 'gestao-financeira', titulo: 'Gestão Financeira para Pequenos Negócios', nivel: 'Iniciante', area: 'Negócios', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Pequenos empreendedores', ferramentas: ['Excel', 'Contahub', 'Power BI'] },
-    { slug: 'modelo-negocio', titulo: 'Business Model Canvas + Canvas Solo', nivel: 'Intermediário', area: 'Negócios', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Empreendedores, startups', ferramentas: ['Notion', 'Miro', 'Gemini'] },
-
-    // === EDIÇÃO DE VÍDEO/ÁUDIO ===
-    { slug: 'premiere-basico', titulo: 'Premiere Pro: Edição Profissional', nivel: 'Iniciante', area: 'Criatividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Editores de vídeo, youtubers', ferramentas: ['Adobe Premiere Pro'] },
-    { slug: 'after-effects', titulo: 'After Effects: Motion Graphics', nivel: 'Intermediário', area: 'Criatividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Editores, motion designers', ferramentas: ['Adobe After Effects'] },
-    { slug: 'audicao-audio', titulo: 'Edição de Áudio com Audition', nivel: 'Iniciante', area: 'Criatividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Podcasters, editores de áudio', ferramentas: ['Adobe Audition', 'Audacity'] },
-    { slug: 'fotografia-basica', titulo: 'Fotografia Digital Básica', nivel: 'Iniciante', area: 'Criatividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Fotógrafos iniciantes, hobby', ferramentas: ['Lightroom', 'Photoshop'] },
-
-    // === PRODUTIVIDADE E PROFISSIONAL ===
-    { slug: 'notion-produtividade', titulo: 'Notion: Produtividade Pessoal e Profissional', nivel: 'Iniciante', area: 'Produtividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais, estudantes, empreendedores', ferramentas: ['Notion', 'Gemini'] },
-    { slug: 'power-bi', titulo: 'Power BI: Dashboards Profissionais', nivel: 'Intermediário', area: 'Produtividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Analistas, gestores', ferramentas: ['Power BI', 'Excel', 'DAX'] },
-    { slug: 'linkedin-pessoal', titulo: 'LinkedIn: Marca Pessoal e Networking', nivel: 'Iniciante', area: 'Produtividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais, consultores, empreendedores', ferramentas: ['LinkedIn', 'ChatGPT'] },
-    { slug: 'gestao-tempo', titulo: 'Gestão de Tempo e Produtividade', nivel: 'Iniciante', area: 'Produtividade', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Profissionais ocupados, empreendedores', ferramentas: ['Notion', 'Trello', 'Gemini'] },
-
-    // === PROFISSIONAL ===
-    { slug: 'ia-engenheiros-arquitetos', titulo: 'IA para Engenheiros e Arquitetos', nivel: 'Intermediário', area: 'Profissional', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Engenheiros, arquitetos, calculistas', ferramentas: ['Midjourney', 'Veras', 'PromeAI', 'Revit'] },
-    { slug: 'ia-operadores-drone', titulo: 'IA para Operadores de Drone', nivel: 'Intermediário', area: 'Profissional', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Operadores de drone, pilotos ANAC', ferramentas: ['DroneDeploy', 'Pix4D', 'CapCut'] },
-
-    // === INFANTO-JUVENIL ===
-    { slug: 'ia-robotica-criancas', titulo: 'IA + Robótica para Crianças (7-12 anos)', nivel: 'Infantil', area: 'Infanto-juvenil', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Crianças de 7 a 12 anos', ferramentas: ['Scratch', 'LEGO Education', 'Micro:bit', 'Gemini Kids'] },
-    { slug: 'ia-adolescentes', titulo: 'IA para Adolescentes (13-17 anos)', nivel: 'Intermediário', area: 'Infanto-juvenil', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Adolescentes de 13 a 17 anos', ferramentas: ['Cursor', 'Gemini', 'CapCut', 'Gemini Imagen'] },
-    { slug: 'programacao-criancas', titulo: 'Programação para Crianças (8-12)', nivel: 'Infantil', area: 'Infanto-juvenil', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Crianças curiosas por programar', ferramentas: ['Scratch', 'Micro:bit', 'mBlock'] },
-    { slug: 'robotica-educacional', titulo: 'Robótica Educacional com LEGO', nivel: 'Infantil', area: 'Infanto-juvenil', preco: 4000, modalidades: ['online', 'presencial'], duracao: '10h', publico: 'Crianças e adolescentes (9-15)', ferramentas: ['LEGO Spike Prime', 'Scratch'] },
-
-    // === MENTORIA VIP ===
-    { slug: 'mentoria-vip', titulo: 'Mentoria VIP Personalizada', nivel: 'VIP', area: 'Mentoria', preco: 4500, modalidades: ['online', 'presencial'], duracao: 'Mínimo 10 horas', publico: 'Executivos, fundadores, profissionais com objetivo específico', ferramentas: ['Personalizado'] },
-  ];
 
   // ===== STATE =====
   let state = {
@@ -142,7 +33,6 @@
     lead: { name: '', whatsapp: '', startedAt: null, course_interest: [], lastIntent: null },
     messages: [],
     suggestedCourse: null,
-    conversationHistory: [], // Para contexto da IA
   };
 
   // ===== STORAGE =====
@@ -164,7 +54,6 @@
   function saveLead() {
     if (!state.lead.name || !state.lead.whatsapp) return;
     try {
-      // Salva no CRM via biblioteca leads.js
       if (window.AISchoolLeads) {
         const conversation = state.messages.map(m => ({
           from: m.from, text: m.text, timestamp: m.timestamp
@@ -181,31 +70,6 @@
     } catch (e) {}
   }
 
-  // ===== TEXT HELPERS =====
-  function normalize(text) {
-    return (text || '').toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-  }
-
-  function formatBRL(v) {
-    return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  }
-
-  // ===== COURSE FINDER =====
-  function findCourse(query) {
-    const input = normalize(query);
-    let best = null, bestScore = 0;
-    CURSOS.forEach(c => {
-      const haystack = normalize(c.titulo + ' ' + c.area + ' ' + (c.publico || '') + ' ' + (c.ferramentas || []).join(' '));
-      let score = 0;
-      input.split(/\s+/).forEach(w => {
-        if (w.length > 2 && haystack.includes(w)) score += 1;
-      });
-      if (score > bestScore) { bestScore = score; best = c; }
-    });
-    return bestScore >= 2 ? best : null;
-  }
-
   function trackInterest(slug) {
     if (slug && !state.lead.course_interest.includes(slug)) {
       state.lead.course_interest.push(slug);
@@ -214,138 +78,7 @@
     }
   }
 
-  // ===== DEEPSEEK API CALL =====
-  async function callDeepSeek(userMessage) {
-    const apiKey = await getApiKey();
-    if (!apiKey) {
-      // Sem chave: usa fallback local
-      return getFallbackResponse(userMessage);
-    }
-
-    // Adiciona mensagem ao histórico
-    state.conversationHistory.push({ role: 'user', content: userMessage });
-
-    const systemPrompt = buildSystemPrompt();
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      ...state.conversationHistory.slice(-10),
-    ];
-
-    try {
-      const response = await fetch(CONFIG.deepseekUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + apiKey,
-        },
-        body: JSON.stringify({
-          model: CONFIG.deepseekModel,
-          messages: messages,
-          max_tokens: 800,
-          temperature: 0.7,
-          stream: false,
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('DeepSeek API error: ' + response.status);
-      }
-
-      const data = await response.json();
-      const reply = data.choices[0]?.message?.content || '';
-
-      state.conversationHistory.push({ role: 'assistant', content: reply });
-      if (state.conversationHistory.length > 20) {
-        state.conversationHistory = state.conversationHistory.slice(-20);
-      }
-
-      return reply;
-    } catch (err) {
-      console.error('[Aria] DeepSeek API falhou:', err);
-      return getFallbackResponse(userMessage);
-    }
-  }
-
-  // ===== SYSTEM PROMPT (define o comportamento) =====
-  function buildSystemPrompt() {
-    const catalogoResumido = CURSOS.map(c => `- ${c.titulo} | R$${c.preco.toLocaleString('pt-BR')} | ${c.duracao} | ${c.modalidades.join('/')} | Para: ${c.publico}`).join('\n');
-
-    return `Você é a Aria, consultora e vendedora sênior da AI School, escola brasileira de tecnologia e negócios digitais.
-
-SOBRE A ESCOLA:
-A AI School oferece cursos de informática, web, programação, design, marketing digital, IA, edição de vídeo, negócios digitais e mais. Atende crianças (7-12), adolescentes (13-17), adultos e profissionais. Modalidades online e presencial (São Paulo).
-
-PREÇOS (R$):
-- Cursos regulares: R$4.000 por 10h online, R$4.500 presencial (R$400/h online, R$450/h presencial)
-- Mentoria VIP: R$4.500 (10h online, R$450/h) ou R$5.000 (10h presencial, R$500/h)
-- Automação Modular: R$4.000 por módulo, mínimo 3 módulos (R$12.000)
-- Pagamento: PIX (à vista), Boleto (2x sem juros), Cartão (até 12x com juros da operadora)
-
-PAGAMENTO: PIX, boleto 2x sem juros, cartão até 12x (juros da operadora). Não fale de reembolso ou devolução.
-
-CATÁLOGO COMPLETO:
-${catalogoResumido}
-
-FORMA DE ATUAR (você é uma SDR consultiva):
-1. Atenda com calma, sem pressa de vender
-2. Tira dúvidas técnicas com profundidade (use seu conhecimento)
-3. Quando o cliente perguntar sobre um tema, explique o conceito ANTES de oferecer curso
-4. Recomende o curso ideal baseado no perfil e objetivo
-5. Quando o cliente decidir, direciona pra matrícula (não empurra WhatsApp a toda hora)
-6. Não mencione reembolso, devolução ou "garantia de 7 dias"
-7. Não fale "falar com humano" o tempo todo, só se o cliente pedir explicitamente
-
-REGRAS:
-- Responda sempre em português brasileiro
-- Use linguagem natural, não robótica
-- Seja específico sobre os cursos (ementa, ferramentas, duração)
-- Quando mencionar preço, use o formato "R$4.000 (10h)"
-- Quando o cliente quiser matricular, diga que vai direcionar pro checkout
-- Não invente cursos que não estão no catálogo
-- Não use emojis em excesso (máximo 2-3 por mensagem)
-- Não use bullet points demais, prefira parágrafos naturais
-- Mantenha respostas concisas (máximo 200 palavras geralmente)
-
-NOME DO LEAD ATUAL: ${state.lead.name || 'ainda não informou'}
-INTERESSES JÁ DEMONSTRADOS: ${state.lead.course_interest.join(', ') || 'nenhum ainda'}`;
-  }
-
-  // ===== FALLBACK (se API falhar) =====
-  function getFallbackResponse(userMessage) {
-    const input = normalize(userMessage);
-    const name = state.lead.name || '';
-
-    // Saudação
-    if (/^(oi|ola|olá|opa|bom dia|boa tarde|boa noite)/.test(input)) {
-      return `Olá${name ? ', ' + name : ''}! Sou a Aria da AI School. Posso te ajudar a encontrar o curso ideal, tirar dúvidas sobre conteúdo, preços ou modalidades. O que você quer saber?`;
-    }
-
-    // Curso específico
-    const course = findCourse(input);
-    if (course) {
-      trackInterest(course.slug);
-      state.suggestedCourse = course;
-      return `Encontrei o curso ideal pra você: ${course.titulo}.\n\n${course.duracao} | R$${course.preco.toLocaleString('pt-BR')} | ${course.modalidades.join(' ou ')}\n\nPara: ${course.publico}.\nFerramentas: ${(course.ferramentas || []).join(', ')}.\n\nQuer saber mais sobre o conteúdo, ou prefere matricular?`;
-    }
-
-    // Matricular
-    if (/^(quero matricular|matricular|inscrever|fechar|bora|to dentro)/.test(input)) {
-      const c = state.suggestedCourse || findCourse(input);
-      if (c) {
-        return `Boa! Vou te levar pro checkout de ${c.titulo}. Lá você gera o PIX e paga em segundos. Também aceitamos boleto 2x sem juros ou cartão em até 12x.`;
-      }
-      return 'Boa! Qual curso você quer? Posso te mostrar opções ou recomendar com base no seu objetivo.';
-    }
-
-    // Preço
-    if (/(preco|preço|valor|custo|quanto)/.test(input)) {
-      return `Tabela de preços:\n\nCursos regulares: R$4.000 (10h online) ou R$4.500 (presencial)\nMentoria VIP: R$4.500 (10h online) ou R$5.000 (presencial)\nAutomação Modular: R$4.000 por módulo (mínimo 3)\n\nPagamento: PIX, boleto 2x sem juros ou cartão 12x com juros da operadora.`;
-    }
-
-    return `Entendi${name ? ', ' + name : ''}. Posso te ajudar com:\n\n- Explicar conceitos de IA, programação, marketing, design\n- Recomendar curso ideal pro seu perfil\n- Detalhar ementa de qualquer curso\n- Informações de preço e pagamento\n\nO que você quer saber?`;
-  }
-
-  // ===== STYLES (mesma do v3) =====
+  // ===== STYLES =====
   const STYLES = `
     .aria-fab { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #ec4899); border: none; cursor: pointer; z-index: 9998; box-shadow: 0 6px 24px rgba(124,58,237,0.4); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; animation: aria-pulse 3s ease-in-out infinite; }
     .aria-fab:hover { transform: scale(1.06); }
@@ -424,7 +157,6 @@ INTERESSES JÁ DEMONSTRADOS: ${state.lead.course_interest.join(', ') || 'nenhum 
 
   let fab, chatWindow, messagesEl, inputEl, sendBtn, quickEl, actionsEl, badge;
   let isOpen = false;
-  let isTyping = false;
 
   function createUI() {
     fab = el('button', { class: 'aria-fab', 'aria-label': 'Conversar com Aria', title: 'Fale com a Aria' });
@@ -504,7 +236,6 @@ INTERESSES JÁ DEMONSTRADOS: ${state.lead.course_interest.join(', ') || 'nenhum 
   }
 
   function showTyping() {
-    isTyping = true;
     const t = el('div', { class: 'aria-typing', id: 'aria-typing-indicator' });
     t.appendChild(el('span'));
     t.appendChild(el('span'));
@@ -514,7 +245,6 @@ INTERESSES JÁ DEMONSTRADOS: ${state.lead.course_interest.join(', ') || 'nenhum 
   }
 
   function hideTyping() {
-    isTyping = false;
     const t = document.getElementById('aria-typing-indicator');
     if (t) t.remove();
   }
@@ -540,9 +270,8 @@ INTERESSES JÁ DEMONSTRADOS: ${state.lead.course_interest.join(', ') || 'nenhum 
   async function botSay(text, opts) {
     opts = opts || {};
     showTyping();
-    // Tempo variável baseado no tamanho da resposta (DeepSeek demora mais)
-    const waitTime = 800 + Math.random() * 800;
-    await new Promise(r => setTimeout(r, waitTime));
+    // Latência natural curta (sem API externa = resposta rápida)
+    await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
     hideTyping();
     addMessage(text, 'bot');
     clearQuick();
@@ -581,8 +310,8 @@ INTERESSES JÁ DEMONSTRADOS: ${state.lead.course_interest.join(', ') || 'nenhum 
         messagesEl.appendChild(msgEl);
       });
       messagesEl.scrollTop = messagesEl.scrollHeight;
-      botSay(`Oi, ${state.lead.name}! Bem-vindo de volta. Como posso te ajudar hoje?`, {
-        quick: ['Quero ver cursos', 'Tirar dúvida', 'Quero matricular']
+      botSay(`Oi, ${state.lead.name}! Bem-vindo de volta à AI School. Como posso te ajudar hoje?`, {
+        quick: ['Quero ver cursos', 'Tirar dúvida', 'Quero matricular', 'Falar com humano']
       });
       return;
     }
@@ -619,57 +348,104 @@ INTERESSES JÁ DEMONSTRADOS: ${state.lead.course_interest.join(', ') || 'nenhum 
       saveLead();
       state.stage = 'chatting';
       await botSay(`Perfeito, ${state.lead.name}! ✅\n\nAgora me conta: o que você quer aprender ou tirar dúvida? Posso falar sobre qualquer área, desde IA e programação até marketing digital e design.`, {
-        quick: ['O que é IA?', 'Quero ver cursos', 'Quero programar', 'Quero aprender design']
+        quick: ['O que é IA?', 'Quero ver cursos', 'Quero programar', 'Quero aprender design', 'Quero Mentoria VIP']
       });
       return;
     }
 
-    // Chatting: usar DeepSeek API
     await handleChat(text);
   }
 
   async function handleChat(text) {
-    const input = normalize(text);
+    // 1. PEDIDO DE HUMANO
+    if (window.AISchoolRAG && AISchoolRAG.isHumanRequest(text)) {
+      await botSay('Claro! Posso te redirecionar pro WhatsApp da escola. Lá você fala direto com nosso time. 👇', {
+        cta: { label: '📱 Abrir WhatsApp da escola', handler: sendLeadToWhatsApp }
+      });
+      return;
+    }
 
-    // Detectar intenção de matrícula explicita (atalho direto pro checkout)
-    if (/^(quero matricular|matricular agora|inscrever agora|fechar agora|bora fechar)/.test(input)) {
-      const course = state.suggestedCourse || findCourse(input);
+    // 2. INTENÇÃO DE MATRÍCULA
+    if (window.AISchoolRAG && AISchoolRAG.isEnrollmentIntent(text)) {
+      const course = (window.AISchoolRAG && AISchoolRAG.findCourse(text)) || state.suggestedCourse;
       if (course) {
         trackInterest(course.slug);
-        await botSay(`Boa, ${state.lead.name}! 🚀 Vou te levar direto pro checkout de ${course.titulo}. Lá você gera o PIX e paga em segundos. Também aceitamos boleto 2x sem juros ou cartão em até 12x.`, {
-          cta: { label: '🚀 Ir para o checkout', handler: () => redirectToCheckout(course.slug) }
+        const precoStr = course.preco === 4500
+          ? 'R$4.500 (10h online) ou R$5.000 (presencial)'
+          : course.preco === 12000
+          ? 'R$12.000 (3 módulos de 10h)'
+          : 'R$4.000 (10h online) ou R$4.500 (presencial)';
+        await botSay(`Boa, ${state.lead.name}! 🚀 Vou te levar direto pro checkout de ${course.titulo}.\n\nValor: ${precoStr}\nPagamento: PIX, boleto 2x sem juros ou cartão em até 12x (juros da operadora).`, {
+          cta: { label: '🚀 Ir para o checkout', handler: () => redirectToCheckout(course.slug) },
+          quick: ['Tirar dúvida antes', 'Ver outros cursos', 'Falar com humano']
+        });
+        return;
+      }
+      await botSay('Boa! Qual curso você quer fazer? Se não souber, me conta o que você quer aprender que eu te indico.', {
+        quick: ['Quero ver cursos', 'Quero Mentoria VIP', 'Tirar dúvida']
+      });
+      return;
+    }
+
+    // 3. PEDIDO DE EXPLICAÇÃO DE CURSO
+    if (window.AISchoolRAG && AISchoolRAG.isCourseDetailRequest(text)) {
+      const course = (window.AISchoolRAG && AISchoolRAG.findCourse(text)) || state.suggestedCourse;
+      if (course) {
+        trackInterest(course.slug);
+        await botSay(formatCourseDetails(course, state.lead.name), {
+          quick: ['Quero matricular', 'Como funciona o pagamento?', 'Tem horários diferentes?', 'Ver outros cursos']
         });
         return;
       }
     }
 
-    // Detectar interesse em curso específico e sugerir matrícula
-    const course = findCourse(input);
-    if (course && !state.suggestedCourse) {
-      state.suggestedCourse = course;
-      trackInterest(course.slug);
+    // 4. PEDIDO DE LISTA DE CURSOS
+    if (window.AISchoolRAG && AISchoolRAG.isListRequest(text)) {
+      const listText = AISchoolRAG.listCoursesByArea();
+      await botSay(listText, {
+        quick: ['IA', 'Programação', 'Design', 'Marketing', 'Negócios', 'Mentoria VIP']
+      });
+      return;
     }
 
-    // Chama DeepSeek API pra resposta real
-    showTyping();
-    try {
-      const reply = await callDeepSeek(text);
-      hideTyping();
-      if (reply) {
-        addMessage(reply, 'bot');
-        // Sugere CTA de matrícula se um curso foi identificado
-        if (state.suggestedCourse) {
-          const ctaLabel = state.suggestedCourse.slug === 'mentoria-vip' ? '👑 Quero Mentoria VIP' : '🚀 Quero matricular';
-          showCTA(ctaLabel, () => redirectToCheckout(state.suggestedCourse.slug));
-        }
-        showQuick(['Ver outros cursos', 'Tirar outra dúvida', 'Falar com humano']);
+    // 5. RAG: usar knowledge base pra responder
+    if (window.AISchoolRAG) {
+      const course = AISchoolRAG.findCourse(text);
+      if (course) {
+        state.suggestedCourse = course;
+        trackInterest(course.slug);
       }
-    } catch (err) {
-      hideTyping();
-      const fallback = getFallbackResponse(text);
-      addMessage(fallback, 'bot');
-      showQuick(['Quero ver cursos', 'Quero matricular', 'Falar com humano']);
+
+      const reply = AISchoolRAG.generateResponse(text, state.lead.name, state.lead.course_interest);
+      await botSay(reply, {
+        quick: state.suggestedCourse
+          ? ['Quero matricular', 'O que vou aprender?', 'Ver outros cursos', 'Falar com humano']
+          : ['Quero ver cursos', 'O que é IA?', 'Quero Mentoria VIP', 'Falar com humano']
+      });
+
+      // Se um curso foi identificado, oferece CTA de matrícula
+      if (state.suggestedCourse) {
+        showCTA('🚀 Quero matricular', () => redirectToCheckout(state.suggestedCourse.slug));
+      }
+      return;
     }
+
+    // 6. FALLBACK (sem RAG carregado)
+    await botSay(`Posso te ajudar com várias coisas, ${state.lead.name}. O que você quer saber?`, {
+      quick: ['Quero ver cursos', 'Tirar dúvida', 'Falar com humano']
+    });
+  }
+
+  function formatCourseDetails(course, nome) {
+    const oque = (course.oque_aprende || []).map(o => '• ' + o).join('\n');
+    const ferramentas = (course.ferramentas || []).join(', ');
+    const precoStr = course.preco === 4500
+      ? 'R$4.500 (10h online) / R$5.000 (presencial)'
+      : course.preco === 12000
+      ? 'R$12.000 (3 módulos de 10h, R$4.000/módulo)'
+      : 'R$4.000 (10h online) / R$4.500 (presencial)';
+
+    return `EMENTA: ${course.titulo}\n\nO QUE VOCÊ VAI APRENDER:\n${oque}\n\nFERRAMENTAS: ${ferramentas}\nPROFESSOR: ${course.professor}\nDURAÇÃO: ${course.duracao}\nINVESTIMENTO: ${precoStr}\n\nQuer matricular${nome ? ', ' + nome : ''}?`;
   }
 
   function handleSend() {
