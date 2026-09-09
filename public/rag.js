@@ -482,14 +482,21 @@ Sobre o que você quer saber? Posso falar sobre cursos, preços, formas de pagam
     const input = normalize(query);
     let best = null, bestScore = 0;
     CURSOS.forEach(c => {
+      const titulo = normalize(c.titulo);
       const haystack = normalize(c.titulo + ' ' + c.area + ' ' + c.publico + ' ' + (c.ferramentas || []).join(' ') + ' ' + c.professor);
       let score = 0;
       input.split(/\s+/).forEach(w => {
-        if (w.length > 2 && haystack.includes(w)) score += 1;
+        if (w.length > 2) {
+          // Palavra no título tem peso 3 (match mais relevante)
+          if (titulo.includes(w)) score += 3;
+          // Palavra no resto (ferramentas, área, professor) tem peso 1
+          else if (haystack.includes(w)) score += 1;
+        }
       });
       if (score > bestScore) { bestScore = score; best = c; }
     });
-    return bestScore >= 2 ? best : null;
+    // Threshold de 1 já que peso de título é alto
+    return bestScore >= 1 ? best : null;
   }
 
   // ===== GERAR RESPOSTA =====
@@ -500,9 +507,9 @@ Sobre o que você quer saber? Posso falar sobre cursos, preços, formas de pagam
     const score = result.score;
     const course = result.course;
 
-    // Se encontrou curso E conceito, prioriza curso se a pergunta for sobre curso
+    // Se encontrou curso e a pergunta tem intenção de aprendizado, prioriza curso
     const input = normalize(userInput);
-    if (course && /curso|aprender|quero|fazer/.test(input)) {
+    if (course && (/\bcurso\b|\baprender\b|\bquero\b|\bfazer\b|\bestudar\b|\bpreciso\b/.test(input) || course.titulo.toLowerCase().includes('python') || course.titulo.toLowerCase().includes('ia '))) {
       return formatCourseResponse(course, nome);
     }
 
