@@ -266,10 +266,6 @@ body::before { content: ''; position: fixed; inset: 0; background: radial-gradie
       <div class="topbar">
         <h1>Dashboard</h1>
         <div class="topbar-actions">
-          <button class="btn btn-ghost" onclick="syncFromSheets()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-            Sincronizar
-          </button>
           <button class="btn btn-ghost" onclick="AISchoolLeads.exportCSV()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             CSV
@@ -427,52 +423,44 @@ body::before { content: ''; position: fixed; inset: 0; background: radial-gradie
       </div>
 
       <div class="chart-card">
-        <h3 class="chart-title">Integração Google Sheets</h3>
-
-        <div id="sheetsAlert"></div>
-
-        <div class="settings-form">
-          <div class="form-group">
-            <label>URL do Google Apps Script (Web App)</label>
-            <input type="text" id="sheetsUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfyc.../exec" />
-            <div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.4rem;">
-              Pegue a URL no Apps Script (Extensões → Apps Script → Implantar → App da Web).
-              Os leads serão enviados automaticamente pra sua planilha.
-            </div>
-          </div>
-          <div style="display:flex;gap:0.5rem;">
-            <button class="btn btn-primary" onclick="saveSheetsUrl()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              Salvar URL
-            </button>
-            <button class="btn btn-ghost" onclick="testSheetsUrl()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              Testar conexão
-            </button>
-            <button class="btn btn-emerald" onclick="syncFromSheets()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-              Importar da planilha
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="chart-card" style="margin-top:1rem;">
-        <h3 class="chart-title">Backup de dados</h3>
+        <h3 class="chart-title">Backup e Importação</h3>
         <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;">
-          Os leads ficam salvos no navegador (localStorage). Para backup, exporte regularmente.
-          Você também pode importar um JSON de leads.
+          Os leads ficam salvos no seu navegador (localStorage). Exporte regularmente para fazer backup.
+          Você pode importar um JSON em outro dispositivo ou navegador.
         </p>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-          <button class="btn btn-ghost" onclick="AISchoolLeads.exportCSV()">Exportar CSV</button>
-          <button class="btn btn-ghost" onclick="AISchoolLeads.exportJSON()">Exportar JSON</button>
+          <button class="btn btn-primary" onclick="AISchoolLeads.exportCSV()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+          </button>
+          <button class="btn btn-ghost" onclick="AISchoolLeads.exportJSON()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar JSON
+          </button>
           <label class="btn btn-ghost" style="cursor:pointer;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Importar JSON
             <input type="file" accept=".json" style="display:none;" onchange="importJSON(event)" />
           </label>
           <button class="btn btn-ghost" style="color:#ef4444;border-color:rgba(239,68,68,0.3);" onclick="clearAllData()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             Apagar todos os leads
           </button>
+        </div>
+      </div>
+
+      <div class="chart-card" style="margin-top:1rem;">
+        <h3 class="chart-title">Sobre este CRM</h3>
+        <div style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">
+          <p style="margin-bottom:0.5rem;"><strong style="color:var(--text);">AI School CRM v1.0</strong> - Sistema 100% client-side.</p>
+          <p style="margin-bottom:0.5rem;">✅ Funciona no GitHub Pages sem backend</p>
+          <p style="margin-bottom:0.5rem;">✅ Leads salvos localmente no navegador</p>
+          <p style="margin-bottom:0.5rem;">✅ Integração automática com chatbot e checkout</p>
+          <p style="margin-bottom:0.5rem;">✅ Exportação em CSV (Excel/Sheets) e JSON</p>
+          <p style="margin-bottom:0.5rem;">✅ Importação de JSON para sincronizar entre dispositivos</p>
+          <p style="margin-top:1rem;font-size:0.75rem;color:var(--text-dim);">
+            Dica: Para acessar os mesmos leads em outro dispositivo, exporte o JSON aqui e importe lá.
+          </p>
         </div>
       </div>
     </div>
@@ -519,7 +507,6 @@ function navigateTo(page, extra) {
   if (page === 'dashboard') renderDashboard();
   if (page === 'leads') renderLeads();
   if (page === 'add-lead') populateAddLeadForm();
-  if (page === 'settings') loadSettings();
 
   // Handle filters from sidebar
   if (extra && extra.startsWith('filter=')) {
@@ -909,76 +896,18 @@ function submitManualLead(event) {
 }
 
 // ===== SETTINGS =====
-function loadSettings() {
-  document.getElementById('sheetsUrl').value = AISchoolLeads.getSheetsUrl();
-  testSheetsUrl();
-}
-
-function saveSheetsUrl() {
-  const url = document.getElementById('sheetsUrl').value.trim();
-  AISchoolLeads.setSheetsUrl(url);
-  showSheetsAlert('URL salva com sucesso!', 'success');
-  testSheetsUrl();
-}
-
-function testSheetsUrl() {
-  const url = AISchoolLeads.getSheetsUrl();
-  if (!url) {
-    showSheetsAlert('Nenhuma URL configurada.', 'warn');
-    return;
-  }
-  showSheetsAlert('Testando conexão...', 'info');
-  fetch(url + '?acao=status', { method: 'GET' })
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(data => {
-      if (data && data.status === 'ok') {
-        showSheetsAlert('✅ Conexão OK! Planilha: ' + (data.planilha || 'conectada'), 'success');
-      } else {
-        showSheetsAlert('⚠️ Resposta inesperada da planilha. Verifique se o Apps Script está implantado corretamente.', 'warn');
-      }
-    })
-    .catch(err => {
-      showSheetsAlert('❌ Erro ao conectar: ' + err.message + '. Acesse o link abaixo para configurar o Apps Script:', 'warn');
-    });
-}
-
-function showSheetsAlert(message, type) {
-  const el = document.getElementById('sheetsAlert');
-  el.innerHTML = `<div class="alert ${type}">${message}</div>`;
-}
-
-function syncFromSheets() {
-  showSheetsAlert('Sincronizando da planilha...', 'info');
-  AISchoolLeads.syncFromGoogleSheets().then(result => {
-    if (result.ok) {
-      showSheetsAlert(`✅ ${result.added} novos leads importados da planilha (total na planilha: ${result.total}).`, 'success');
-      renderLeads();
-      renderDashboard();
-    } else {
-      showSheetsAlert('❌ Erro ao importar: ' + result.error, 'warn');
-    }
-  });
-}
-
 function importJSON(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = (e) => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data)) throw new Error('Formato inválido. Esperado um array de leads.');
-      const existing = AISchoolLeads.getAllLeads();
-      // Substitui todos
-      localStorage.setItem('aischool_leads_crm_v1', JSON.stringify(data));
-      alert(data.length + ' leads importados com sucesso!');
+    const result = AISchoolLeads.importJSON(e.target.result);
+    if (result.ok) {
+      alert(`${result.added} novos leads adicionados e ${result.updated} atualizados. Total: ${result.total}.`);
       renderLeads();
       renderDashboard();
-    } catch (err) {
-      alert('Erro ao importar: ' + err.message);
+    } else {
+      alert('Erro ao importar: ' + result.error);
     }
   };
   reader.readAsText(file);
@@ -987,7 +916,7 @@ function importJSON(event) {
 function clearAllData() {
   if (!confirm('Tem certeza? Todos os leads serão apagados deste navegador.')) return;
   if (!confirm('Última confirmação: apagar TODOS os ' + AISchoolLeads.getAllLeads().length + ' leads?')) return;
-  localStorage.removeItem('aischool_leads_crm_v1');
+  AISchoolLeads.clearAll();
   alert('Todos os leads foram apagados.');
   renderLeads();
   renderDashboard();

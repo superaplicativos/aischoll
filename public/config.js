@@ -372,5 +372,4 @@ window.AISCHOOL_CONFIG = {
   pixCpf: '33783362857',
   pixRecebedor: 'AI SCHOOL TECNOLOGIA EDUCACIONAL',
   pixCidade: 'SAO PAULO',
-  googleSheetsUrl: 'https://script.google.com/macros/s/AKfycbyivl0Vkeks75M3sbxXIXCKmHyPkSvECgP5K1ds-D1MC8F5z5H_ZDYf4jpqlILCYI9Y/exec',
 };

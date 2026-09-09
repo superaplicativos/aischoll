@@ -2,10 +2,8 @@
  * AI School - Biblioteca compartilhada de Leads
  * Usada por: chatbot.js, checkout-dialog, formulário de matrícula, CRM
  *
- * Funciona 100% client-side (GitHub Pages):
- * - Salva todos os leads em localStorage (chave: aischool_leads_crm)
- * - Sincroniza com Google Sheets (best-effort, se URL configurada)
- * - Formato padronizado para todas as fontes
+ * 100% client-side (GitHub Pages). Leads ficam no localStorage do navegador.
+ * Exporte regularmente para backup (CSV/JSON) pelo painel CRM.
  *
  * API pública (window.AISchoolLeads):
  *   - addLead(partial) → cria/atualiza lead, retorna ID
@@ -20,22 +18,22 @@
  *   - deleteLead(id) → remove lead
  *   - exportCSV() → download CSV
  *   - exportJSON() → download JSON
- *   - syncFromGoogleSheets() → tenta buscar da planilha
+ *   - importJSON(jsonString) → importa leads de JSON
+ *   - getStats() → estatísticas para dashboard
  *   - subscribe(callback) → registra callback para mudanças
+ *   - clearAll() → apaga todos os leads
  */
 (function () {
   'use strict';
 
   const STORAGE_KEY = 'aischool_leads_crm_v1';
-  const SHEETS_KEY = 'aischool_sheets_url';
-  const DEFAULT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyivl0Vkeks75M3sbxXIXCKmHyPkSvECgP5K1ds-D1MC8F5z5H_ZDYf4jpqlILCYI9Y/exec';
 
   // ===== TIPOS DE STATUS =====
   const STATUS = {
     NOVO: 'novo',
     CONTACTADO: 'contactado',
     QUALIFICADO: 'qualificado',
-    MATRICULADO: 'matriculado',  // preencheu form ou clicou em matricular
+    MATRICULADO: 'matriculado',
     PAGO: 'pago',
     PERDIDO: 'perdido',
   };
@@ -60,7 +58,7 @@
 
   const PAYMENT_STATUS = {
     NAO_PAGO: 'nao_pago',
-    AGUARDANDO: 'aguardando',  // gerou PIX mas não confirmou
+    AGUARDANDO: 'aguardando',
     PAGO: 'pago',
     ESTORNADO: 'estornado',
   };
@@ -169,7 +167,6 @@
       const idx = leads.findIndex(l => l.id === existing.id);
       leads[idx] = updated;
       saveLeads(leads);
-      syncToGoogleSheets(updated);
       return updated.id;
     }
 
@@ -197,7 +194,6 @@
     };
     leads.push(newLead);
     saveLeads(leads);
-    syncToGoogleSheets(newLead);
     return newLead.id;
   }
 
@@ -229,7 +225,6 @@
       updated_at: now(),
     };
     saveLeads(leads);
-    syncToGoogleSheets(leads[idx]);
     return true;
   }
 
@@ -289,6 +284,10 @@
     if (filtered.length === leads.length) return false;
     saveLeads(filtered);
     return true;
+  }
+
+  function clearAll() {
+    saveLeads([]);
   }
 
   // ===== EXPORT =====
@@ -358,115 +357,34 @@
     URL.revokeObjectURL(url);
   }
 
-  // ===== GOOGLE SHEETS SYNC =====
-  function getSheetsUrl() {
-    return localStorage.getItem(SHEETS_KEY) || DEFAULT_SHEETS_URL;
-  }
-
-  function setSheetsUrl(url) {
-    localStorage.setItem(SHEETS_KEY, url);
-  }
-
-  let sheetsSyncQueue = [];
-  let lastSync = 0;
-
-  function syncToGoogleSheets(lead) {
-    const url = getSheetsUrl();
-    if (!url || !lead) return Promise.resolve(false);
-    // Throttle 5s
-    if (Date.now() - lastSync < 5000) {
-      sheetsSyncQueue.push(lead);
-      return Promise.resolve(false);
-    }
-    lastSync = Date.now();
-
-    const payload = {
-      id: lead.id,
-      timestamp: now(),
-      name: lead.name,
-      whatsapp: lead.whatsapp,
-      email: lead.email,
-      source: lead.source,
-      status: lead.status,
-      payment_status: lead.payment_status,
-      payment_amount: lead.payment_amount,
-      payment_method: lead.payment_method,
-      payment_date: lead.payment_date,
-      course_interest: lead.course_interest,
-      modalidade: lead.modalidade,
-      messageCount: (lead.conversation || []).length,
-      lastMessages: (lead.conversation || []).slice(-5).map(m => ({
-        from: m.from, text: m.text, time: new Date(m.timestamp).toISOString()
-      })),
-      notes: lead.notes,
-      metadata: lead.metadata,
-    };
-
-    return fetch(url, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload),
-    }).then(() => {
-      console.log('[AISchoolLeads] Sincronizado com Google Sheets:', lead.name);
-      return true;
-    }).catch((err) => {
-      console.warn('[AISchoolLeads] Falha ao sincronizar (será retentado):', err);
-      sheetsSyncQueue.push(lead);
-      return false;
-    });
-  }
-
-  // Retry queue a cada 60s
-  setInterval(() => {
-    if (sheetsSyncQueue.length === 0) return;
-    const queue = sheetsSyncQueue.slice();
-    sheetsSyncQueue = [];
-    queue.forEach(lead => syncToGoogleSheets(lead));
-  }, 60000);
-
-  function syncFromGoogleSheets() {
-    const url = getSheetsUrl();
-    if (!url) return Promise.resolve({ ok: false, error: 'URL não configurada' });
-
-    return fetch(url + '?acao=listarjson', { method: 'GET' })
-      .then(r => r.json())
-      .then(remoteLeads => {
-        if (!Array.isArray(remoteLeads)) {
-          return { ok: false, error: 'Resposta inválida da planilha' };
+  function importJSON(jsonString) {
+    try {
+      const data = typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
+      if (!Array.isArray(data)) throw new Error('Formato inválido. Esperado um array de leads.');
+      const existing = loadLeads();
+      let added = 0;
+      let updated = 0;
+      data.forEach(remote => {
+        const wa = normalizeWhatsApp(remote.whatsapp);
+        const existingLead = existing.find(l => normalizeWhatsApp(l.whatsapp) === wa && wa);
+        if (existingLead) {
+          Object.assign(existingLead, remote, { id: existingLead.id, updated_at: now() });
+          updated++;
+        } else {
+          existing.push({
+            ...remote,
+            id: remote.id || generateId(remote),
+            created_at: remote.created_at || now(),
+            updated_at: now(),
+          });
+          added++;
         }
-        // Faz merge: para cada lead remoto, se não existe local, adiciona
-        const localLeads = loadLeads();
-        let added = 0;
-        remoteLeads.forEach(remote => {
-          const wa = normalizeWhatsApp(remote.whatsapp);
-          const existing = localLeads.find(l => normalizeWhatsApp(l.whatsapp) === wa);
-          if (!existing && wa) {
-            localLeads.push({
-              id: 'lead_sheets_' + wa,
-              name: remote.name || '',
-              whatsapp: wa,
-              email: remote.email || '',
-              source: 'import',
-              course_interest: remote.course_interest || [],
-              status: remote.status || STATUS.NOVO,
-              payment_status: remote.payment_status || PAYMENT_STATUS.NAO_PAGO,
-              payment_amount: remote.payment_amount || 0,
-              payment_method: remote.payment_method || null,
-              payment_date: remote.payment_date || null,
-              conversation: [],
-              notes: [],
-              created_at: remote.timestamp || remote.data || now(),
-              updated_at: now(),
-              last_contact: remote.timestamp || remote.data || now(),
-            });
-            added++;
-          }
-        });
-        saveLeads(localLeads);
-        return { ok: true, added, total: remoteLeads.length };
-      })
-      .catch(err => ({ ok: false, error: err.message }));
+      });
+      saveLeads(existing);
+      return { ok: true, added, updated, total: existing.length };
+    } catch (err) {
+      return { ok: false, error: err.message };
+    }
   }
 
   // ===== STATS =====
@@ -491,31 +409,23 @@
     weekAgo.setDate(weekAgo.getDate() - 7);
 
     leads.forEach(l => {
-      // by status
       stats.by_status[l.status] = (stats.by_status[l.status] || 0) + 1;
-      // by source
       stats.by_source[l.source] = (stats.by_source[l.source] || 0) + 1;
-      // by payment
       stats.by_payment[l.payment_status] = (stats.by_payment[l.payment_status] || 0) + 1;
-      // by course
       (l.course_interest || []).forEach(c => {
         stats.by_course[c] = (stats.by_course[c] || 0) + 1;
       });
-      // revenue
       if (l.payment_status === PAYMENT_STATUS.PAGO) {
         stats.revenue += l.payment_amount || 0;
       }
-      // pending payment
       if (l.status === STATUS.MATRICULADO && l.payment_status !== PAYMENT_STATUS.PAGO) {
         stats.pending_payment++;
       }
-      // created today/this week
       const created = new Date(l.created_at);
       if (created >= today) stats.new_today++;
       if (created >= weekAgo) stats.new_this_week++;
     });
 
-    // conversion rate
     const paid = stats.by_status[STATUS.PAGO] || 0;
     stats.conversion_rate = stats.total > 0 ? Math.round((paid / stats.total) * 100) : 0;
 
@@ -547,14 +457,12 @@
     setStatus,
     setPaymentStatus,
     deleteLead,
-    // Export
+    clearAll,
+    // Export/Import
     exportCSV,
     exportJSON,
+    importJSON,
     toCSV,
-    // Google Sheets
-    syncFromGoogleSheets,
-    setSheetsUrl,
-    getSheetsUrl,
     // Stats
     getStats,
     // Subscribe

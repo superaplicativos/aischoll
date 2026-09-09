@@ -1,6 +1,6 @@
 /**
  * AI School - Aria (SDR Senior Chatbot)
- * v3.0 - Script de vendas profissional, UX limpa, sem bugs
+ * v3.1 - Script de vendas profissional, UX limpa, sem bugs
  *
  * Fluxo de SDR senior:
  *   1. Hook (benefício imediato)
@@ -14,7 +14,7 @@
  * - Botão flutuante com animação sutil
  * - Captação de lead no primeiro contato
  * - RAG com knowledge base completa
- * - Sincronização Google Sheets (silenciosa)
+ * - Salva leads no CRM (leads.js) automaticamente
  * - Exportação TXT
  * - Persistência de sessão (continua de onde parou)
  */
@@ -30,7 +30,6 @@
     primaryColor: '#7c3aed',
     accentColor: '#10b981',
     botName: 'Aria',
-    googleSheetsUrl: 'https://script.google.com/macros/s/AKfycbyivl0Vkeks75M3sbxXIXCKmHyPkSvECgP5K1ds-D1MC8F5z5H_ZDYf4jpqlILCYI9Y/exec',
   };
 
   // ===== KNOWLEDGE BASE (CURSOS) =====
@@ -440,64 +439,6 @@
       }
     } catch (e) {}
   }
-
-  // ===== GOOGLE SHEETS SYNC =====
-  let sheetsSyncQueue = [];
-  let lastSheetsSync = 0;
-
-  function sendLeadToSheets(opts) {
-    opts = opts || {};
-    if (!CONFIG.googleSheetsUrl) return Promise.resolve(false);
-    if (!state.lead.name || !state.lead.whatsapp) return Promise.resolve(false);
-
-    // Throttle: 30s entre envios (a menos que force)
-    const now = Date.now();
-    if (!opts.force && now - lastSheetsSync < 30000) {
-      return Promise.resolve(false);
-    }
-    lastSheetsSync = now;
-
-    const payload = {
-      timestamp: new Date().toISOString(),
-      name: state.lead.name,
-      whatsapp: state.lead.whatsapp,
-      course_interest: state.lead.course_interest || [],
-      messageCount: state.messages.length,
-      lastMessages: state.messages.slice(-5).map(m => ({
-        from: m.from, text: m.text, time: new Date(m.timestamp).toISOString()
-      })),
-      source: window.location.pathname,
-      userAgent: navigator.userAgent.substring(0, 200),
-      final: !!opts.final,
-      force: !!opts.force
-    };
-
-    return fetch(CONFIG.googleSheetsUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    }).then(() => {
-      console.log('[Aria] Lead sincronizado com Google Sheets');
-      return true;
-    }).catch(() => {
-      sheetsSyncQueue.push(payload);
-      return false;
-    });
-  }
-
-  setInterval(() => {
-    if (sheetsSyncQueue.length === 0) return;
-    const queue = sheetsSyncQueue.slice();
-    sheetsSyncQueue = [];
-    queue.forEach(p => {
-      fetch(CONFIG.googleSheetsUrl, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(p)
-      }).catch(() => { if (sheetsSyncQueue.length < 5) sheetsSyncQueue.push(p); });
-    });
-  }, 60000);
 
   // ===== TEXT HELPERS =====
   function normalize(text) {
@@ -963,28 +904,20 @@
     const txtBtn = el('button', { class: 'aria-action-btn', title: 'Baixar conversa em TXT' });
     txtBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> TXT';
     txtBtn.addEventListener('click', downloadTxt);
-    const sheetsBtn = el('button', { class: 'aria-action-btn green', title: 'Salvar lead na planilha' });
-    sheetsBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha';
-    sheetsBtn.addEventListener('click', () => {
-      sendLeadToSheets({ final: true, force: true }).then(ok => {
-        if (ok) {
-          sheetsBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Salvo!';
-          setTimeout(() => {
-            sheetsBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha';
-          }, 3000);
-        } else {
-          sheetsBtn.innerHTML = '⚠️ Falha';
-          setTimeout(() => {
-            sheetsBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Planilha';
-          }, 3000);
-        }
-      });
+    const crmBtn = el('button', { class: 'aria-action-btn green', title: 'Salvar lead no CRM' });
+    crmBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> CRM';
+    crmBtn.addEventListener('click', () => {
+      saveLead();
+      crmBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Salvo!';
+      setTimeout(() => {
+        crmBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> CRM';
+      }, 2500);
     });
     const waBtn = el('button', { class: 'aria-action-btn amber', title: 'Falar com a escola no WhatsApp' });
     waBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp';
     waBtn.addEventListener('click', sendLeadToWhatsApp);
     actionsEl.appendChild(txtBtn);
-    actionsEl.appendChild(sheetsBtn);
+    actionsEl.appendChild(crmBtn);
     actionsEl.appendChild(waBtn);
 
     chatWindow.appendChild(header);
@@ -1126,7 +1059,7 @@
       botSay('Preciso do seu nome e WhatsApp antes de enviar pra escola. Pode me passar?');
       return;
     }
-    sendLeadToSheets({ final: true, force: true });
+    saveLead();
     const summary = `🤖 NOVO LEAD - AI SCHOOL\n\nNome: ${state.lead.name}\nWhatsApp: ${state.lead.whatsapp}\nInteresse: ${state.lead.course_interest.length > 0 ? state.lead.course_interest.join(', ') : 'A definir'}\nMensagens: ${state.messages.length}\n\n---\n\n${state.messages.slice(-8).map(m => `${m.from === 'bot' ? 'Aria' : state.lead.name}: ${m.text}`).join('\n\n').substring(0, 2500)}`;
     window.open(`https://wa.me/${CONFIG.whatsappSchool}?text=${encodeURIComponent(summary)}`, '_blank');
   }
@@ -1181,7 +1114,6 @@
       try { localStorage.setItem('aichat_lead_whatsapp', digits); } catch (e) {}
       saveSession();
       saveLead();
-      sendLeadToSheets();
       await botSay(`Perfeito, ${state.lead.name}! ✅ Seus dados estão salvos com segurança.\n\nAgora me conta: o que te trouxe aqui hoje? Posso te recomendar o curso ideal.`, {
         quick: ['Quero aprender IA do zero', 'Quero programar com IA', 'Quero editar vídeos com IA', 'É pra meu filho(a)', 'Quero mentoria VIP']
       });
@@ -1337,7 +1269,7 @@
       state.lead.course_interest.push(slug);
       saveSession();
       if (state.lead.name && state.lead.whatsapp) {
-        sendLeadToSheets();
+        saveLead();
       }
     }
   }
@@ -1367,7 +1299,6 @@
 
   function redirectToCheckout(slug) {
     saveLead();
-    sendLeadToSheets({ final: true, force: true });
     if (slug === 'mentoria-vip') {
       window.location.hash = '#/checkout/mentoria';
     } else {
