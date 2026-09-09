@@ -1309,7 +1309,7 @@
         quick: ['Quero ver curso IA Intermediário', 'Quero matricular', 'Tirar outra dúvida']
       },
       {
-        match: /(o que e ia$|o que e ia[^m]|o que.*inteligencia artificial|o que.*intelig.*artificial|como.*ia.*funciona|ia.*como funciona|^o que e ia|^o que.*ia generativa|o que e ia generativa)/,
+        match: /(\bo que (e|é) ia\b|o que.*inteligencia artificial|o que.*intelig.*artificial|como.*\bia\b.*funciona|\bia\b.*como funciona|o que.*ia generativa|o que e ia generativa|\bia\b generativa)/,
         answer: `Boa pergunta${name ? ', ' + name : ''}! Vou te explicar de forma simples.\n\nIA (Inteligência Artificial) é uma área da computação que cria sistemas capazes de fazer tarefas que antes só humanos conseguiam fazer: entender texto, reconhecer imagens, conversar, recomendar coisas, tomar decisões.\n\nHOJE, quando falamos de IA no dia a dia, estamos falando de IA GENERATIVA, que é um tipo específico de IA que CRIA conteúdo novo (texto, imagem, vídeo, código) a partir do que você pede.\n\nExemplos que você provavelmente já usou:\n• ChatGPT (cria texto, responde perguntas)\n• Gemini do Google (mesma coisa, integrado com Google)\n• DALL-E / Imagen (criam imagens)\n• Sora / Google Flow (criam vídeos)\n\nNÃO É mágica nem consciência. É estatística avançada: a IA aprende padrões de bilhões de textos e imagens, e gera respostas baseadas nesses padrões.\n\nPor isso dominar IA agora é tão importante: ela vai estar em TODO trabalho nos próximos anos. Quer que eu te mostre qual curso ideal pro seu momento?`,
         quick: ['Quero ver cursos', 'Não sei qual curso fazer', 'Tirar outra dúvida']
       },
